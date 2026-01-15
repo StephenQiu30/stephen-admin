@@ -66,6 +66,7 @@ const CreatePostModal: React.FC<Props> = (props) => {
       try {
         const res = await uploadFile(
           {
+            // @ts-ignore
             biz: FileUploadBiz.POST_COVER,
           },
           {

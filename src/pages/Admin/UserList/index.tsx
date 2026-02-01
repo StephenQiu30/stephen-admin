@@ -165,12 +165,7 @@ const UserList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
-        options={{
-          density: false,
-          fullScreen: false,
-          setting: false,
-          reload: true,
-        }}
+
         toolBarRender={() => [
           <Space key={'space'} wrap>
             <Button

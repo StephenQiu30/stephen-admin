@@ -125,6 +125,9 @@ const CreatePostModal: React.FC<Props> = (props) => {
         label="标签"
         mode="tags"
         placeholder="请输入标签"
+        fieldProps={{
+          suffixIcon: null,
+        }}
       />
       <ProFormUploadDragger
         title={'上传帖子封面'}

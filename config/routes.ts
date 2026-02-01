@@ -10,6 +10,8 @@ export default [
       { path: '/admin', redirect: '/admin/user' },
       { name: '用户管理', path: '/admin/user', component: './Admin/UserList' },
       { name: '帖子管理', path: '/admin/post', component: './Admin/PostList' },
+      { name: '评论管理', path: '/admin/comment', component: './Admin/CommentList', icon: 'message' },
+      { name: '微信管理', path: '/admin/wechat', component: './Admin/WeChat', icon: 'wechat' },
     ],
   },
   {

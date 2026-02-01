@@ -1,19 +1,20 @@
 import {
   ModalForm,
   ProForm,
+  ProFormSelect,
   ProFormText,
   ProFormTextArea,
   ProFormUploadDragger,
 } from '@ant-design/pro-components';
 import { message, UploadProps } from 'antd';
 import React, { useState } from 'react';
-import { MdEditor } from '@/components';
+
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
-import {updatePost} from '@/services/stephen-backend/postController';
-import {uploadFile} from '@/services/stephen-backend/fileController';
+import { updatePost } from '@/services/stephen-backend/postController';
+import { uploadFile } from '@/services/stephen-backend/fileController';
 
 interface Props {
-  oldData?: API.Post;
+  oldData?: API.PostVO;
   onCancel: () => void;
   onSubmit: (values: API.PostUpdateRequest) => Promise<void>;
   visible: boolean;
@@ -32,7 +33,7 @@ const handleUpdate = async (fields: API.PostUpdateRequest) => {
     if (res.code === 0 && res.data) {
       message.success('更新成功');
       return true;
-    }else {
+    } else {
       message.error(`更新失败${res.message}, 请重试!`);
       return false;
     }
@@ -47,8 +48,7 @@ const UpdatePostModal: React.FC<Props> = (props) => {
   const { oldData, visible, onSubmit, onCancel } = props;
   // 帖子封面
   const [cover, setCover] = useState<any>();
-  // 帖子内容
-  const [content, setContent] = useState<string>(oldData?.content ?? '');
+
 
   const [form] = ProForm.useForm<API.PostUpdateRequest>();
   /**
@@ -98,9 +98,8 @@ const UpdatePostModal: React.FC<Props> = (props) => {
         const success = await handleUpdate({
           ...values,
           id: oldData.id,
-          cover,
-          content,
-          tags: Array.isArray(values.tags) ? values.tags : JSON.parse(values.tags as any),
+          cover: cover || oldData.cover,
+          tags: values.tags,
         });
         if (success) {
           onSubmit?.(values);
@@ -121,12 +120,14 @@ const UpdatePostModal: React.FC<Props> = (props) => {
       }}
     >
       <ProFormText initialValue={oldData?.title} name="title" label="标题" />
-      <ProFormTextArea initialValue={oldData?.content} name="content" label="内容">
-        <MdEditor
-          value={content}
-          onChange={(value) => setContent(value)}
-        />
-      </ProFormTextArea>
+      <ProFormTextArea initialValue={oldData?.content} name="content" label="内容" />
+      <ProFormSelect
+        name="tags"
+        label="标签"
+        mode="tags"
+        placeholder="请输入标签"
+        initialValue={oldData?.tags}
+      />
       <ProFormUploadDragger
         title={'上传帖子封面'}
         max={1}

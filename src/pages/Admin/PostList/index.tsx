@@ -1,10 +1,10 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Avatar, Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { CreatePostModal, UpdatePostModal, ViewPostModal } from '@/pages/Admin/PostList/components';
 import { PlusOutlined } from '@ant-design/icons';
 import { TAG_EMPTY } from '@/constants';
-import { deletePost, listPostByPage } from '@/services/stephen-backend/postController';
+import { deletePost, listPostByPage, listPostVoByPage } from '@/services/stephen-backend/postController';
 
 /**
  * 删除节点
@@ -43,22 +43,27 @@ const PostList: React.FC = () => {
   const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   // 当前用户的所点击的数据
-  const [currentRow, setCurrentRow] = useState<API.Post>();
+  const [currentRow, setCurrentRow] = useState<API.PostVO>();
 
   /**
    * 表格列数据
    */
-  const columns: ProColumns<API.Post>[] = [
+  const columns: ProColumns<API.PostVO>[] = [
     {
       title: 'id',
       dataIndex: 'id',
       valueType: 'text',
       hideInForm: true,
+      copyable: true,
+      ellipsis: true,
+      width: 120,
     },
     {
       title: '标题',
       dataIndex: 'title',
       valueType: 'text',
+      ellipsis: true,
+      copyable: true,
     },
     {
       title: '内容',
@@ -74,39 +79,61 @@ const PostList: React.FC = () => {
         width: 64,
       },
       hideInSearch: true,
+      width: 80,
+    },
+    {
+      title: '创建人',
+      dataIndex: 'userId',
+      valueType: 'text',
+      render: (_, record) => (
+        <Space>
+          {record.userVO?.userAvatar && <Avatar src={record.userVO.userAvatar} size="small" />}
+          <span>{record.userVO?.userName || record.userId}</span>
+        </Space>
+      ),
     },
     {
       title: '点赞数',
       dataIndex: 'favourNum',
       hideInSearch: true,
       hideInForm: true,
+      width: 80,
     },
     {
       title: '收藏数',
       dataIndex: 'thumbNum',
       hideInSearch: true,
       hideInForm: true,
+      width: 80,
     },
     {
       title: '标签',
       dataIndex: 'tags',
+      width: 200,
       render: (_, record) => {
         if (record.tags) {
-          const tagList = JSON.parse(record.tags as string);
-          return tagList.map((tag) => (
-            <Tag key={tag} color={'blue'}>
-              {tag}
-            </Tag>
-          ));
+          let tags = record.tags;
+          if (typeof tags === 'string') {
+            try {
+              tags = JSON.parse(tags);
+            } catch (e) {
+              tags = [];
+            }
+          }
+          if (Array.isArray(tags)) {
+            return (
+              <Space wrap size={4}>
+                {tags.map((tag) => (
+                  <Tag key={tag} color={'blue'}>
+                    {tag}
+                  </Tag>
+                ))}
+              </Space>
+            )
+          }
         }
         return <Tag>{TAG_EMPTY}</Tag>;
       },
-    },
-    {
-      title: '创建用户id',
-      dataIndex: 'userId',
-      valueType: 'text',
-      hideInForm: true,
     },
     {
       title: '创建时间',
@@ -115,6 +142,7 @@ const PostList: React.FC = () => {
       valueType: 'dateTime',
       hideInSearch: true,
       hideInForm: true,
+      width: 160,
     },
     {
       title: '更新时间',
@@ -129,6 +157,8 @@ const PostList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      fixed: 'right',
+      width: 150,
       render: (_, record) => (
         <Space size={'middle'}>
           <Typography.Link
@@ -178,7 +208,7 @@ const PostList: React.FC = () => {
   ];
   return (
     <>
-      <ProTable<API.Post, API.PageParams>
+      <ProTable<API.PostVO, API.PageParams>
         headerTitle={'帖子列表'}
         actionRef={actionRef}
         rowKey={'id'}
@@ -202,7 +232,7 @@ const PostList: React.FC = () => {
         request={async (params, sort, filter) => {
           const sortField = Object.keys(sort)?.[0];
           const sortOrder = sort?.[sortField] ?? undefined;
-          const { data, code } = await listPostByPage({
+          const { data, code } = await listPostVoByPage({
             ...params,
             ...filter,
             sortField,

@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import {
   ModalForm,
   ProForm,
+  ProFormSelect,
   ProFormText,
   ProFormTextArea,
   ProFormUploadDragger,
 } from '@ant-design/pro-components';
-import { MdEditor } from '@/components';
+
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
 import { uploadFile } from '@/services/stephen-backend/fileController';
 import { addPost } from '@/services/stephen-backend/postController';
@@ -50,8 +51,7 @@ const CreatePostModal: React.FC<Props> = (props) => {
   const { visible, onCancel, onSubmit } = props;
   // 帖子封面
   const [cover, setCover] = useState<any>();
-  // 帖子内容
-  const [content, setContent] = useState<string>('');
+
   const [form] = ProForm.useForm<API.PostAddRequest>();
 
   /**
@@ -98,7 +98,7 @@ const CreatePostModal: React.FC<Props> = (props) => {
         const success = await handleAdd({
           ...values,
           cover,
-          content,
+          tags: values.tags,
         });
         if (success) {
           onSubmit?.();
@@ -119,9 +119,13 @@ const CreatePostModal: React.FC<Props> = (props) => {
       }}
     >
       <ProFormText name="title" label="标题" />
-      <ProFormTextArea name="content" label="描述">
-        <MdEditor value={content} onChange={(value) => setContent(value)} />
-      </ProFormTextArea>
+      <ProFormTextArea name="content" label="描述" />
+      <ProFormSelect
+        name="tags"
+        label="标签"
+        mode="tags"
+        placeholder="请输入标签"
+      />
       <ProFormUploadDragger
         title={'上传帖子封面'}
         max={1}

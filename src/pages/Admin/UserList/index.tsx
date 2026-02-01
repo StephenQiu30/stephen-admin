@@ -4,7 +4,7 @@ import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
 import { CreateUserModal, UpdateUserModal } from '@/pages/Admin/UserList/components';
-import {deleteUser, listUserByPage} from '@/services/stephen-backend/userController';
+import { deleteUser, listUserByPage } from '@/services/stephen-backend/userController';
 
 /**
  * 删除节点
@@ -52,11 +52,15 @@ const UserList: React.FC = () => {
       dataIndex: 'id',
       valueType: 'text',
       hideInForm: true,
+      copyable: true,
+      ellipsis: true,
+      width: 120,
     },
     {
       title: '账号',
       dataIndex: 'userAccount',
       valueType: 'text',
+      copyable: true,
     },
     {
       title: '用户名',
@@ -71,6 +75,7 @@ const UserList: React.FC = () => {
         width: 64,
       },
       hideInSearch: true,
+      width: 80,
     },
     {
       title: '邮箱',
@@ -101,11 +106,14 @@ const UserList: React.FC = () => {
       valueType: 'dateTime',
       hideInSearch: true,
       hideInForm: true,
+      hideInTable: true,
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      fixed: 'right',
+      width: 150,
       render: (_, record) => (
         <Space size={'middle'}>
           <Typography.Link
@@ -143,6 +151,7 @@ const UserList: React.FC = () => {
       ),
     },
   ];
+
   return (
     <>
       <ProTable<API.User, API.PageParams>

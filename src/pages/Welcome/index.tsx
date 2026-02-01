@@ -1,67 +1,85 @@
-import { Col, Grid, Row } from 'antd';
-import React, { useRef } from 'react';
-import {
-  ActionType,
-  PageContainer,
-  ProCard,
-  ProList,
-  StatisticCard,
-} from '@ant-design/pro-components';
-import { PostCard } from '@/components';
-import {listPostVoByPage} from '@/services/stephen-backend/postController';
+import { PageContainer, ProCard, StatisticCard } from '@ant-design/pro-components';
+import { useModel } from '@umijs/max';
+import { Card, Col, Row, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { listPostVoByPage } from '@/services/stephen-backend/postController';
+import { listUserByPage } from '@/services/stephen-backend/userController';
 
+const { Statistic } = StatisticCard;
 
-// 响应式组件
-const { useBreakpoint } = Grid;
-
-/**
- * 主页
- * @constructor
- */
 const Welcome: React.FC = () => {
-  // 响应式
-  const screens = useBreakpoint();
-  const isMobile = !screens.md;
-  const actionRef = useRef<ActionType>();
-  return (
-    <PageContainer title={false}>
-      <Row wrap={true}>
-        <Col span={isMobile ? 24 : 18}>
-          <ProCard bordered bodyStyle={{ padding: 4 }}>
-            <ProList<API.PostVO>
-              onChange={() => {
-                actionRef.current?.reload();
-              }}
-              pagination={{
-                pageSize: 10,
-                showTotal: undefined,
-                responsive: true,
-              }}
-              actionRef={actionRef}
-              itemLayout="vertical"
-              rowKey="id"
-              request={async (params, sort, filter) => {
-                const sortField = 'updateTime';
-                const sortOrder = sort?.[sortField] ?? 'desc';
-                const { data, code } = await listPostVoByPage({
-                  ...params,
-                  ...filter,
-                  sortField,
-                  sortOrder,
-                } as API.PostQueryRequest);
+  const { initialState } = useModel('@@initialState');
+  const { currentUser } = initialState || {};
 
-                return {
-                  success: code === 0,
-                  data: data?.records || [],
-                  total: data?.total || 0,
-                };
-              }}
-              renderItem={(item) => <PostCard key={item?.id} post={item} />}
-            />
-          </ProCard>
-        </Col>
-        <Col span={isMobile ? 0 : 6}>
-          <StatisticCard></StatisticCard>
+  const [userCount, setUserCount] = useState<number>(0);
+  const [postCount, setPostCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // Fetch users count (pageSize 1 to minimize data transfer)
+      const userRes = await listUserByPage({ pageSize: 1 });
+      if (userRes?.data) {
+        setUserCount(userRes.data.total || 0);
+      }
+
+      // Fetch posts count
+      const postRes = await listPostVoByPage({ pageSize: 1 });
+      if (postRes?.data) {
+        setPostCount(postRes.data.total || 0);
+      }
+    } catch (e) {
+      console.error('Fetch dashboard data failed', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <PageContainer
+      content={
+        <Typography.Title level={4}>
+          欢迎回来，{currentUser?.userName}！
+        </Typography.Title>
+      }
+    >
+      <ProCard split="vertical" bordered headerBordered>
+        <StatisticCard.Group direction="row">
+          <StatisticCard
+            statistic={{
+              title: '总用户数',
+              value: userCount,
+              loading: loading,
+            }}
+          />
+          <StatisticCard.Divider />
+          <StatisticCard
+            statistic={{
+              title: '总帖子数',
+              value: postCount,
+              loading: loading,
+            }}
+          />
+          <StatisticCard.Divider />
+          <StatisticCard
+            statistic={{
+              title: '当前时间',
+              value: new Date().toLocaleDateString(),
+            }}
+          />
+        </StatisticCard.Group>
+      </ProCard>
+
+      <Row gutter={24} style={{ marginTop: 24 }}>
+        <Col span={24}>
+          <Card title="平台简介" bordered={false}>
+            这是一个基于 Ant Design Pro 的后台管理平台。您可以在这里管理用户和帖子。
+          </Card>
         </Col>
       </Row>
     </PageContainer>

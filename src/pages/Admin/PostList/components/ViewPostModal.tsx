@@ -1,7 +1,7 @@
 import { Modal, Typography } from 'antd';
 import React from 'react';
 import { ProCard } from '@ant-design/pro-components';
-import { MdViewer } from '@/components';
+
 
 interface Props {
   onCancel: () => void;
@@ -33,7 +33,7 @@ const ViewPostModal: React.FC<Props> = (props) => {
         bodyStyle={{ padding: 0 }}
         title={<Typography.Title level={3}>{post?.title}</Typography.Title>}
       >
-        <MdViewer key={post?.id} value={post.content} />
+        <Typography.Paragraph>{post?.content}</Typography.Paragraph>
       </ProCard>
     </Modal>
   );

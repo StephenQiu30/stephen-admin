@@ -75,7 +75,7 @@ export default defineConfig({
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: 'Stephen的爆米花',
+  title: 'StephenQiu30',
   layout: {
     locale: true,
     ...defaultSettings,

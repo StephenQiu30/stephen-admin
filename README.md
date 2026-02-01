@@ -1,4 +1,4 @@
-# Stephen的爆米花 - 前端应用
+# StephenQiu30 - 前端应用
 
 > 作者：[StephenQiu](https://github.com/Stephenqhd30)
 

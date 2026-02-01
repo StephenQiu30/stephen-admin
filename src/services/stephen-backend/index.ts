@@ -5,6 +5,7 @@
 import * as userController from './userController';
 import * as postThumbController from './postThumbController';
 import * as postFavourController from './postFavourController';
+import * as postCommentController from './postCommentController';
 import * as postController from './postController';
 import * as fileController from './fileController';
 import * as searchController from './searchController';
@@ -14,6 +15,7 @@ export default {
   userController,
   postThumbController,
   postFavourController,
+  postCommentController,
   postController,
   fileController,
   searchController,

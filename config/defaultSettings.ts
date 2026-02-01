@@ -13,7 +13,7 @@ const Settings: ProLayoutProps & {
   fixedHeader: true,
   fixSiderbar: true,
   splitMenus: true,
-  title: 'Stephen的爆米花',
+  title: 'StephenQiu30',
   pwa: true,
   logo: 'https://butterfly-1318299170.cos.ap-shanghai.myqcloud.com/logo/stephen/logo.svg',
   token: {

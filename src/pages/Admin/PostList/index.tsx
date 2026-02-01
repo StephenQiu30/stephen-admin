@@ -57,6 +57,7 @@ const PostList: React.FC = () => {
       copyable: true,
       ellipsis: true,
       width: 120,
+      responsive: ['md'],
     },
     {
       title: '标题',
@@ -85,6 +86,7 @@ const PostList: React.FC = () => {
       title: '创建人',
       dataIndex: 'userId',
       valueType: 'text',
+      responsive: ['md'],
       render: (_, record) => (
         <Space>
           {record.userVO?.userAvatar && <Avatar src={record.userVO.userAvatar} size="small" />}
@@ -98,6 +100,7 @@ const PostList: React.FC = () => {
       hideInSearch: true,
       hideInForm: true,
       width: 80,
+      responsive: ['lg'],
     },
     {
       title: '收藏数',
@@ -105,11 +108,13 @@ const PostList: React.FC = () => {
       hideInSearch: true,
       hideInForm: true,
       width: 80,
+      responsive: ['lg'],
     },
     {
       title: '标签',
       dataIndex: 'tags',
       width: 200,
+      responsive: ['md'],
       render: (_, record) => {
         if (record.tags) {
           let tags = record.tags;
@@ -143,6 +148,7 @@ const PostList: React.FC = () => {
       hideInSearch: true,
       hideInForm: true,
       width: 160,
+      responsive: ['xxl'],
     },
     {
       title: '更新时间',
@@ -215,6 +221,12 @@ const PostList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
+        options={{
+          density: false,
+          fullScreen: false,
+          setting: false,
+          reload: true,
+        }}
         toolBarRender={() => [
           <Space key={'space'} wrap>
             <Button
@@ -246,6 +258,7 @@ const PostList: React.FC = () => {
           };
         }}
         columns={columns}
+        scroll={{ x: 1000 }}
       />
 
       {/*新建表单的Modal框*/}

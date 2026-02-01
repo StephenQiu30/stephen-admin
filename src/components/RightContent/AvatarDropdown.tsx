@@ -6,7 +6,7 @@ import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useCallback } from 'react';
 import { flushSync } from 'react-dom';
 import HeaderDropdown from '../HeaderDropdown';
-import {userLogout} from '@/services/stephen-backend/userController';
+import { userLogout } from '@/services/stephen-backend/userController';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -23,7 +23,7 @@ const { useBreakpoint } = Grid;
  * 头像下拉框
  * @constructor
  */
-export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
+export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ children }) => {
   const { initialState, setInitialState } = useModel('@@initialState');
   // 获取当前登录用户的信息
   const { currentUser } = initialState || {};
@@ -34,7 +34,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
   const loginOut = async () => {
     try {
       const res = await userLogout();
-      const {search, pathname} = window.location;
+      const { search, pathname } = window.location;
       const urlParams = new URL(window.location.href).searchParams;
       /** 此方法会跳转到 redirect 参数所在的位置 */
       const redirect = urlParams.get('redirect');
@@ -108,16 +108,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
         items: menuItems,
       }}
     >
-      <Space>
-        {currentUser?.userAvatar ? (
-          <Space>
-            <Avatar src={currentUser?.userAvatar} />
-            {!isMobile && <span>{currentUser?.userName}</span>}
-          </Space>
-        ) : (
-          <Avatar icon={<UserOutlined />} />
-        )}
-      </Space>
+      {children}
     </HeaderDropdown>
   );
 };

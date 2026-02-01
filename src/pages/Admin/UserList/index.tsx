@@ -55,12 +55,14 @@ const UserList: React.FC = () => {
       copyable: true,
       ellipsis: true,
       width: 120,
+      responsive: ['md'],
     },
     {
       title: '账号',
       dataIndex: 'userAccount',
       valueType: 'text',
       copyable: true,
+      responsive: ['md'],
     },
     {
       title: '用户名',
@@ -81,6 +83,7 @@ const UserList: React.FC = () => {
       title: '邮箱',
       dataIndex: 'userEmail',
       valueType: 'text',
+      responsive: ['lg'],
     },
     {
       title: '权限',
@@ -98,6 +101,7 @@ const UserList: React.FC = () => {
       valueType: 'dateTime',
       hideInSearch: true,
       hideInForm: true,
+      responsive: ['xxl'],
     },
     {
       title: '更新时间',
@@ -161,6 +165,12 @@ const UserList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
+        options={{
+          density: false,
+          fullScreen: false,
+          setting: false,
+          reload: true,
+        }}
         toolBarRender={() => [
           <Space key={'space'} wrap>
             <Button
@@ -192,6 +202,7 @@ const UserList: React.FC = () => {
           };
         }}
         columns={columns}
+        scroll={{ x: 800 }}
       />
 
       {/*新建表单的Modal框*/}

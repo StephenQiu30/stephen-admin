@@ -1,15 +1,19 @@
 import { PageContainer, ProCard, StatisticCard } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
-import { Card, Col, Row, Typography } from 'antd';
+import { Card, Col, Grid, Row, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { listPostVoByPage } from '@/services/stephen-backend/postController';
 import { listUserByPage } from '@/services/stephen-backend/userController';
 
 const { Statistic } = StatisticCard;
 
+const { useBreakpoint } = Grid;
+
 const Welcome: React.FC = () => {
   const { initialState } = useModel('@@initialState');
   const { currentUser } = initialState || {};
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
 
   const [userCount, setUserCount] = useState<number>(0);
   const [postCount, setPostCount] = useState<number>(0);
@@ -48,8 +52,8 @@ const Welcome: React.FC = () => {
         </Typography.Title>
       }
     >
-      <ProCard split="vertical" bordered headerBordered>
-        <StatisticCard.Group direction="row">
+      <ProCard split={isMobile ? 'horizontal' : 'vertical'} bordered headerBordered>
+        <StatisticCard.Group direction={isMobile ? 'column' : 'row'}>
           <StatisticCard
             statistic={{
               title: '总用户数',

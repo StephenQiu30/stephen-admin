@@ -61,15 +61,13 @@ const UpdatePostModal: React.FC<Props> = (props) => {
     customRequest: async (options: any) => {
       const { onSuccess, onError, file } = options;
       try {
+        const formData = new FormData();
+        formData.append('file', file);
         const res = await uploadFile(
           {
-            // @ts-ignore
             biz: FileUploadBiz.POST_COVER,
           },
-          {
-            file: file,
-          },
-          file,
+          formData,
         );
         if (res.code === 0 && res.data) {
           onSuccess(res.data);

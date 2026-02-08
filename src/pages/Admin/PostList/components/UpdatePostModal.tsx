@@ -124,8 +124,18 @@ const UpdatePostModal: React.FC<Props> = (props) => {
         },
       }}
     >
-      <ProFormText initialValue={oldData?.title} name="title" label="标题" />
-      <ProFormTextArea initialValue={oldData?.content} name="content" label="内容" />
+      <ProFormText
+        initialValue={oldData?.title}
+        name="title"
+        label="标题"
+        rules={[{ required: true, message: '请输入标题' }]}
+      />
+      <ProFormTextArea
+        initialValue={oldData?.content}
+        name="content"
+        label="内容"
+        rules={[{ required: true, message: '请输入内容' }]}
+      />
       <ProFormSelect
         name="tags"
         label="标签"

@@ -93,6 +93,12 @@ const PostList: React.FC = () => {
       copyable: true,
     },
     {
+      title: '全局搜索',
+      dataIndex: 'searchText',
+      valueType: 'text',
+      hideInTable: true,
+    },
+    {
       title: '内容',
       dataIndex: 'content',
       valueType: 'text',
@@ -121,7 +127,7 @@ const PostList: React.FC = () => {
     },
     {
       title: '点赞数',
-      dataIndex: 'favourNum',
+      dataIndex: 'thumbNum',
       hideInSearch: true,
       hideInForm: true,
       width: 80,
@@ -129,7 +135,7 @@ const PostList: React.FC = () => {
     },
     {
       title: '收藏数',
-      dataIndex: 'thumbNum',
+      dataIndex: 'favourNum',
       hideInSearch: true,
       hideInForm: true,
       width: 80,
@@ -141,28 +147,28 @@ const PostList: React.FC = () => {
       width: 200,
       responsive: ['md'],
       render: (_, record) => {
-        if (record.tags) {
-          let tags: string[] = [];
-          if (typeof record.tags === 'string') {
-            try {
-              tags = JSON.parse(record.tags);
-            } catch (e) {
-              tags = [];
-            }
+        let tags: string[] = [];
+        if (typeof record.tags === 'string') {
+          try {
+            tags = JSON.parse(record.tags);
+          } catch (e) {
+            tags = [];
           }
-          if (Array.isArray(tags)) {
-            return (
-              <Space wrap size={4}>
-                {tags.map((tag) => (
-                  <Tag key={tag} color={'blue'}>
-                    {tag}
-                  </Tag>
-                ))}
-              </Space>
-            )
-          }
+        } else if (Array.isArray(record.tags)) {
+          tags = record.tags;
         }
-        return <Tag>{TAG_EMPTY}</Tag>;
+        if (tags.length === 0) {
+          return <Tag>{TAG_EMPTY}</Tag>;
+        }
+        return (
+          <Space wrap size={4}>
+            {tags.map((tag) => (
+              <Tag key={tag} color={'blue'}>
+                {tag}
+              </Tag>
+            ))}
+          </Space>
+        );
       },
     },
     {

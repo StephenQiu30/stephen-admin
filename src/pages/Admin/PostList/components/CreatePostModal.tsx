@@ -116,8 +116,16 @@ const CreatePostModal: React.FC<Props> = (props) => {
         },
       }}
     >
-      <ProFormText name="title" label="标题" />
-      <ProFormTextArea name="content" label="描述" />
+      <ProFormText
+        name="title"
+        label="标题"
+        rules={[{ required: true, message: '请输入标题' }]}
+      />
+      <ProFormTextArea
+        name="content"
+        label="描述"
+        rules={[{ required: true, message: '请输入内容' }]}
+      />
       <ProFormSelect
         name="tags"
         label="标签"

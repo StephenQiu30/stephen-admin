@@ -123,12 +123,7 @@ const CreateUserModal: React.FC<Props> = (props) => {
         label={'用户名'}
         rules={[{ required: true, message: '请输入用户名' }]}
       />
-      <ProFormTextArea name={'userProfile'} label={'简介'} />
-      <ProFormText
-        name={'userPhone'}
-        label={'电话'}
-        rules={[{ pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}
-      />
+
       <ProFormText
         name={'userEmail'}
         label={'邮箱'}

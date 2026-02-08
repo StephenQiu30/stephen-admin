@@ -1,4 +1,6 @@
-import AccountLoginPage from '@/pages/User/Login/components/AccountLoginPage';
-import PhoneLoginPage from '@/pages/User/Login/components/PhoneLoginPage';
+import { FormInstance } from 'antd';
 
-export { AccountLoginPage, PhoneLoginPage };
+export type LoginType = 'account' | 'mobile';
+
+
+export { default as EmailLoginPage } from './EmailLoginPage';

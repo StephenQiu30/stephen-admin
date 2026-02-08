@@ -1,7 +1,7 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
 import { message, Popconfirm, Space, Typography, Avatar } from 'antd';
 import React, { useRef } from 'react';
-import { deletePostComment, listPostCommentVoByPage } from '@/services/stephen-backend/postCommentController';
+import { deletePostComment, listPostCommentVoByPage } from '@/services/post/postCommentController';
 
 /**
  * 删除节点

@@ -10,8 +10,8 @@ import {
 } from '@ant-design/pro-components';
 
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
-import { uploadFile } from '@/services/stephen-backend/fileController';
-import { addPost } from '@/services/stephen-backend/postController';
+import { uploadFile } from '@/services/file/fileController';
+import { addPost } from '@/services/post/postController';
 
 interface Props {
   onCancel: () => void;

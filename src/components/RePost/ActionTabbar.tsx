@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Divider, message, Space, Statistic } from 'antd';
 import { LikeOutlined, LikeTwoTone, StarOutlined, StarTwoTone } from '@ant-design/icons';
-import {doPostFavour} from '@/services/stephen-backend/postFavourController';
-import {doThumb} from '@/services/stephen-backend/postThumbController';
+import { doFavour } from '@/services/post/postFavourController';
+import { doThumb } from '@/services/post/postThumbController';
 
 interface Props {
   post: API.PostVO;
@@ -27,7 +27,7 @@ const ActionTabbar: React.FC<Props> = ({ post }) => {
    */
   const handleFavour = async () => {
     try {
-      const res = await doPostFavour({
+      const res = await doFavour({
         postId: post.id,
       });
       if (res.code === 0 && res.data) {
@@ -72,7 +72,7 @@ const ActionTabbar: React.FC<Props> = ({ post }) => {
           valueStyle={{
             fontSize: 14,
           }}
-          />
+        />
       </div>
       <Divider type={'vertical'} />
       <div onClick={handleFavour}>

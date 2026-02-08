@@ -10,8 +10,8 @@ import { message, Select, UploadProps } from 'antd';
 import React, { useState } from 'react';
 import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
-import {updateUser} from '@/services/stephen-backend/userController';
-import {uploadFile} from '@/services/stephen-backend/fileController';
+import { updateUser } from '@/services/user/userController';
+import { uploadFile } from '@/services/file/fileController';
 
 interface Props {
   oldData?: API.User;
@@ -125,11 +125,22 @@ const UpdateUserModal: React.FC<Props> = (props) => {
         },
       }}
     >
-      <ProFormText name={'userAccount'} label={'账号'} />
-      <ProFormText name={'userName'} label={'用户名'} />
+      <ProFormText
+        name={'userName'}
+        label={'用户名'}
+        rules={[{ required: true, message: '请输入用户名' }]}
+      />
       <ProFormTextArea name={'userProfile'} label={'简介'} />
-      <ProFormText name={'userPhone'} label={'电话'} />
-      <ProFormText name={'userEmail'} label={'邮箱'} />
+      <ProFormText
+        name={'userPhone'}
+        label={'电话'}
+        rules={[{ pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}
+      />
+      <ProFormText
+        name={'userEmail'}
+        label={'邮箱'}
+        rules={[{ required: true, message: '请输入邮箱' }, { type: 'email', message: '请输入正确的邮箱' }]}
+      />
       <ProFormUploadDragger
         title={'上传头像'}
         label={'头像'}

@@ -10,11 +10,11 @@ import { message, UploadProps } from 'antd';
 import React, { useState } from 'react';
 
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
-import { updatePost } from '@/services/stephen-backend/postController';
-import { uploadFile } from '@/services/stephen-backend/fileController';
+import { updatePost } from '@/services/post/postController';
+import { uploadFile } from '@/services/file/fileController';
 
 interface Props {
-  oldData?: API.PostVO;
+  oldData?: API.Post;
   onCancel: () => void;
   onSubmit: (values: API.PostUpdateRequest) => Promise<void>;
   visible: boolean;
@@ -88,12 +88,19 @@ const UpdatePostModal: React.FC<Props> = (props) => {
     return null;
   }
 
+  let tags = [];
+  try {
+    tags = JSON.parse(oldData.tags || '[]');
+  } catch (e) {
+    tags = [];
+  }
+
   return (
     <ModalForm<API.PostUpdateRequest>
       title={'更新帖子信息'}
       open={visible}
       form={form}
-      initialValues={oldData}
+      initialValues={{ ...oldData, tags }}
       onFinish={async (values: API.PostUpdateRequest) => {
         const success = await handleUpdate({
           ...values,

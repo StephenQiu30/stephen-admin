@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { PostCard } from '@/components';
 import { ActionType, ProList } from '@ant-design/pro-components';
-import {listMyPostVoByPage} from '@/services/stephen-backend/postController';
+import { listMyPostVoByPage } from '@/services/post/postController';
 
 /**
  * 我的帖子

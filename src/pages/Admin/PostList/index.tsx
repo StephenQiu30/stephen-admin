@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import { CreatePostModal, UpdatePostModal, ViewPostModal } from '@/pages/Admin/PostList/components';
 import { PlusOutlined } from '@ant-design/icons';
 import { TAG_EMPTY } from '@/constants';
-import { deletePost, listPostByPage, listPostVoByPage } from '@/services/stephen-backend/postController';
+import { deletePost, listPostByPage } from '@/services/post/postController';
 
 /**
  * 删除节点
@@ -43,12 +43,38 @@ const PostList: React.FC = () => {
   const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   // 当前用户的所点击的数据
-  const [currentRow, setCurrentRow] = useState<API.PostVO>();
+  const [currentRow, setCurrentRow] = useState<API.Post>();
+  const [selectedRowsState, setSelectedRows] = useState<API.Post[]>([]);
+
+  /**
+   * 批量删除
+   * @param selectedRows
+   */
+  const handleBatchDelete = async (selectedRows: API.Post[]) => {
+    const hide = message.loading('正在删除');
+    if (!selectedRows) return true;
+    try {
+      await Promise.all(
+        selectedRows.map(async (row) => {
+          await deletePost({
+            id: row.id,
+          });
+        }),
+      );
+      message.success('删除成功');
+      actionRef.current?.reloadAndRest?.();
+    } catch (error: any) {
+      message.error(`删除失败${error.message}, 请重试!`);
+    } finally {
+      hide();
+      setSelectedRows([]);
+    }
+  };
 
   /**
    * 表格列数据
    */
-  const columns: ProColumns<API.PostVO>[] = [
+  const columns: ProColumns<API.Post>[] = [
     {
       title: 'id',
       dataIndex: 'id',
@@ -83,14 +109,13 @@ const PostList: React.FC = () => {
       width: 80,
     },
     {
-      title: '创建人',
+      title: '创建人ID',
       dataIndex: 'userId',
       valueType: 'text',
       responsive: ['md'],
       render: (_, record) => (
         <Space>
-          {record.userVO?.userAvatar && <Avatar src={record.userVO.userAvatar} size="small" />}
-          <span>{record.userVO?.userName || record.userId}</span>
+          <span>{record.userId}</span>
         </Space>
       ),
     },
@@ -117,10 +142,10 @@ const PostList: React.FC = () => {
       responsive: ['md'],
       render: (_, record) => {
         if (record.tags) {
-          let tags = record.tags;
-          if (typeof tags === 'string') {
+          let tags: string[] = [];
+          if (typeof record.tags === 'string') {
             try {
-              tags = JSON.parse(tags);
+              tags = JSON.parse(record.tags);
             } catch (e) {
               tags = [];
             }
@@ -139,6 +164,16 @@ const PostList: React.FC = () => {
         }
         return <Tag>{TAG_EMPTY}</Tag>;
       },
+    },
+    {
+      title: '状态',
+      dataIndex: 'isDelete',
+      valueType: 'select',
+      valueEnum: {
+        0: { text: '正常', status: 'Success' },
+        1: { text: '已删除', status: 'Error' },
+      },
+      hideInForm: true,
     },
     {
       title: '创建时间',
@@ -214,14 +249,13 @@ const PostList: React.FC = () => {
   ];
   return (
     <>
-      <ProTable<API.PostVO, API.PageParams>
+      <ProTable<API.Post, API.PageParams>
         headerTitle={'帖子列表'}
         actionRef={actionRef}
         rowKey={'id'}
         search={{
           labelWidth: 120,
         }}
-
         toolBarRender={() => [
           <Space key={'space'} wrap>
             <Button
@@ -234,14 +268,40 @@ const PostList: React.FC = () => {
             >
               新建
             </Button>
+            {selectedRowsState?.length > 0 && (
+              <Button
+                type={'primary'}
+                danger
+                key="batchDelete"
+                onClick={() => {
+                  handleBatchDelete(selectedRowsState);
+                }}
+              >
+                批量删除
+              </Button>
+            )}
           </Space>,
         ]}
         request={async (params, sort, filter) => {
-          const sortField = Object.keys(sort)?.[0] || 'updateTime';
-          const sortOrder = sort?.[sortField] ?? 'descend';
-          const { data, code } = await listPostVoByPage({
+          const sortFieldCamel = Object.keys(sort)?.[0] || 'update_time';
+          const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+
+          let sortField = sortFieldCamel;
+          if (sortField === 'updateTime') {
+            sortField = 'update_time';
+          }
+          if (sortField === 'createTime') {
+            sortField = 'create_time';
+          }
+
+          // 处理 tags 查询，将字符串转换为数组
+          const paramsWithTags = params as API.PageParams & { tags?: string };
+          const tags = paramsWithTags.tags ? [paramsWithTags.tags] : undefined;
+
+          const { data, code } = await listPostByPage({
             ...params,
             ...filter,
+            tags,
             sortField,
             sortOrder,
           } as API.PostQueryRequest);
@@ -253,6 +313,11 @@ const PostList: React.FC = () => {
           };
         }}
         columns={columns}
+        rowSelection={{
+          onChange: (_, selectedRows) => {
+            setSelectedRows(selectedRows);
+          },
+        }}
         scroll={{ x: 1000 }}
       />
 
@@ -294,7 +359,7 @@ const PostList: React.FC = () => {
             setViewModalVisible(false);
             actionRef.current?.reload();
           }}
-          post={currentRow as API.PostVO}
+          post={currentRow as API.Post}
         />
       )}
     </>

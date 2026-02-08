@@ -4,7 +4,7 @@ import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
 import { CreateUserModal, UpdateUserModal } from '@/pages/Admin/UserList/components';
-import { deleteUser, listUserByPage } from '@/services/stephen-backend/userController';
+import { deleteUser, listUserByPage } from '@/services/user/userController';
 
 /**
  * 删除节点
@@ -58,16 +58,17 @@ const UserList: React.FC = () => {
       responsive: ['md'],
     },
     {
-      title: '账号',
-      dataIndex: 'userAccount',
-      valueType: 'text',
-      copyable: true,
-      responsive: ['md'],
-    },
-    {
       title: '用户名',
       dataIndex: 'userName',
       valueType: 'text',
+    },
+    {
+      title: '用户简介',
+      dataIndex: 'userProfile',
+      valueType: 'text',
+      ellipsis: true,
+      width: 150,
+      hideInSearch: true,
     },
     {
       title: '头像',
@@ -80,10 +81,61 @@ const UserList: React.FC = () => {
       width: 80,
     },
     {
+      title: '微信绑定',
+      dataIndex: 'wechatStatus',
+      hideInSearch: true,
+      hideInForm: true,
+      width: 100,
+      render: (_, record) => (
+        <Space>
+          {record.mpOpenId || record.wxUnionId ? (
+            <Tag color="green">已绑定</Tag>
+          ) : (
+            <Tag color="default">未绑定</Tag>
+          )}
+        </Space>
+      ),
+    },
+    {
+      title: 'GitHub',
+      dataIndex: 'githubStatus',
+      hideInSearch: true,
+      hideInForm: true,
+      width: 100,
+      render: (_, record) => (
+        <Space>
+          {record.githubId ? <Tag color="green">已绑定</Tag> : <Tag color="default">未绑定</Tag>}
+        </Space>
+      ),
+    },
+    {
+      title: '电话',
+      dataIndex: 'userPhone',
+      valueType: 'text',
+      responsive: ['lg'],
+    },
+    {
       title: '邮箱',
       dataIndex: 'userEmail',
       valueType: 'text',
       responsive: ['lg'],
+    },
+    {
+      title: '邮箱验证',
+      dataIndex: 'emailVerified',
+      valueType: 'select',
+      valueEnum: {
+        0: { text: '未验证', status: 'Error' },
+        1: { text: '已验证', status: 'Success' },
+      },
+      width: 100,
+      render: (_, record) => {
+        return (
+          <Tag color={record.emailVerified === 1 ? 'green' : 'red'}>
+            {record.emailVerified === 1 ? '已验证' : '未验证'}
+          </Tag>
+        );
+      },
     },
     {
       title: '权限',
@@ -95,12 +147,32 @@ const UserList: React.FC = () => {
       },
     },
     {
+      title: '最后登录',
+      sorter: true,
+      dataIndex: 'lastLoginTime',
+      valueType: 'dateTime',
+      hideInSearch: true,
+      hideInForm: true,
+      width: 160,
+      responsive: ['xl'],
+    },
+    {
+      title: '登录IP',
+      dataIndex: 'lastLoginIp',
+      valueType: 'text',
+      hideInSearch: true,
+      hideInForm: true,
+      width: 120,
+      responsive: ['xl'],
+    },
+    {
       title: '创建时间',
       sorter: true,
       dataIndex: 'createTime',
       valueType: 'dateTime',
       hideInSearch: true,
       hideInForm: true,
+      width: 160,
       responsive: ['xxl'],
     },
     {
@@ -181,12 +253,15 @@ const UserList: React.FC = () => {
           </Space>,
         ]}
         request={async (params, sort, filter) => {
-          const sortField = Object.keys(sort)?.[0] || 'updateTime';
+          const sortField = Object.keys(sort)?.[0] || 'update_time';
           const sortOrder = sort?.[sortField] ?? 'descend';
+
+          const newSortField = sortField === 'updateTime' ? 'update_time' : sortField === 'createTime' ? 'create_time' : sortField;
+
           const { data, code } = await listUserByPage({
             ...params,
             ...filter,
-            sortField,
+            sortField: newSortField,
             sortOrder,
           } as API.UserQueryRequest);
 

@@ -1,7 +1,7 @@
 import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { Button, message, Result } from 'antd';
 import React, { useState } from 'react';
-import { setMenu } from '@/services/stephen-backend/wxMpController';
+import { setMenu } from '@/services/user/wxMpController';
 
 const WeChatManager: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);

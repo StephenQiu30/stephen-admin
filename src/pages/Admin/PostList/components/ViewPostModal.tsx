@@ -7,7 +7,7 @@ interface Props {
   onCancel: () => void;
   visible: boolean;
   onSubmit: () => Promise<void>;
-  post: API.PostVO;
+  post: API.Post;
 }
 
 /**

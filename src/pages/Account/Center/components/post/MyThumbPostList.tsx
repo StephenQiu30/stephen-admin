@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { PostCard } from '@/components';
 import { ActionType, ProList } from '@ant-design/pro-components';
-import {listMyThumbPostByPage} from '@/services/stephen-backend/postThumbController';
+// import { listMyThumbPostByPage } from '@/services/post/postThumbController';
 
 /**
  * 我的帖子
@@ -23,19 +23,11 @@ const MyThumbPostList: React.FC = () => {
       itemLayout="vertical"
       rowKey="id"
       request={async (params, sort, filter) => {
-        const sortField = 'createTime';
-        const sortOrder = sort?.[sortField] ?? 'desc';
-        const { data, code } = await listMyThumbPostByPage({
-          ...params,
-          ...filter,
-          sortField,
-          sortOrder,
-        } as API.PostQueryRequest);
-
+        // TODO: Restore listMyThumbPostByPage when API is available
         return {
-          success: code === 0,
-          data: data?.records || [],
-          total: data?.total || 0,
+          success: true,
+          data: [],
+          total: 0,
         };
       }}
       renderItem={(item) => <PostCard key={item?.id} post={item} />}

@@ -4,7 +4,7 @@ import React from 'react';
 import Settings from '../config/defaultSettings';
 import { UnAccessiblePage } from '@/pages/Exception';
 import { requestConfig } from '@/requestConfig';
-import { getLoginUser } from '@/services/stephen-backend/userController';
+import { getLoginUser } from '@/services/user/userController';
 
 const loginPath = '/user/login';
 
@@ -26,7 +26,7 @@ export async function getInitialState(): Promise<InitialState> {
         localStorage.setItem('stephen-token', res?.data?.token || '');
       }
     }
-  } catch (error: any) {}
+  } catch (error: any) { }
   // 返回一个 Promise<InitialState> 类型的值
   return initialState;
 }

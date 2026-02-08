@@ -132,37 +132,37 @@ export default defineConfig({
     {
       requestLibPath: "import { request } from '@umijs/max'",
       schemaPath: 'http://localhost:8081/api/v3/api-docs',
-      projectName: 'stephen-cloud/user',
+      projectName: 'user',
     },
     {
       requestLibPath: "import { request } from '@umijs/max'",
       schemaPath: 'http://localhost:8082/api/v3/api-docs',
-      projectName: 'stephen-cloud/post',
+      projectName: 'post',
     },
     {
       requestLibPath: "import { request } from '@umijs/max'",
       schemaPath: 'http://localhost:8083/api/v3/api-docs',
-      projectName: 'stephen-cloud/notification',
+      projectName: 'notification',
     },
     {
       requestLibPath: "import { request } from '@umijs/max'",
       schemaPath: 'http://localhost:8084/api/v3/api-docs',
-      projectName: 'stephen-cloud/search',
+      projectName: 'search',
     },
     {
       requestLibPath: "import { request } from '@umijs/max'",
       schemaPath: 'http://localhost:8085/api/v3/api-docs',
-      projectName: 'stephen-cloud/file',
+      projectName: 'file',
     },
     {
       requestLibPath: "import { request } from '@umijs/max'",
       schemaPath: 'http://localhost:8087/api/v3/api-docs',
-      projectName: 'stephen-cloud/mail',
+      projectName: 'mail',
     },
     {
       requestLibPath: "import { request } from '@umijs/max'",
       schemaPath: 'http://localhost:8088/api/v3/api-docs',
-      projectName: 'stephen-cloud/websocket',
+      projectName: 'websocket',
     },
   ],
   mfsu: {

@@ -5,9 +5,8 @@ import { Divider, Image, message, Space, Tabs, theme, Typography } from 'antd';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { createStyles } from 'antd-style';
 import { BACKGROUND_IMAGE, STEPHEN_SUBTITLE, STEPHEN_TITLE } from '@/constants';
-import { AlipayOutlined, TaobaoOutlined, WeiboOutlined } from '@ant-design/icons';
-import { AccountLoginPage, PhoneLoginPage } from '@/pages/User/Login/components';
-import { userLogin } from '@/services/stephen-backend/userController';
+import { EmailLoginPage } from '@/pages/User/Login/components';
+import { userLoginByEmail } from '@/services/user/userController';
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -46,18 +45,23 @@ const iconStyles: CSSProperties = {
  * @constructor
  */
 const Login: React.FC = () => {
-  const [type, setType] = useState<string>('account');
+  const [type, setType] = useState<string>('email');
   const { token } = theme.useToken();
   const { initialState, setInitialState } = useModel('@@initialState');
   const [redirected, setRedirected] = useState(false); // 控制重定向状态
   const { styles } = useStyles();
+
   // 用户登录
-  const handleLoginSubmit = async (values: API.UserLoginRequest) => {
+  const handleLoginSubmit = async (values: API.UserEmailLoginRequest) => {
     const hide = message.loading('正在登录中..');
     try {
       // 登录
-      const res = await userLogin({ ...values });
+      const res = await userLoginByEmail({ ...values });
       if (res.code === 0 && res.data) {
+        if (res.data.userRole !== 'admin') {
+          message.error('无权限，仅管理员可登录！');
+          return;
+        }
         // 保存已登录的用户信息
         setInitialState({
           ...initialState,
@@ -76,6 +80,8 @@ const Login: React.FC = () => {
       hide();
     }
   };
+
+
 
   // useEffect 监听 redirected 状态的变化
   useEffect(() => {
@@ -106,92 +112,15 @@ const Login: React.FC = () => {
             autoLogin: true,
           }}
           onFinish={async (values) => {
-            await handleLoginSubmit(values as API.UserLoginRequest);
+            await handleLoginSubmit(values as API.UserEmailLoginRequest);
           }}
-          actions={
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'column',
-              }}
-            >
-              <Divider plain>
-                <span
-                  style={{
-                    color: token.colorTextPlaceholder,
-                    fontWeight: 'normal',
-                    fontSize: 14,
-                  }}
-                >
-                  其他登录方式
-                </span>
-              </Divider>
-              <Space align="center" size={24}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    height: 40,
-                    width: 40,
-                    border: '1px solid ' + token.colorPrimaryBorder,
-                    borderRadius: '50%',
-                  }}
-                >
-                  <AlipayOutlined style={{ ...iconStyles, color: '#1677FF' }} />
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    height: 40,
-                    width: 40,
-                    border: '1px solid ' + token.colorPrimaryBorder,
-                    borderRadius: '50%',
-                  }}
-                >
-                  <TaobaoOutlined style={{ ...iconStyles, color: '#FF6A10' }} />
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    height: 40,
-                    width: 40,
-                    border: '1px solid ' + token.colorPrimaryBorder,
-                    borderRadius: '50%',
-                  }}
-                >
-                  <WeiboOutlined style={{ ...iconStyles, color: '#1890ff' }} />
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <Typography.Link href={'/user/register'}>去注册</Typography.Link>
-                </div>
-              </Space>
-            </div>
-          }
+
         >
           <Tabs centered activeKey={type} onChange={(activeKey) => setType(activeKey)}>
-            <Tabs.TabPane key={'account'} tab={'账号密码登录'} />
-            <Tabs.TabPane key={'phone'} tab={'手机号登录'} />
+            <Tabs.TabPane key={'email'} tab={'邮箱登录'} />
           </Tabs>
           {/*用户选择账号密码登录*/}
-          {type === 'account' && <AccountLoginPage />}
-          {type === 'phone' && <PhoneLoginPage />}
+          {type === 'email' && <EmailLoginPage />}
         </LoginFormPage>
       </div>
       <Footer />

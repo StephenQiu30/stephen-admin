@@ -2,8 +2,8 @@ import { PageContainer, ProCard, StatisticCard } from '@ant-design/pro-component
 import { useModel } from '@umijs/max';
 import { Card, Col, Grid, Row, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { listPostVoByPage } from '@/services/stephen-backend/postController';
-import { listUserByPage } from '@/services/stephen-backend/userController';
+import { listPostVoByPage } from '@/services/post/postController';
+import { listUserByPage } from '@/services/user/userController';
 
 const { Statistic } = StatisticCard;
 

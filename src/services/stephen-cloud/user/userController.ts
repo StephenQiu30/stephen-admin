@@ -91,9 +91,12 @@ export async function listUserVoByPage(
   });
 }
 
-/** 此处后端没有提供注释 POST /user/login */
-export async function userLogin(body: API.UserLoginRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseLoginUserVO>('/user/login', {
+/** 此处后端没有提供注释 POST /user/login/email */
+export async function userLoginByEmail(
+  body: API.UserEmailLoginRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseLoginUserVO>('/user/login/email', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -103,13 +106,76 @@ export async function userLogin(body: API.UserLoginRequest, options?: { [key: st
   });
 }
 
-/** 此处后端没有提供注释 GET /user/login/wx_open */
-export async function userLoginByWxOpen(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.userLoginByWxOpenParams,
+/** 此处后端没有提供注释 POST /user/login/email/code */
+export async function sendEmailLoginCode(
+  body: API.UserEmailCodeSendRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseLoginUserVO>('/user/login/wx_open', {
+  return request<API.BaseResponseInteger>('/user/login/email/code', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 GET /user/login/github */
+export async function getGitHubAuthorizeUrl(options?: { [key: string]: any }) {
+  return request<API.BaseResponseString>('/user/login/github', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 POST /user/login/github */
+export async function userLoginByGitHub(
+  body: API.GitHubLoginRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseLoginUserVO>('/user/login/github', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 GET /user/login/github/callback */
+export async function gitHubLoginCallback(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.gitHubLoginCallbackParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseLoginUserVO>('/user/login/github/callback', {
+    method: 'GET',
+    params: {
+      ...params,
+      arg0: undefined,
+      ...params['arg0'],
+    },
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 GET /user/login/wx/qrcode */
+export async function getWxLoginQrCode(options?: { [key: string]: any }) {
+  return request<API.BaseResponseWxLoginResponse>('/user/login/wx/qrcode', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 GET /user/login/wx/status */
+export async function checkWxLoginStatus(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.checkWxLoginStatusParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseLoginUserVO>('/user/login/wx/status', {
     method: 'GET',
     params: {
       ...params,
@@ -122,21 +188,6 @@ export async function userLoginByWxOpen(
 export async function userLogout(options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>('/user/logout', {
     method: 'POST',
-    ...(options || {}),
-  });
-}
-
-/** 此处后端没有提供注释 POST /user/register */
-export async function userRegister(
-  body: API.UserRegisterRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseLong>('/user/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
     ...(options || {}),
   });
 }

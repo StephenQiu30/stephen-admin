@@ -2,23 +2,22 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 文件上传 文件上传(使用COS对象存储) POST /file/upload */
+/** 文件上传 统一样式的文件上传接口 POST /file/upload */
 export async function uploadFile(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.uploadFileParams,
-  body: { file?: File },
+  body: {},
   options?: { [key: string]: any },
 ) {
-  const formData = new FormData();
-  if (body.file) {
-    formData.append('file', body.file);
-  }
-  formData.append('biz', params.biz);
-
   return request<API.BaseResponseString>('/file/upload', {
     method: 'POST',
-    data: formData,
-    requestType: 'form',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    params: {
+      ...params,
+    },
+    data: body,
     ...(options || {}),
   });
 }

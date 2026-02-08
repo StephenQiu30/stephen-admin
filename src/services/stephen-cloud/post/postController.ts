@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 此处后端没有提供注释 POST /post/add */
+/** 创建帖子 创建新帖子 POST /post/add */
 export async function addPost(body: API.PostAddRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseLong>('/post/add', {
     method: 'POST',
@@ -14,7 +14,7 @@ export async function addPost(body: API.PostAddRequest, options?: { [key: string
   });
 }
 
-/** 此处后端没有提供注释 POST /post/delete */
+/** 删除帖子 删除指定帖子，仅本人或管理员可操作 POST /post/delete */
 export async function deletePost(body: API.DeleteRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>('/post/delete', {
     method: 'POST',
@@ -26,7 +26,7 @@ export async function deletePost(body: API.DeleteRequest, options?: { [key: stri
   });
 }
 
-/** 此处后端没有提供注释 POST /post/edit */
+/** 编辑帖子 编辑帖子信息，仅本人可操作 POST /post/edit */
 export async function editPost(body: API.PostEditRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>('/post/edit', {
     method: 'POST',
@@ -38,7 +38,7 @@ export async function editPost(body: API.PostEditRequest, options?: { [key: stri
   });
 }
 
-/** 此处后端没有提供注释 GET /post/get/vo */
+/** 获取帖子详情 根据ID获取帖子详细信息 GET /post/get/vo */
 export async function getPostVoById(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.getPostVOByIdParams,
@@ -53,7 +53,7 @@ export async function getPostVoById(
   });
 }
 
-/** 此处后端没有提供注释 POST /post/list/page */
+/** 分页获取帖子列表（管理员） POST /post/list/page */
 export async function listPostByPage(body: API.PostQueryRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponsePagePost>('/post/list/page', {
     method: 'POST',
@@ -65,7 +65,7 @@ export async function listPostByPage(body: API.PostQueryRequest, options?: { [ke
   });
 }
 
-/** 此处后端没有提供注释 POST /post/list/page/vo */
+/** 分页获取帖子列表 分页获取帖子脱敏信息列表 POST /post/list/page/vo */
 export async function listPostVoByPage(
   body: API.PostQueryRequest,
   options?: { [key: string]: any },
@@ -80,7 +80,7 @@ export async function listPostVoByPage(
   });
 }
 
-/** 此处后端没有提供注释 POST /post/my/list/page/vo */
+/** 我的帖子列表 分页获取当前登录用户创建的帖子列表 POST /post/my/list/page/vo */
 export async function listMyPostVoByPage(
   body: API.PostQueryRequest,
   options?: { [key: string]: any },
@@ -95,7 +95,7 @@ export async function listMyPostVoByPage(
   });
 }
 
-/** 此处后端没有提供注释 POST /post/update */
+/** 更新帖子 更新帖子信息（仅管理员可用） POST /post/update */
 export async function updatePost(body: API.PostUpdateRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>('/post/update', {
     method: 'POST',

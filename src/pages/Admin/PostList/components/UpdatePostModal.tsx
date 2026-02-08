@@ -3,9 +3,9 @@ import {
   ProForm,
   ProFormSelect,
   ProFormText,
-  ProFormTextArea,
   ProFormUploadDragger,
 } from '@ant-design/pro-components';
+import { MarkdownEditor } from '@/components';
 import { message, UploadProps } from 'antd';
 import React, { useState } from 'react';
 
@@ -130,12 +130,13 @@ const UpdatePostModal: React.FC<Props> = (props) => {
         label="标题"
         rules={[{ required: true, message: '请输入标题' }]}
       />
-      <ProFormTextArea
-        initialValue={oldData?.content}
+      <ProForm.Item
         name="content"
         label="内容"
         rules={[{ required: true, message: '请输入内容' }]}
-      />
+      >
+        <MarkdownEditor />
+      </ProForm.Item>
       <ProFormSelect
         name="tags"
         label="标签"

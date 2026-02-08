@@ -1,6 +1,8 @@
 import { Modal, Typography } from 'antd';
 import React from 'react';
+import { MarkdownViewer } from '@/components';
 import { ProCard } from '@ant-design/pro-components';
+
 
 
 interface Props {
@@ -30,10 +32,10 @@ const ViewPostModal: React.FC<Props> = (props) => {
       width={1200}
     >
       <ProCard
-        bodyStyle={{ padding: 0 }}
+        bodyStyle={{ padding: 16 }}
         title={<Typography.Title level={3}>{post?.title}</Typography.Title>}
       >
-        <Typography.Paragraph>{post?.content}</Typography.Paragraph>
+        <MarkdownViewer value={post?.content} />
       </ProCard>
     </Modal>
   );

@@ -5,9 +5,9 @@ import {
   ProForm,
   ProFormSelect,
   ProFormText,
-  ProFormTextArea,
   ProFormUploadDragger,
 } from '@ant-design/pro-components';
+import { MarkdownEditor } from '@/components';
 
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
 import { uploadFile } from '@/services/file/fileController';
@@ -121,11 +121,13 @@ const CreatePostModal: React.FC<Props> = (props) => {
         label="标题"
         rules={[{ required: true, message: '请输入标题' }]}
       />
-      <ProFormTextArea
+      <ProForm.Item
         name="content"
-        label="描述"
+        label="内容"
         rules={[{ required: true, message: '请输入内容' }]}
-      />
+      >
+        <MarkdownEditor />
+      </ProForm.Item>
       <ProFormSelect
         name="tags"
         label="标签"

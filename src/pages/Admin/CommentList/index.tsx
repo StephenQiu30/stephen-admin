@@ -1,6 +1,11 @@
-import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { message, Popconfirm, Space, Typography, Avatar } from 'antd';
-import React, { useRef } from 'react';
+import {
+    ActionType,
+    FooterToolbar,
+    ProColumns,
+    ProTable,
+} from '@ant-design/pro-components';
+import { Avatar, Button, message, Popconfirm, Space, Typography } from 'antd';
+import React, { useRef, useState } from 'react';
 import { deletePostComment, listPostCommentVoByPage } from '@/services/post/postCommentController';
 
 /**

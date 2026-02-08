@@ -22,6 +22,13 @@ export default [
     access: 'canAdmin',
   },
   {
+    name: '通知管理',
+    path: '/admin/notification',
+    component: './Admin/NotificationList',
+    icon: 'NotificationOutlined',
+    access: 'canAdmin',
+  },
+  {
     name: '微信管理',
     path: '/admin/wechat',
     component: './Admin/WeChat',

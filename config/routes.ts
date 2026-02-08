@@ -36,6 +36,20 @@ export default [
     access: 'canAdmin',
   },
   {
+    name: '邮件工具',
+    path: '/admin/mail',
+    component: './Admin/MailTool',
+    icon: 'MailOutlined',
+    access: 'canAdmin',
+  },
+  {
+    name: '聚合搜索',
+    path: '/admin/search',
+    component: './Admin/SearchCenter',
+    icon: 'SearchOutlined',
+    access: 'canAdmin',
+  },
+  {
     path: '/user',
     layout: false,
     routes: [{ name: '用户登录', path: '/user/login', component: './User/Login' }],

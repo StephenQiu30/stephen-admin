@@ -17,6 +17,13 @@ declare namespace API {
     message?: string;
   };
 
+  type EmailAttachment = {
+    filename?: string;
+    content?: string;
+    size?: number;
+    contentType?: string;
+  };
+
   type EmailCodeRequest = {
     email?: string;
     code?: string;
@@ -37,5 +44,8 @@ declare namespace API {
     isHtml?: boolean;
     bizType?: string;
     bizId?: string;
+    templateName?: string;
+    templateVariables?: Record<string, any>;
+    attachments?: EmailAttachment[];
   };
 }

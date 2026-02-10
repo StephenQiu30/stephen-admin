@@ -8,6 +8,24 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseInteger = {
+    /** 状态码 */
+    code?: number;
+    /** 数据 */
+    data?: number;
+    /** 消息 */
+    message?: string;
+  };
+
+  type BaseResponseListLong = {
+    /** 状态码 */
+    code?: number;
+    /** 数据 */
+    data?: number[];
+    /** 消息 */
+    message?: string;
+  };
+
   type BaseResponseLong = {
     /** 状态码 */
     code?: number;
@@ -98,6 +116,18 @@ declare namespace API {
     relatedType?: string;
   };
 
+  type NotificationBatchAddRequest = {
+    notifications?: NotificationAddRequest[];
+  };
+
+  type NotificationBatchDeleteRequest = {
+    ids?: number[];
+  };
+
+  type NotificationBatchReadRequest = {
+    ids?: number[];
+  };
+
   type NotificationQueryRequest = {
     /** 当前页号 */
     current?: number;
@@ -115,6 +145,11 @@ declare namespace API {
     isRead?: number;
     /** 关联对象类型 */
     relatedType?: string;
+  };
+
+  type NotificationReadRequest = {
+    /** 通知 ID */
+    id?: number;
   };
 
   type NotificationUpdateRequest = {

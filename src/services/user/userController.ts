@@ -64,6 +64,14 @@ export async function getUserVoById(
   });
 }
 
+/** 是否管理员 返回当前登录用户是否为管理员 GET /user/is/admin */
+export async function isAdmin(options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean>('/user/is/admin', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
 /** 此处后端没有提供注释 POST /user/list/page */
 export async function listUserByPage(body: API.UserQueryRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponsePageUser>('/user/list/page', {

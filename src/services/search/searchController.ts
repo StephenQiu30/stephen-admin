@@ -29,6 +29,21 @@ export async function searchApiAccessLogByPage(
   });
 }
 
+/** 批量同步 API 访问日志到 ES POST /search/api/access/log/batch/upsert */
+export async function batchUpsertApiAccessLog(
+  body: API.ApiAccessLogEsDTO[],
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean>('/search/api/access/log/batch/upsert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 分页搜索邮件记录（从 ES 查询） POST /search/email_record/page */
 export async function searchEmailRecordByPage(
   body: API.EmailRecordQueryRequest,
@@ -44,12 +59,57 @@ export async function searchEmailRecordByPage(
   });
 }
 
+/** 批量同步邮件记录到 ES POST /search/email/record/batch/upsert */
+export async function batchUpsertEmailRecord(
+  body: API.EmailRecordEsDTO[],
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean>('/search/email/record/batch/upsert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 分页搜索文件上传记录（从 ES 查询） POST /search/file_upload_record/page */
 export async function searchFileUploadRecordByPage(
   body: API.FileUploadRecordQueryRequest,
   options?: { [key: string]: any },
 ) {
   return request<API.BaseResponsePage>('/search/file_upload_record/page', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 批量同步文件上传记录到 ES POST /search/file/upload/record/batch/upsert */
+export async function batchUpsertFileUploadRecord(
+  body: API.FileUploadRecordEsDTO[],
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean>('/search/file/upload/record/batch/upsert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 批量同步通知到 ES POST /search/notification/batch/upsert */
+export async function batchUpsertNotification(
+  body: API.NotificationEsDTO[],
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean>('/search/notification/batch/upsert', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -89,6 +149,33 @@ export async function searchOperationLogByPage(
   });
 }
 
+/** 批量同步操作日志到 ES POST /search/operation/log/batch/upsert */
+export async function batchUpsertOperationLog(
+  body: API.OperationLogEsDTO[],
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean>('/search/operation/log/batch/upsert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 批量同步帖子到 ES POST /search/post/batch/upsert */
+export async function batchUpsertPost(body: API.PostEsDTO[], options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean>('/search/post/batch/upsert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 分页搜索帖子（从 ES 查询） POST /search/post/page */
 export async function searchPostByPage(
   body: API.PostQueryRequest,
@@ -110,6 +197,33 @@ export async function searchUserLoginLogByPage(
   options?: { [key: string]: any },
 ) {
   return request<API.BaseResponsePage>('/search/user_login_log/page', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 批量同步用户到 ES POST /search/user/batch/upsert */
+export async function batchUpsertUser(body: API.UserEsDTO[], options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean>('/search/user/batch/upsert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 批量同步用户登录日志到 ES POST /search/user/login/log/batch/upsert */
+export async function batchUpsertUserLoginLog(
+  body: API.UserLoginLogEsDTO[],
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean>('/search/user/login/log/batch/upsert', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

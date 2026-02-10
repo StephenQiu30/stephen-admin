@@ -34,7 +34,7 @@ export async function listRecordByPage(
   body: API.FileUploadRecordQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageFileUploadRecord>('/file/upload/record/list/page', {
+  return request<API.BaseResponsePageFileUploadRecordVO>('/file/upload/record/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

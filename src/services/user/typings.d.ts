@@ -322,8 +322,12 @@ declare namespace API {
     userEmail?: string;
     /** 用户电话 */
     userPhone?: string;
+    /** 用户简介 */
+    userProfile?: string;
     /** 创建时间 */
     createTime?: string;
+    /** 更新时间 */
+    updateTime?: string;
   };
 
   type WxLoginResponse = {

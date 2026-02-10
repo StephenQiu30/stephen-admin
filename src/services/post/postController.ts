@@ -53,9 +53,9 @@ export async function getPostVoById(
   });
 }
 
-/** 分页获取帖子列表（管理员） POST /post/list/page */
+/** 分页获取帖子列表（用于同步） POST /post/list/page */
 export async function listPostByPage(body: API.PostQueryRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponsePagePost>('/post/list/page', {
+  return request<API.BaseResponsePagePostVO>('/post/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

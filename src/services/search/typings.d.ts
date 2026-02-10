@@ -1,4 +1,23 @@
 declare namespace API {
+  type ApiAccessLogEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    traceId?: string;
+    userId?: number;
+    method?: string;
+    path?: string;
+    query?: string;
+    status?: number;
+    latencyMs?: number;
+    clientIp?: string;
+    userAgent?: string;
+    referer?: string;
+    requestSize?: number;
+    responseSize?: number;
+  };
+
   type ApiAccessLogQueryRequest = {
     /** 当前页号 */
     current?: number;
@@ -8,16 +27,31 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
-    /** id */
+    /** ID */
     id?: number;
-    /** 追踪ID */
-    traceId?: string;
     /** 用户ID */
     userId?: number;
+    /** HTTP方法 */
+    method?: string;
     /** 请求路径 */
     path?: string;
-    /** 状态码 */
+    /** 响应状态码 */
     status?: number;
+    /** 客户端IP */
+    clientIp?: string;
+    /** 追踪ID */
+    traceId?: string;
+    /** 搜索文本 */
+    searchText?: string;
+  };
+
+  type BaseResponseBoolean = {
+    /** 状态码 */
+    code?: number;
+    /** 数据 */
+    data?: boolean;
+    /** 消息 */
+    message?: string;
   };
 
   type BaseResponsePage = {
@@ -36,6 +70,21 @@ declare namespace API {
     message?: string;
   };
 
+  type EmailRecordEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    msgId?: string;
+    bizType?: string;
+    toEmail?: string;
+    subject?: string;
+    content?: string;
+    status?: string;
+    errorMessage?: string;
+    sendTime?: string;
+  };
+
   type EmailRecordQueryRequest = {
     /** 当前页号 */
     current?: number;
@@ -45,16 +94,38 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
-    /** id */
+    /** ID */
     id?: number;
+    /** 消息ID */
+    msgId?: string;
+    /** 业务幂等ID */
+    bizId?: string;
     /** 业务类型 */
     bizType?: string;
     /** 收件人邮箱 */
     toEmail?: string;
-    /** 邮件状态 */
+    /** 发送状态 */
     status?: string;
-    /** 搜索词 */
+    /** 搜索文本 */
     searchText?: string;
+  };
+
+  type FileUploadRecordEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    userId?: number;
+    bizType?: string;
+    fileName?: string;
+    fileSize?: number;
+    fileSuffix?: string;
+    contentType?: string;
+    storageType?: string;
+    objectKey?: string;
+    md5?: string;
+    clientIp?: string;
+    status?: string;
   };
 
   type FileUploadRecordQueryRequest = {
@@ -66,16 +137,30 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
-    /** id */
+    /** ID */
     id?: number;
-    /** 用户ID */
+    /** 上传用户ID */
     userId?: number;
     /** 业务类型 */
     bizType?: string;
-    /** 文件名 */
+    /** 原始文件名 */
     fileName?: string;
-    /** 搜索词 */
+    /** 上传状态 */
+    status?: string;
+    /** 搜索文本 */
     searchText?: string;
+  };
+
+  type NotificationEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    userId?: number;
+    title?: string;
+    content?: string;
+    type?: string;
+    status?: number;
   };
 
   type NotificationQueryRequest = {
@@ -87,16 +172,38 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
-    /** id */
-    id?: number;
-    /** 用户ID */
-    userId?: number;
     /** 通知类型 */
     type?: string;
-    /** 通知状态 */
+    /** 接收用户 ID */
+    userId?: number;
+    /** 是否已读 */
+    isRead?: number;
+    /** D */
+    id?: number;
+    /** 状态 */
     status?: number;
-    /** 搜索词 */
+    /** 关联对象类型 */
+    relatedType?: string;
+    /** 搜索文本 */
     searchText?: string;
+  };
+
+  type OperationLogEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    operatorId?: number;
+    operatorName?: string;
+    module?: string;
+    action?: string;
+    method?: string;
+    path?: string;
+    requestParams?: string;
+    responseStatus?: number;
+    success?: number;
+    errorMessage?: string;
+    clientIp?: string;
   };
 
   type OperationLogQueryRequest = {
@@ -108,7 +215,7 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
-    /** id */
+    /** ID */
     id?: number;
     /** 操作人ID */
     operatorId?: number;
@@ -118,7 +225,15 @@ declare namespace API {
     action?: string;
     /** 是否成功 */
     success?: number;
-    /** 搜索词 */
+    /** 客户端IP */
+    clientIp?: string;
+    /** 追踪ID */
+    traceId?: string;
+    /** 操作描述 */
+    description?: string;
+    /** 请求方法 */
+    method?: string;
+    /** 搜索文本 */
     searchText?: string;
   };
 
@@ -155,6 +270,20 @@ declare namespace API {
     pages?: number;
   };
 
+  type PostEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    title?: string;
+    content?: string;
+    cover?: string;
+    tags?: string[];
+    thumbNum?: number;
+    favourNum?: number;
+    userId?: number;
+  };
+
   type PostQueryRequest = {
     /** 当前页号 */
     current?: number;
@@ -166,7 +295,7 @@ declare namespace API {
     sortOrder?: string;
     /** id */
     id?: number;
-    /** not id */
+    /** notId */
     notId?: number;
     /** 搜索词 */
     searchText?: string;
@@ -174,12 +303,14 @@ declare namespace API {
     title?: string;
     /** 内容 */
     content?: string;
-    /** 标签列表（JSON 数组） */
+    /** 标签列表 */
     tags?: string[];
     /** 至少有一个标签 */
     orTags?: string[];
     /** 创建用户 id */
     userId?: number;
+    /** 收藏用户 id */
+    favourUserId?: number;
   };
 
   type SearchRequest = {
@@ -202,6 +333,34 @@ declare namespace API {
     dataList?: Record<string, any>[];
   };
 
+  type UserEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    userAccount?: string;
+    userName?: string;
+    userAvatar?: string;
+    userProfile?: string;
+    userRole?: string;
+    userEmail?: string;
+    userPhone?: string;
+  };
+
+  type UserLoginLogEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    userId?: number;
+    account?: string;
+    loginType?: string;
+    status?: string;
+    failReason?: string;
+    clientIp?: string;
+    userAgent?: string;
+  };
+
   type UserLoginLogQueryRequest = {
     /** 当前页号 */
     current?: number;
@@ -211,15 +370,19 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
-    /** id */
+    /** ID */
     id?: number;
     /** 用户ID */
     userId?: number;
-    /** 账号 */
+    /** 登录账号 */
     account?: string;
-    /** 状态 */
+    /** 登录类型 */
+    loginType?: string;
+    /** 登录状态 */
     status?: string;
-    /** 搜索词 */
+    /** 客户端IP */
+    clientIp?: string;
+    /** 搜索文本 */
     searchText?: string;
   };
 
@@ -230,19 +393,25 @@ declare namespace API {
     pageSize?: number;
     /** 排序字段 */
     sortField?: string;
-    /** 排序顺序（默认升序） */
+    /** 排序方式 */
     sortOrder?: string;
     /** id */
     id?: number;
-    /** 不包含的 id */
+    /** 排除的 id */
     notId?: number;
+    /** 微信开放平台 UnionID */
+    wxUnionId?: string;
+    /** 公众号 openId */
+    mpOpenId?: string;
     /** 用户昵称 */
     userName?: string;
-    /** 用户角色 */
+    /** 用户角色：user/admin/ban */
     userRole?: string;
     /** 用户邮箱 */
     userEmail?: string;
-    /** 搜索词 */
+    /** 用户电话 */
+    userPhone?: string;
+    /** 搜索文本 */
     searchText?: string;
   };
 }

@@ -26,22 +26,6 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponsePagePost = {
-    /** 状态码 */
-    code?: number;
-    data?: PagePost;
-    /** 消息 */
-    message?: string;
-  };
-
-  type BaseResponsePagePostComment = {
-    /** 状态码 */
-    code?: number;
-    data?: PagePostComment;
-    /** 消息 */
-    message?: string;
-  };
-
   type BaseResponsePagePostCommentVO = {
     /** 状态码 */
     code?: number;
@@ -92,34 +76,6 @@ declare namespace API {
     asc?: boolean;
   };
 
-  type PagePost = {
-    records?: Post[];
-    total?: number;
-    size?: number;
-    current?: number;
-    orders?: OrderItem[];
-    optimizeCountSql?: PagePost;
-    searchCount?: PagePost;
-    optimizeJoinOfCountSql?: boolean;
-    maxLimit?: number;
-    countId?: string;
-    pages?: number;
-  };
-
-  type PagePostComment = {
-    records?: PostComment[];
-    total?: number;
-    size?: number;
-    current?: number;
-    orders?: OrderItem[];
-    optimizeCountSql?: PagePostComment;
-    searchCount?: PagePostComment;
-    optimizeJoinOfCountSql?: boolean;
-    maxLimit?: number;
-    countId?: string;
-    pages?: number;
-  };
-
   type PagePostCommentVO = {
     records?: PostCommentVO[];
     total?: number;
@@ -148,31 +104,6 @@ declare namespace API {
     pages?: number;
   };
 
-  type Post = {
-    /** id */
-    id?: number;
-    /** 标题 */
-    title?: string;
-    /** 内容 */
-    content?: string;
-    /** 封面 */
-    cover?: string;
-    /** 标签列表 json */
-    tags?: string;
-    /** 点赞数 */
-    thumbNum?: number;
-    /** 收藏数 */
-    favourNum?: number;
-    /** 创建用户 id */
-    userId?: number;
-    /** 创建时间 */
-    createTime?: string;
-    /** 更新时间 */
-    updateTime?: string;
-    /** 是否删除 */
-    isDelete?: number;
-  };
-
   type PostAddRequest = {
     /** 标题 */
     title?: string;
@@ -182,25 +113,6 @@ declare namespace API {
     cover?: string;
     /** 标签列表 */
     tags?: string[];
-  };
-
-  type PostComment = {
-    /** id */
-    id?: number;
-    /** 评论内容 */
-    content?: string;
-    /** 帖子 id */
-    postId?: number;
-    /** 评论用户 id */
-    userId?: number;
-    /** 父评论 id（0表示一级评论） */
-    parentId?: number;
-    /** 创建时间 */
-    createTime?: string;
-    /** 更新时间 */
-    updateTime?: string;
-    /** 是否删除 */
-    isDelete?: number;
   };
 
   type PostCommentAddRequest = {
@@ -387,7 +299,11 @@ declare namespace API {
     userEmail?: string;
     /** 用户电话 */
     userPhone?: string;
+    /** 用户简介 */
+    userProfile?: string;
     /** 创建时间 */
     createTime?: string;
+    /** 更新时间 */
+    updateTime?: string;
   };
 }

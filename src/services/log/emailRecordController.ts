@@ -34,7 +34,7 @@ export async function listRecordByPage1(
   body: API.EmailRecordQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageEmailRecord>('/email/record/list/page', {
+  return request<API.BaseResponsePageEmailRecordVO>('/email/record/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

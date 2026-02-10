@@ -34,7 +34,7 @@ export async function listLogByPage(
   body: API.UserLoginLogQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageUserLoginLog>('/user/login/log/list/page', {
+  return request<API.BaseResponsePageUserLoginLogVO>('/user/login/log/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -143,8 +143,14 @@ declare namespace API {
     userId?: number;
     /** 是否已读 */
     isRead?: number;
+    /** D */
+    id?: number;
+    /** 状态 */
+    status?: number;
     /** 关联对象类型 */
     relatedType?: string;
+    /** 搜索文本 */
+    searchText?: string;
   };
 
   type NotificationReadRequest = {
@@ -188,6 +194,8 @@ declare namespace API {
     isRead?: number;
     /** 创建时间 */
     createTime?: string;
+    /** 更新时间 */
+    updateTime?: string;
   };
 
   type OrderItem = {

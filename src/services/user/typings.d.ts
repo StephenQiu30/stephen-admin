@@ -17,6 +17,15 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseListUserVO = {
+    /** 状态码 */
+    code?: number;
+    /** 数据 */
+    data?: UserVO[];
+    /** 消息 */
+    message?: string;
+  };
+
   type BaseResponseLoginUserVO = {
     /** 状态码 */
     code?: number;
@@ -102,6 +111,10 @@ declare namespace API {
 
   type getUserVOByIdParams = {
     id: number;
+  };
+
+  type getUserVOByIdsParams = {
+    ids: number[];
   };
 
   type GitHubCallbackRequest = {

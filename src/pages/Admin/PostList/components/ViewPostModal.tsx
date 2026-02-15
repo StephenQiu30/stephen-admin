@@ -3,8 +3,6 @@ import React from 'react';
 import { MarkdownViewer } from '@/components';
 import { ProCard } from '@ant-design/pro-components';
 
-
-
 interface Props {
   onCancel: () => void;
   visible: boolean;

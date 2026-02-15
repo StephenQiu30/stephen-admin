@@ -1,7 +1,7 @@
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
-import { Avatar, Button, Divider, Space, Tag, Typography, theme } from 'antd';
+import { Avatar, Button, Divider, Space, Tag, theme, Typography } from 'antd';
 import React from 'react';
 import { history } from '@@/core/history';
 
@@ -109,7 +109,9 @@ const UserCard: React.FC<Props> = (props) => {
 
           {user?.userEmail && (
             <div style={{ marginTop: 16 }}>
-              <Text type="secondary" style={{ fontSize: 12 }}>{user.userEmail}</Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {user.userEmail}
+              </Text>
             </div>
           )}
         </div>

@@ -2,9 +2,9 @@ import { MarkdownEditor as AntdMarkdownEditor } from '@ant-design/md-editor';
 import React from 'react';
 
 interface Props {
-    value?: string;
-    onChange?: (value: string) => void;
-    placeholder?: string;
+  value?: string;
+  onChange?: (value: string) => void;
+  placeholder?: string;
 }
 
 /**
@@ -14,15 +14,9 @@ interface Props {
  * @constructor
  */
 const MarkdownEditor: React.FC<Props> = (props) => {
-    const { value, onChange, placeholder } = props;
+  const { value, onChange, placeholder } = props;
 
-    return (
-        <AntdMarkdownEditor
-            initValue={value}
-            onChange={onChange}
-            placeholder={placeholder}
-        />
-    );
+  return <AntdMarkdownEditor initValue={value} onChange={onChange} placeholder={placeholder} />;
 };
 
 export default MarkdownEditor;

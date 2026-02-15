@@ -20,7 +20,6 @@ interface Props {
   visible: boolean;
 }
 
-
 /**
  * 更新节点
  *
@@ -48,7 +47,6 @@ const UpdatePostModal: React.FC<Props> = (props) => {
   const { oldData, visible, onSubmit, onCancel } = props;
   // 帖子封面
   const [cover, setCover] = useState<any>();
-
 
   const [form] = ProForm.useForm<API.PostUpdateRequest>();
   /**
@@ -134,11 +132,7 @@ const UpdatePostModal: React.FC<Props> = (props) => {
         label="标题"
         rules={[{ required: true, message: '请输入标题' }]}
       />
-      <ProForm.Item
-        name="content"
-        label="内容"
-        rules={[{ required: true, message: '请输入内容' }]}
-      >
+      <ProForm.Item name="content" label="内容" rules={[{ required: true, message: '请输入内容' }]}>
         <MarkdownEditor />
       </ProForm.Item>
       <ProFormSelect

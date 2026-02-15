@@ -45,10 +45,7 @@ const wrapProTableRequest = async <U,>(
 /**
  * 通用操作处理
  */
-const handleOperation = async (
-  action: () => Promise<any>,
-  successText: string = '操作成功',
-) => {
+const handleOperation = async (action: () => Promise<any>, successText: string = '操作成功') => {
   const hide = message.loading('正在处理');
   try {
     const res = await action();
@@ -295,10 +292,7 @@ const UserList: React.FC = () => {
               await handleDelete(deleteUser, record.id, '删除成功', actionRef);
             }}
           >
-            <Typography.Link
-              key={'delete'}
-              type={'danger'}
-            >
+            <Typography.Link key={'delete'} type={'danger'}>
               删除
             </Typography.Link>
           </Popconfirm>
@@ -316,7 +310,6 @@ const UserList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
-
         toolBarRender={() => [
           <Space key={'space'} wrap>
             <Button
@@ -335,7 +328,13 @@ const UserList: React.FC = () => {
                 danger
                 key="batchDelete"
                 onClick={() => {
-                  handleBatchDelete(deleteUser, selectedRowsState, '批量删除成功', actionRef, setSelectedRows);
+                  handleBatchDelete(
+                    deleteUser,
+                    selectedRowsState,
+                    '批量删除成功',
+                    actionRef,
+                    setSelectedRows,
+                  );
                 }}
               >
                 批量删除
@@ -344,12 +343,7 @@ const UserList: React.FC = () => {
           </Space>,
         ]}
         request={async (params, sort, filter) => {
-          return await wrapProTableRequest(
-            listUserByPage,
-            params,
-            sort,
-            filter,
-          );
+          return await wrapProTableRequest(listUserByPage, params, sort, filter);
         }}
         columns={columns}
         rowSelection={{
@@ -359,7 +353,6 @@ const UserList: React.FC = () => {
         }}
         scroll={{ x: 800 }}
       />
-
 
       {/*新建表单的Modal框*/}
       {createModalVisible && (

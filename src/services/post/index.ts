@@ -6,6 +6,7 @@ import * as postController from './postController';
 import * as postThumbController from './postThumbController';
 import * as postFavourController from './postFavourController';
 import * as postCommentController from './postCommentController';
+
 export default {
   postController,
   postThumbController,

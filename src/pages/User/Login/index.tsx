@@ -72,8 +72,6 @@ const Login: React.FC = () => {
     }
   };
 
-
-
   // useEffect 监听 redirected 状态的变化
   useEffect(() => {
     if (redirected) {
@@ -105,7 +103,6 @@ const Login: React.FC = () => {
           onFinish={async (values) => {
             await handleLoginSubmit(values as API.UserEmailLoginRequest);
           }}
-
         >
           {/*用户选择账号密码登录*/}
           <EmailLoginPage />

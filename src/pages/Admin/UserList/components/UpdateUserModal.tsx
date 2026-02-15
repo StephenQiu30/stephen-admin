@@ -137,7 +137,10 @@ const UpdateUserModal: React.FC<Props> = (props) => {
       <ProFormText
         name={'userEmail'}
         label={'邮箱'}
-        rules={[{ required: true, message: '请输入邮箱' }, { type: 'email', message: '请输入正确的邮箱' }]}
+        rules={[
+          { required: true, message: '请输入邮箱' },
+          { type: 'email', message: '请输入正确的邮箱' },
+        ]}
       />
       <ProFormUploadDragger
         title={'上传头像'}
@@ -153,7 +156,9 @@ const UpdateUserModal: React.FC<Props> = (props) => {
           <Select.Option value={UserRoleEnum.ADMIN}>
             {userRole[UserRoleEnum.ADMIN].text}
           </Select.Option>
-          <Select.Option value={UserRoleEnum.USER}>{userRole[UserRoleEnum.USER].text}</Select.Option>
+          <Select.Option value={UserRoleEnum.USER}>
+            {userRole[UserRoleEnum.USER].text}
+          </Select.Option>
           <Select.Option value={UserRoleEnum.BAN}>{userRole[UserRoleEnum.BAN].text}</Select.Option>
         </Select>
       </ProFormSelect>

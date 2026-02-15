@@ -26,7 +26,7 @@ export async function getInitialState(): Promise<InitialState> {
         localStorage.setItem('stephen-token', res?.data?.token || '');
       }
     }
-  } catch (error: any) { }
+  } catch (error: any) {}
   // 返回一个 Promise<InitialState> 类型的值
   return initialState;
 }

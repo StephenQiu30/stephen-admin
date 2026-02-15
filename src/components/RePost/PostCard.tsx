@@ -14,7 +14,7 @@ const { useBreakpoint } = Grid;
  * @param props
  * @constructor
  */
-const PostCard: React.FC<Props> = ({post}) => {
+const PostCard: React.FC<Props> = ({ post }) => {
   const scene = useBreakpoint();
   const isMobile = !scene.md;
 

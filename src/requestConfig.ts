@@ -2,7 +2,6 @@
 import type { RequestConfig } from '@umijs/max';
 import { BASE_URL, PRODUCTION_URL } from '@/constants';
 
-
 // 与后端约定的响应数据格式
 interface ResponseStructure {
   success: boolean;

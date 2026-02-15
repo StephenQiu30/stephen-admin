@@ -116,16 +116,8 @@ const CreatePostModal: React.FC<Props> = (props) => {
         },
       }}
     >
-      <ProFormText
-        name="title"
-        label="标题"
-        rules={[{ required: true, message: '请输入标题' }]}
-      />
-      <ProForm.Item
-        name="content"
-        label="内容"
-        rules={[{ required: true, message: '请输入内容' }]}
-      >
+      <ProFormText name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]} />
+      <ProForm.Item name="content" label="内容" rules={[{ required: true, message: '请输入内容' }]}>
         <MarkdownEditor />
       </ProForm.Item>
       <ProFormSelect

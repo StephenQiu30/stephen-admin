@@ -122,12 +122,12 @@ export async function getNotificationVoById(
   });
 }
 
-/** 分页获取通知列表 分页获取当前用户的通知列表 POST /notification/list/page */
-export async function listNotificationByPage(
+/** 分页获取通知列表（管理员） POST /notification/list/page/admin */
+export async function listNotificationByPageAdmin(
   body: API.NotificationQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageNotificationVO>('/notification/list/page', {
+  return request<API.BaseResponsePageNotification>('/notification/list/page/admin', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -137,12 +137,12 @@ export async function listNotificationByPage(
   });
 }
 
-/** 分页获取通知列表（管理员） POST /notification/list/page/admin */
-export async function listNotificationByPageAdmin(
+/** 分页获取通知列表（脱敏） POST /notification/list/page/vo */
+export async function listNotificationVoByPage(
   body: API.NotificationQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageNotification>('/notification/list/page/admin', {
+  return request<API.BaseResponsePageNotificationVO>('/notification/list/page/vo', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -104,6 +104,14 @@ export async function batchUpsertFileUploadRecord(
   });
 }
 
+/** 手动触发所有日志数据的全量同步 POST /search/log/sync/full */
+export async function fullSyncLogs(options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean>('/search/log/sync/full', {
+    method: 'POST',
+    ...(options || {}),
+  });
+}
+
 /** 批量同步通知到 ES POST /search/notification/batch/upsert */
 export async function batchUpsertNotification(
   body: API.NotificationEsDTO[],

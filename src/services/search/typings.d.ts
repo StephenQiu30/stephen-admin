@@ -27,6 +27,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 用户ID */
@@ -94,6 +98,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 消息ID */
@@ -137,6 +145,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 上传用户ID */
@@ -172,6 +184,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** 通知类型 */
     type?: string;
     /** 接收用户 ID */
@@ -215,6 +231,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 操作人ID */
@@ -293,6 +313,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** id */
     id?: number;
     /** notId */
@@ -322,6 +346,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** 搜索词 */
     searchText?: string;
     /** 分类 */
@@ -331,6 +359,12 @@ declare namespace API {
   type SearchVOObject = {
     /** 数据列表 */
     dataList?: Record<string, any>[];
+    /** 总条数 */
+    total?: number;
+    /** 当前页 */
+    current?: number;
+    /** 每页大小 */
+    pageSize?: number;
   };
 
   type UserEsDTO = {
@@ -370,6 +404,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 用户ID */
@@ -395,6 +433,10 @@ declare namespace API {
     sortField?: string;
     /** 排序方式 */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** id */
     id?: number;
     /** 排除的 id */

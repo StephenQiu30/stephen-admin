@@ -140,6 +140,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** id */
     id?: number;
     /** 帖子 id */
@@ -201,6 +205,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** 用户 id */
     userId?: number;
     postQueryRequest?: PostQueryRequest;
@@ -220,6 +228,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** id */
     id?: number;
     /** notId */

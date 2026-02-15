@@ -35,6 +35,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 用户ID */
@@ -174,6 +178,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 消息ID */
@@ -263,6 +271,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 上传用户ID */
@@ -348,6 +360,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 操作人ID */
@@ -500,6 +516,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** ID */
     id?: number;
     /** 用户ID */

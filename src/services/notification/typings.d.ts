@@ -137,6 +137,10 @@ declare namespace API {
     sortField?: string;
     /** 排序顺序（默认升序） */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** 通知类型 */
     type?: string;
     /** 接收用户 ID */

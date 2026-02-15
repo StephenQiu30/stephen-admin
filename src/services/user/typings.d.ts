@@ -285,6 +285,10 @@ declare namespace API {
     sortField?: string;
     /** 排序方式 */
     sortOrder?: string;
+    /** 最小更新时间 */
+    minUpdateTime?: string;
+    /** 最大更新时间 */
+    maxUpdateTime?: string;
     /** id */
     id?: number;
     /** 排除的 id */

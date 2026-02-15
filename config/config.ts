@@ -164,16 +164,6 @@ export default defineConfig({
       schemaPath: 'http://localhost:8087/api/v3/api-docs',
       projectName: 'mail',
     },
-    {
-      requestLibPath: "import { request } from '@umijs/max'",
-      schemaPath: 'http://localhost:8088/api/v3/api-docs',
-      projectName: 'websocket',
-    },
-    {
-      requestLibPath: "import { request } from '@umijs/max'",
-      schemaPath: 'http://localhost:8091/api/v3/api-docs',
-      projectName: 'job',
-    },
   ],
   mfsu: {
     strategy: 'normal',

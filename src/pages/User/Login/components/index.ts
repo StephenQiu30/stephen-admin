@@ -1,4 +1,3 @@
-import { FormInstance } from 'antd';
 
 export type LoginType = 'account' | 'mobile';
 

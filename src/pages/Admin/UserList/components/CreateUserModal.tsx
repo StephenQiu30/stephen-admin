@@ -3,7 +3,6 @@ import {
   ProForm,
   ProFormSelect,
   ProFormText,
-  ProFormTextArea,
   ProFormUploadDragger,
 } from '@ant-design/pro-components';
 import { message, Select, UploadProps } from 'antd';

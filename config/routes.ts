@@ -28,20 +28,7 @@ export default [
     icon: 'NotificationOutlined',
     access: 'canAdmin',
   },
-  {
-    name: '微信管理',
-    path: '/admin/wechat',
-    component: './Admin/WeChat',
-    icon: 'WechatOutlined',
-    access: 'canAdmin',
-  },
-  {
-    name: '邮件工具',
-    path: '/admin/mail',
-    component: './Admin/MailTool',
-    icon: 'MailOutlined',
-    access: 'canAdmin',
-  },
+
   {
     name: '日志管理',
     path: '/admin/log',

@@ -1,7 +1,41 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
 import React, { useRef } from 'react';
-import { listLogByPage } from '@/services/log/userLoginLogController';
-import { wrapProTableRequest } from '@/utils/tableUtils';
+import { searchUserLoginLogByPage } from '@/services/search/searchController';
+import { SortOrder } from 'antd/lib/table/interface';
+
+/**
+ * 驼峰转蛇形命名
+ */
+const camelToSnake = (str: string) => {
+    return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+};
+
+/**
+ * 通用 ProTable request 封装
+ */
+const wrapProTableRequest = async <U,>(
+    serviceApi: (params: U) => Promise<any>,
+    params: any,
+    sort: Record<string, SortOrder>,
+    filter: any,
+    defaultSortField: string = 'update_time',
+    options?: { isEs?: boolean },
+) => {
+    const sortFieldCamel = Object.keys(sort)?.[0] || defaultSortField;
+    const sortOrder = sort?.[sortFieldCamel] === 'ascend' ? 'ascend' : 'descend';
+    const sortField = options?.isEs ? sortFieldCamel : camelToSnake(sortFieldCamel);
+    const { data, code } = await serviceApi({
+        ...params,
+        ...filter,
+        sortField,
+        sortOrder,
+    } as any);
+    return {
+        success: code === 0,
+        data: data?.records || [],
+        total: Number(data?.total) || 0,
+    };
+};
 
 /**
  * 登录日志页面
@@ -27,10 +61,12 @@ const UserLoginLog: React.FC = () => {
             search={{ labelWidth: 100 }}
             request={async (params, sort, filter) => {
                 return await wrapProTableRequest(
-                    listLogByPage,
+                    searchUserLoginLogByPage,
                     params,
                     sort,
                     filter,
+                    'createTime',
+                    { isEs: true },
                 );
             }}
             columns={columns}

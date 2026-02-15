@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatisticCard } from '@ant-design/pro-components';
-import {Avatar, Divider, Space, Typography} from 'antd';
+import { Divider, Space, Typography } from 'antd';
 import dayjs from 'dayjs';
 
 interface Props {

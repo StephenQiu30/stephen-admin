@@ -1,6 +1,6 @@
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { history, Link, useModel } from '@umijs/max';
-import { Avatar, Button, Grid, message, Space } from 'antd';
+import { Button, message } from 'antd';
 import { stringify } from 'querystring';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useCallback } from 'react';
@@ -18,7 +18,6 @@ export const AvatarName = () => {
   const { currentUser } = initialState || {};
   return <span className="anticon">{currentUser?.userName}</span>;
 };
-const { useBreakpoint } = Grid;
 /**
  * 头像下拉框
  * @constructor
@@ -27,7 +26,6 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ children }) =
   const { initialState, setInitialState } = useModel('@@initialState');
   // 获取当前登录用户的信息
   const { currentUser } = initialState || {};
-  const isMobile = !useBreakpoint().md;
   /**
    * 退出登录，并且将当前的 url 保存
    */

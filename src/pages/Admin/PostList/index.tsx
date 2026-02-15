@@ -1,11 +1,115 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Avatar, Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { CreatePostModal, UpdatePostModal, ViewPostModal } from '@/pages/Admin/PostList/components';
 import { PlusOutlined } from '@ant-design/icons';
 import { TAG_EMPTY } from '@/constants';
 import { deletePost, listPostByPage } from '@/services/post/postController';
-import { handleBatchDelete, handleDelete, wrapProTableRequest } from '@/utils/tableUtils';
+import { SortOrder } from 'antd/lib/table/interface';
+
+/**
+ * 驼峰转蛇形命名
+ * @param str
+ */
+const camelToSnake = (str: string) => {
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+};
+
+/**
+ * 通用 ProTable request 封装
+ */
+const wrapProTableRequest = async <U,>(
+  serviceApi: (params: U) => Promise<any>,
+  params: any,
+  sort: Record<string, SortOrder>,
+  filter: any,
+  defaultSortField: string = 'update_time',
+  options?: { isEs?: boolean },
+) => {
+  const sortFieldCamel = Object.keys(sort)?.[0] || defaultSortField;
+  const sortOrder = sort?.[sortFieldCamel] === 'ascend' ? 'ascend' : 'descend';
+  const sortField = options?.isEs ? sortFieldCamel : camelToSnake(sortFieldCamel);
+  const { data, code } = await serviceApi({
+    ...params,
+    ...filter,
+    sortField,
+    sortOrder,
+  } as any);
+  return {
+    success: code === 0,
+    data: data?.records || [],
+    total: Number(data?.total) || 0,
+  };
+};
+
+/**
+ * 通用操作处理
+ */
+const handleOperation = async (
+  action: () => Promise<any>,
+  successText: string = '操作成功',
+) => {
+  const hide = message.loading('正在处理');
+  try {
+    const res = await action();
+    if (res.code === 0) {
+      message.success(successText);
+      return true;
+    } else {
+      message.error(`操作失败: ${res.message || '未知错误'}`);
+      return false;
+    }
+  } catch (error: any) {
+    message.error(`操作失败: ${error.message || '网络错误'}`);
+    return false;
+  } finally {
+    hide();
+  }
+};
+
+/**
+ * 通用删除处理
+ */
+const handleDelete = async (
+  action: (params: { id: any }) => Promise<any>,
+  id: any,
+  successText: string = '删除成功',
+  actionRef?: React.MutableRefObject<ActionType | undefined>,
+) => {
+  if (!id) return false;
+  const success = await handleOperation(() => action({ id }), successText);
+  if (success && actionRef) {
+    actionRef.current?.reload();
+  }
+  return success;
+};
+
+/**
+ * 通用批量删除处理
+ */
+const handleBatchDelete = async <T extends { id?: any }>(
+  action: (params: { id: any }) => Promise<any>,
+  selectedRows: T[],
+  successText: string = '批量删除成功',
+  actionRef?: React.MutableRefObject<ActionType | undefined>,
+  setSelectedRows?: (rows: T[]) => void,
+) => {
+  if (!selectedRows || selectedRows.length === 0) return false;
+  const success = await handleOperation(async () => {
+    await Promise.all(
+      selectedRows.map(async (row) => {
+        await action({ id: row.id });
+      }),
+    );
+    return { code: 0, data: true };
+  }, successText);
+
+  if (success) {
+    actionRef?.current?.reloadAndRest?.();
+    setSelectedRows?.([]);
+  }
+  return success;
+};
 
 /**
  * 用户管理列表

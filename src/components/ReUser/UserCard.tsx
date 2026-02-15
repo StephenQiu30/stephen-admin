@@ -1,7 +1,7 @@
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
-import { Avatar, Button, Card, Divider, Space, Tag, Typography, theme } from 'antd';
+import { Avatar, Button, Divider, Space, Tag, Typography, theme } from 'antd';
 import React from 'react';
 import { history } from '@@/core/history';
 

@@ -1,8 +1,8 @@
 import { Footer } from '@/components';
 import { LoginFormPage } from '@ant-design/pro-components';
 import { history, useModel } from '@umijs/max';
-import { Divider, Image, message, Space, Tabs, theme, Typography } from 'antd';
-import React, { CSSProperties, useEffect, useState } from 'react';
+import { Image, message, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { createStyles } from 'antd-style';
 import { BACKGROUND_IMAGE, STEPHEN_SUBTITLE, STEPHEN_TITLE } from '@/constants';
 import { EmailLoginPage } from '@/pages/User/Login/components';
@@ -33,20 +33,11 @@ const useStyles = createStyles(({ token }) => {
   };
 });
 
-const iconStyles: CSSProperties = {
-  color: 'rgba(0, 0, 0, 0.2)',
-  fontSize: '18px',
-  verticalAlign: 'middle',
-  cursor: 'pointer',
-};
-
 /**
  * 登录页面
  * @constructor
  */
 const Login: React.FC = () => {
-  const [type, setType] = useState<string>('email');
-  const { token } = theme.useToken();
   const { initialState, setInitialState } = useModel('@@initialState');
   const [redirected, setRedirected] = useState(false); // 控制重定向状态
   const { styles } = useStyles();
@@ -116,11 +107,8 @@ const Login: React.FC = () => {
           }}
 
         >
-          <Tabs centered activeKey={type} onChange={(activeKey) => setType(activeKey)}>
-            <Tabs.TabPane key={'email'} tab={'邮箱登录'} />
-          </Tabs>
           {/*用户选择账号密码登录*/}
-          {type === 'email' && <EmailLoginPage />}
+          <EmailLoginPage />
         </LoginFormPage>
       </div>
       <Footer />

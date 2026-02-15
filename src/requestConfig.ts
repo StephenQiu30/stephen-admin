@@ -47,16 +47,27 @@ export const requestConfig: RequestConfig = {
       }
       // 错误码的处理
       const code: number = data.code;
-      // 未登录，且不为获取用户登录信息接口
-      if (
-        code === 40100 &&
-        !requestPath.includes('/user/get/login') &&
-        !location.pathname.includes('/user/login')
-      ) {
-        // 跳转至登录页面
-        window.location.href = `/user/login?redirect=${window.location.href}`;
-        throw new Error('用户还未登录,请先登录');
+
+      // 如果 code 不为 0，视为业务异常
+      if (code !== 0) {
+        // 未登录，且不为获取用户登录信息接口
+        if (
+          code === 40100 &&
+          !requestPath.includes('/user/get/login') &&
+          !location.pathname.includes('/user/login')
+        ) {
+          // 跳转至登录页面
+          window.location.href = `/user/login?redirect=${window.location.href}`;
+          throw new Error('用户还未登录,请先登录');
+        }
+
+        // 其他业务错误，如果请求配置中没有声明 skipErrorHandler，则统一提示
+        // NOTE: 这里可以根据需要决定是否启用全局 message.error
+        // if (!response.config.skipErrorHandler) {
+        //   message.error(data.message || '请求失败');
+        // }
       }
+
       return response;
     },
   ],

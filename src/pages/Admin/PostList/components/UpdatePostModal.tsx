@@ -3,6 +3,7 @@ import {
   ProForm,
   ProFormSelect,
   ProFormText,
+  ProFormTextArea,
   ProFormUploadDragger,
 } from '@ant-design/pro-components';
 import { MarkdownEditor } from '@/components';
@@ -14,7 +15,7 @@ import { updatePost } from '@/services/post/postController';
 import { uploadFile } from '@/services/file/fileController';
 
 interface Props {
-  oldData?: API.Post;
+  oldData?: API.PostVO;
   onCancel: () => void;
   onSubmit: (values: API.PostUpdateRequest) => Promise<void>;
   visible: boolean;
@@ -86,11 +87,15 @@ const UpdatePostModal: React.FC<Props> = (props) => {
     return null;
   }
 
-  let tags = [];
-  try {
-    tags = JSON.parse(oldData.tags || '[]');
-  } catch (e) {
-    tags = [];
+  let tags: string[] = [];
+  if (Array.isArray(oldData.tags)) {
+    tags = oldData.tags;
+  } else if (typeof oldData.tags === 'string') {
+    try {
+      tags = JSON.parse(oldData.tags);
+    } catch (e) {
+      tags = [];
+    }
   }
 
   return (
@@ -145,7 +150,7 @@ const UpdatePostModal: React.FC<Props> = (props) => {
         fieldProps={{
           suffixIcon: null,
         }}
-        initialValue={oldData?.tags}
+        initialValue={tags}
       />
       <ProFormUploadDragger
         title={'上传帖子封面'}

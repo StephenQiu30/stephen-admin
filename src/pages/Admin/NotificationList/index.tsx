@@ -4,7 +4,9 @@ import React, { useRef, useState } from 'react';
 import {
     deleteNotification,
     listNotificationByPageAdmin,
+    batchMarkRead,
 } from '@/services/notification/notificationController';
+import { handleOperation, wrapProTableRequest } from '@/utils/tableUtils';
 import CreateNotificationModal from './components/CreateNotificationModal';
 import UpdateNotificationModal from './components/UpdateNotificationModal';
 
@@ -14,22 +16,8 @@ import UpdateNotificationModal from './components/UpdateNotificationModal';
  * @param row
  */
 const handleDelete = async (row: API.DeleteRequest) => {
-    const hide = message.loading('正在删除');
     if (!row) return true;
-    try {
-        const res = await deleteNotification({
-            id: row.id,
-        });
-        if (res.code === 0 && res.data) {
-            message.success('删除成功');
-        } else {
-            message.error(`删除失败${res.message}, 请重试!`);
-        }
-    } catch (error: any) {
-        message.error(`删除失败${error.message}, 请重试!`);
-    } finally {
-        hide();
-    }
+    return await handleOperation(() => deleteNotification({ id: row.id }), '删除成功');
 };
 
 const NotificationList: React.FC = () => {
@@ -46,9 +34,8 @@ const NotificationList: React.FC = () => {
      * @param selectedRows
      */
     const handleBatchDelete = async (selectedRows: API.Notification[]) => {
-        const hide = message.loading('正在删除');
         if (!selectedRows) return true;
-        try {
+        const success = await handleOperation(async () => {
             await Promise.all(
                 selectedRows.map(async (row) => {
                     await deleteNotification({
@@ -56,12 +43,29 @@ const NotificationList: React.FC = () => {
                     });
                 }),
             );
-            message.success('删除成功');
+            return { code: 0, data: true };
+        }, '批量删除成功');
+
+        if (success) {
             actionRef.current?.reloadAndRest?.();
-        } catch (error: any) {
-            message.error(`删除失败${error.message}, 请重试!`);
-        } finally {
-            hide();
+            setSelectedRows([]);
+        }
+    };
+
+    /**
+     * 批量已读
+     * @param selectedRows
+     */
+    const handleBatchRead = async (selectedRows: API.Notification[]) => {
+        if (!selectedRows) return true;
+        const ids = selectedRows.map((row) => row.id!);
+        const success = await handleOperation(async () => {
+            await batchMarkRead({ ids });
+            return { code: 0, data: true };
+        }, '批量已读成功');
+
+        if (success) {
+            actionRef.current?.reloadAndRest?.();
             setSelectedRows([]);
         }
     };
@@ -193,25 +197,12 @@ const NotificationList: React.FC = () => {
                     </Button>,
                 ]}
                 request={async (params, sort, filter) => {
-                    const sortField = Object.keys(sort)?.[0];
-                    const sortOrder = sort?.[sortField] ?? undefined;
-                    const { data, code } = await listNotificationByPageAdmin({
-                        ...params,
-                        ...filter,
-                        sortField:
-                            sortField === 'createTime'
-                                ? 'create_time'
-                                : sortField === 'updateTime'
-                                    ? 'update_time'
-                                    : sortField,
-                        sortOrder,
-                    } as API.NotificationQueryRequest);
-
-                    return {
-                        success: code === 0,
-                        data: data?.records || [],
-                        total: data?.total || 0,
-                    };
+                    return await wrapProTableRequest(
+                        listNotificationByPageAdmin,
+                        params,
+                        sort,
+                        filter,
+                    );
                 }}
                 columns={columns}
                 rowSelection={{
@@ -239,6 +230,19 @@ const NotificationList: React.FC = () => {
                     >
                         <Button danger type="primary">
                             批量删除
+                        </Button>
+                    </Popconfirm>
+                    <Popconfirm
+                        title="确定全部已读？"
+                        description="确定将选中项标记为已读?"
+                        okText="确定"
+                        cancelText="取消"
+                        onConfirm={async () => {
+                            await handleBatchRead(selectedRowsState);
+                        }}
+                    >
+                        <Button type="primary">
+                            批量已读
                         </Button>
                     </Popconfirm>
                 </FooterToolbar>

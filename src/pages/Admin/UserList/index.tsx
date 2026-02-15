@@ -5,30 +5,7 @@ import React, { useRef, useState } from 'react';
 import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
 import { CreateUserModal, UpdateUserModal } from '@/pages/Admin/UserList/components';
 import { deleteUser, listUserByPage } from '@/services/user/userController';
-
-/**
- * 删除节点
- *
- * @param row
- */
-const handleDelete = async (row: API.DeleteRequest) => {
-  const hide = message.loading('正在删除');
-  if (!row) return true;
-  try {
-    const res = await deleteUser({
-      id: row.id,
-    });
-    if (res.code === 0 && res.data) {
-      message.success('删除成功');
-    } else {
-      message.error(`删除失败${res.message}, 请重试!`);
-    }
-  } catch (error: any) {
-    message.error(`删除失败${error.message}, 请重试!`);
-  } finally {
-    hide();
-  }
-};
+import { handleBatchDelete, handleDelete, wrapProTableRequest } from '@/utils/tableUtils';
 
 /**
  * 用户管理列表
@@ -42,6 +19,7 @@ const UserList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   // 当前用户的所点击的数据
   const [currentRow, setCurrentRow] = useState<API.User>();
+  const [selectedRowsState, setSelectedRows] = useState<API.User[]>([]);
 
   /**
    * 表格列数据
@@ -123,6 +101,7 @@ const UserList: React.FC = () => {
     {
       title: '邮箱验证',
       dataIndex: 'emailVerified',
+      hideInSearch: true,
       valueType: 'select',
       valueEnum: {
         0: { text: '未验证', status: 'Error' },
@@ -209,16 +188,12 @@ const UserList: React.FC = () => {
             okText="确定"
             cancelText="取消"
             onConfirm={async () => {
-              await handleDelete(record);
-              actionRef.current?.reload();
+              await handleDelete(deleteUser, record.id, '删除成功', actionRef);
             }}
           >
             <Typography.Link
               key={'delete'}
               type={'danger'}
-              onClick={() => {
-                setCurrentRow(record);
-              }}
             >
               删除
             </Typography.Link>
@@ -230,7 +205,7 @@ const UserList: React.FC = () => {
 
   return (
     <>
-      <ProTable<API.User, API.PageParams>
+      <ProTable<API.User, API.UserQueryRequest>
         headerTitle={'查询表格'}
         actionRef={actionRef}
         rowKey={'id'}
@@ -250,30 +225,37 @@ const UserList: React.FC = () => {
             >
               新建
             </Button>
+            {selectedRowsState?.length > 0 && (
+              <Button
+                type={'primary'}
+                danger
+                key="batchDelete"
+                onClick={() => {
+                  handleBatchDelete(deleteUser, selectedRowsState, '批量删除成功', actionRef, setSelectedRows);
+                }}
+              >
+                批量删除
+              </Button>
+            )}
           </Space>,
         ]}
         request={async (params, sort, filter) => {
-          const sortField = Object.keys(sort)?.[0] || 'update_time';
-          const sortOrder = sort?.[sortField] ?? 'descend';
-
-          const newSortField = sortField === 'updateTime' ? 'update_time' : sortField === 'createTime' ? 'create_time' : sortField;
-
-          const { data, code } = await listUserByPage({
-            ...params,
-            ...filter,
-            sortField: newSortField,
-            sortOrder,
-          } as API.UserQueryRequest);
-
-          return {
-            success: code === 0,
-            data: data?.records || [],
-            total: data?.total || 0,
-          };
+          return await wrapProTableRequest(
+            listUserByPage,
+            params,
+            sort,
+            filter,
+          );
         }}
         columns={columns}
+        rowSelection={{
+          onChange: (_, selectedRows) => {
+            setSelectedRows(selectedRows);
+          },
+        }}
         scroll={{ x: 800 }}
       />
+
 
       {/*新建表单的Modal框*/}
       {createModalVisible && (
@@ -288,6 +270,7 @@ const UserList: React.FC = () => {
           visible={createModalVisible}
         />
       )}
+
       {/*更新表单的Modal框*/}
       {updateModalVisible && (
         <UpdateUserModal

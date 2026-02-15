@@ -1,23 +1,16 @@
 import { PageContainer, ProCard } from '@ant-design/pro-components';
-import { Button, message, Result } from 'antd';
+import { Button, Result } from 'antd';
 import React, { useState } from 'react';
 import { setMenu } from '@/services/user/wxMpController';
+import { handleOperation } from '@/utils/tableUtils';
 
 const WeChatManager: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const handleSetMenu = async () => {
         setLoading(true);
-        try {
-            const res = await setMenu();
-            if (res) {
-                message.success('菜单同步成功');
-            }
-        } catch (error: any) {
-            message.error(`菜单同步失败: ${error.message}`);
-        } finally {
-            setLoading(false);
-        }
+        await handleOperation(() => setMenu(), '菜单同步成功');
+        setLoading(false);
     };
 
     return (

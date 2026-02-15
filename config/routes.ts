@@ -43,12 +43,34 @@ export default [
     access: 'canAdmin',
   },
   {
-    name: '聚合搜索',
-    path: '/admin/search',
-    component: './Admin/SearchCenter',
-    icon: 'SearchOutlined',
+    name: '日志管理',
+    path: '/admin/log',
+    icon: 'HistoryOutlined',
     access: 'canAdmin',
+    routes: [
+      {
+        name: '文件日志',
+        path: '/admin/log/file',
+        component: './Admin/File/Log',
+      },
+      {
+        name: 'API 访问日志',
+        path: '/admin/log/api',
+        component: './Admin/Log/ApiAccessLog',
+      },
+      {
+        name: '操作日志',
+        path: '/admin/log/operation',
+        component: './Admin/Log/OperationLog',
+      },
+      {
+        name: '登录日志',
+        path: '/admin/log/login',
+        component: './Admin/Log/UserLoginLog',
+      },
+    ],
   },
+
   {
     path: '/user',
     layout: false,

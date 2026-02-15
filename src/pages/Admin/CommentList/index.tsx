@@ -6,31 +6,8 @@ import {
 } from '@ant-design/pro-components';
 import { Avatar, Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
-import { deletePostComment, listPostCommentVoByPage } from '@/services/post/postCommentController';
-
-/**
- * 删除节点
- *
- * @param row
- */
-const handleDelete = async (row: API.DeleteRequest) => {
-    const hide = message.loading('正在删除');
-    if (!row) return true;
-    try {
-        const res = await deletePostComment({
-            id: row.id,
-        });
-        if (res.code === 0 && res.data) {
-            message.success('删除成功');
-        } else {
-            message.error(`删除失败${res.message}, 请重试!`);
-        }
-    } catch (error: any) {
-        message.error(`删除失败${error.message}, 请重试!`);
-    } finally {
-        hide();
-    }
-};
+import { deletePostComment, listPostCommentByPage } from '@/services/post/postCommentController';
+import { handleBatchDelete, handleDelete, wrapProTableRequest } from '@/utils/tableUtils';
 
 /**
  * 评论管理列表
@@ -38,6 +15,7 @@ const handleDelete = async (row: API.DeleteRequest) => {
  */
 const CommentList: React.FC = () => {
     const actionRef = useRef<ActionType>();
+    const [selectedRowsState, setSelectedRows] = useState<API.PostCommentVO[]>([]);
 
     /**
      * 表格列数据
@@ -82,7 +60,6 @@ const CommentList: React.FC = () => {
             sorter: true,
             dataIndex: 'createTime',
             valueType: 'dateTime',
-            hideInSearch: true,
             hideInForm: true,
             width: 180,
         },
@@ -99,8 +76,7 @@ const CommentList: React.FC = () => {
                         okText="确定"
                         cancelText="取消"
                         onConfirm={async () => {
-                            await handleDelete(record);
-                            actionRef.current?.reload();
+                            await handleDelete(deletePostComment, record.id, '删除成功', actionRef);
                         }}
                     >
                         <Typography.Link
@@ -116,31 +92,53 @@ const CommentList: React.FC = () => {
     ];
 
     return (
-        <ProTable<API.PostCommentVO, API.PageParams>
-            headerTitle={'评论列表'}
-            actionRef={actionRef}
-            rowKey={'id'}
-            search={{
-                labelWidth: 120,
-            }}
-            request={async (params, sort, filter) => {
-                const sortField = Object.keys(sort)?.[0];
-                const sortOrder = sort?.[sortField] ?? undefined;
-                const { data, code } = await listPostCommentVoByPage({
-                    ...params,
-                    ...filter,
-                    sortField,
-                    sortOrder,
-                } as API.PostCommentQueryRequest);
-
-                return {
-                    success: code === 0,
-                    data: data?.records || [],
-                    total: data?.total || 0,
-                };
-            }}
-            columns={columns}
-        />
+        <>
+            <ProTable<API.PostCommentVO, any>
+                headerTitle={'评论列表'}
+                actionRef={actionRef}
+                rowKey={'id'}
+                search={{
+                    labelWidth: 120,
+                }}
+                request={async (params, sort, filter) => {
+                    return await wrapProTableRequest(
+                        listPostCommentByPage,
+                        params,
+                        sort,
+                        filter,
+                    );
+                }}
+                columns={columns}
+                rowSelection={{
+                    onChange: (_, selectedRows) => {
+                        setSelectedRows(selectedRows);
+                    },
+                }}
+            />
+            {selectedRowsState?.length > 0 && (
+                <FooterToolbar
+                    extra={
+                        <div>
+                            已选择 <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a> 项
+                        </div>
+                    }
+                >
+                    <Popconfirm
+                        title="确定删除？"
+                        description="删除后将无法恢复?"
+                        okText="确定"
+                        cancelText="取消"
+                        onConfirm={async () => {
+                            await handleBatchDelete(deletePostComment, selectedRowsState, '批量删除成功', actionRef, setSelectedRows);
+                        }}
+                    >
+                        <Button danger type="primary">
+                            批量删除
+                        </Button>
+                    </Popconfirm>
+                </FooterToolbar>
+            )}
+        </>
     );
 };
 export default CommentList;

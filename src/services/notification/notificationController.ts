@@ -62,6 +62,21 @@ export async function batchMarkRead(
   });
 }
 
+/** 广播通知（管理员） POST /notification/broadcast */
+export async function adminBroadcast(
+  body: API.NotificationBroadcastRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean>('/notification/broadcast', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 删除通知 删除指定通知，仅本人或管理员可操作 POST /notification/delete */
 export async function deleteNotification(
   body: API.DeleteRequest,

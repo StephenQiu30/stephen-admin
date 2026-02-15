@@ -128,6 +128,13 @@ declare namespace API {
     ids?: number[];
   };
 
+  type NotificationBroadcastRequest = {
+    /** 通知标题 */
+    title?: string;
+    /** 通知内容 */
+    content?: string;
+  };
+
   type NotificationQueryRequest = {
     /** 当前页号 */
     current?: number;
@@ -196,6 +203,8 @@ declare namespace API {
     relatedType?: string;
     /** 是否已读 */
     isRead?: number;
+    /** 业务幂等 ID */
+    bizId?: string;
     /** 创建时间 */
     createTime?: string;
     /** 更新时间 */

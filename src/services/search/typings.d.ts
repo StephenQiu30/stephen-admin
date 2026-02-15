@@ -172,6 +172,10 @@ declare namespace API {
     title?: string;
     content?: string;
     type?: string;
+    bizId?: string;
+    relatedId?: number;
+    relatedType?: string;
+    isRead?: number;
     status?: number;
   };
 

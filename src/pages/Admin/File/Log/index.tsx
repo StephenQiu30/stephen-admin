@@ -1,65 +1,8 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { message, Popconfirm } from 'antd';
+import { message, Popconfirm, Tag } from 'antd';
 import React, { useRef } from 'react';
 import { deleteRecord } from '@/services/log/fileUploadRecordController';
 import { searchFileUploadRecordByPage } from '@/services/search/searchController';
-import { SortOrder } from 'antd/lib/table/interface';
-
-/**
- * 驼峰转蛇形命名
- */
-const camelToSnake = (str: string) => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-};
-
-/**
- * 通用 ProTable request 封装
- */
-const wrapProTableRequest = async <U,>(
-  serviceApi: (params: U) => Promise<any>,
-  params: any,
-  sort: Record<string, SortOrder>,
-  filter: any,
-  defaultSortField: string = 'update_time',
-  options?: { isEs?: boolean },
-) => {
-  const sortFieldCamel = Object.keys(sort)?.[0] || defaultSortField;
-  const sortOrder = sort?.[sortFieldCamel] === 'ascend' ? 'ascend' : 'descend';
-  const sortField = options?.isEs ? sortFieldCamel : camelToSnake(sortFieldCamel);
-  const { data, code } = await serviceApi({
-    ...params,
-    ...filter,
-    sortField,
-    sortOrder,
-  } as any);
-  return {
-    success: code === 0,
-    data: data?.records || [],
-    total: Number(data?.total) || 0,
-  };
-};
-
-/**
- * 通用操作处理
- */
-const handleOperation = async (action: () => Promise<any>, successText: string = '操作成功') => {
-  const hide = message.loading('正在处理');
-  try {
-    const res = await action();
-    if (res.code === 0) {
-      message.success(successText);
-      return true;
-    } else {
-      message.error(`操作失败: ${res.message || '未知错误'}`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`操作失败: ${error.message || '网络错误'}`);
-    return false;
-  } finally {
-    hide();
-  }
-};
 
 /**
  * 文件日志页面
@@ -72,13 +15,22 @@ const FileLog: React.FC = () => {
    * 删除文件记录
    * @param record
    */
-  const handleDelete = async (record: API.FileUploadRecordVO) => {
-    if (!record.id) return true;
-    const success = await handleOperation(() => deleteRecord({ id: record.id }), '删除成功');
-    if (success) {
-      actionRef.current?.reload();
+  const handleDeleteRecord = async (record: API.FileUploadRecordVO) => {
+    const hide = message.loading('正在删除');
+    if (!record) return true;
+    try {
+      await deleteRecord({
+        id: record.id as any,
+      });
+      hide();
+      message.success('删除成功');
+      actionRef?.current?.reload();
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error(`删除失败: ${error.message}`);
+      return false;
     }
-    return success;
   };
 
   const columns: ProColumns<API.FileUploadRecordVO>[] = [
@@ -88,6 +40,7 @@ const FileLog: React.FC = () => {
       valueType: 'text',
       hideInForm: true,
       width: 150,
+      copyable: true,
     },
     {
       title: '文件名',
@@ -96,8 +49,9 @@ const FileLog: React.FC = () => {
     },
     {
       title: '文件类型',
-      dataIndex: 'fileType',
+      dataIndex: 'fileSuffix',
       valueType: 'text',
+      render: (_, record) => <Tag color="blue">{record.fileSuffix}</Tag>,
     },
     {
       title: '文件大小 (Bytes)',
@@ -120,12 +74,15 @@ const FileLog: React.FC = () => {
       title: '上传者 ID',
       dataIndex: 'userId',
       valueType: 'text',
+      copyable: true,
+      width: 150,
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
       valueType: 'dateTime',
-      hideInSearch: true,
+      hideInForm: true,
+      width: 180,
       sorter: true,
     },
     {
@@ -136,7 +93,7 @@ const FileLog: React.FC = () => {
         <Popconfirm
           key="delete"
           title="确认删除该记录？"
-          onConfirm={() => handleDelete(record)}
+          onConfirm={() => handleDeleteRecord(record)}
           okText="是"
           cancelText="否"
         >
@@ -155,14 +112,21 @@ const FileLog: React.FC = () => {
         labelWidth: 120,
       }}
       request={async (params, sort, filter) => {
-        return await wrapProTableRequest(
-          searchFileUploadRecordByPage,
-          params,
-          sort,
-          filter,
-          'createTime',
-          { isEs: true },
-        );
+        const sortField = Object.keys(sort)?.[0] || 'createTime';
+        const sortOrder = sort?.[sortField] ?? 'descend';
+
+        const { data, code } = await searchFileUploadRecordByPage({
+          ...params,
+          ...filter,
+          sortField,
+          sortOrder,
+        } as any);
+
+        return {
+          success: code === 0,
+          data: data?.records || [],
+          total: Number(data?.total) || 0,
+        };
       }}
       columns={columns}
     />

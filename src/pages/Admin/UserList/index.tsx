@@ -5,108 +5,6 @@ import React, { useRef, useState } from 'react';
 import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
 import { CreateUserModal, UpdateUserModal } from '@/pages/Admin/UserList/components';
 import { deleteUser, listUserByPage } from '@/services/user/userController';
-import { SortOrder } from 'antd/lib/table/interface';
-
-/**
- * 驼峰转蛇形命名
- * @param str
- */
-const camelToSnake = (str: string) => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-};
-
-/**
- * 通用 ProTable request 封装
- */
-const wrapProTableRequest = async <U,>(
-  serviceApi: (params: U) => Promise<any>,
-  params: any,
-  sort: Record<string, SortOrder>,
-  filter: any,
-  defaultSortField: string = 'update_time',
-  options?: { isEs?: boolean },
-) => {
-  const sortFieldCamel = Object.keys(sort)?.[0] || defaultSortField;
-  const sortOrder = sort?.[sortFieldCamel] === 'ascend' ? 'ascend' : 'descend';
-  const sortField = options?.isEs ? sortFieldCamel : camelToSnake(sortFieldCamel);
-  const { data, code } = await serviceApi({
-    ...params,
-    ...filter,
-    sortField,
-    sortOrder,
-  } as any);
-  return {
-    success: code === 0,
-    data: data?.records || [],
-    total: Number(data?.total) || 0,
-  };
-};
-
-/**
- * 通用操作处理
- */
-const handleOperation = async (action: () => Promise<any>, successText: string = '操作成功') => {
-  const hide = message.loading('正在处理');
-  try {
-    const res = await action();
-    if (res.code === 0) {
-      message.success(successText);
-      return true;
-    } else {
-      message.error(`操作失败: ${res.message || '未知错误'}`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`操作失败: ${error.message || '网络错误'}`);
-    return false;
-  } finally {
-    hide();
-  }
-};
-
-/**
- * 通用删除处理
- */
-const handleDelete = async (
-  action: (params: { id: any }) => Promise<any>,
-  id: any,
-  successText: string = '删除成功',
-  actionRef?: React.MutableRefObject<ActionType | undefined>,
-) => {
-  if (!id) return false;
-  const success = await handleOperation(() => action({ id }), successText);
-  if (success && actionRef) {
-    actionRef.current?.reload();
-  }
-  return success;
-};
-
-/**
- * 通用批量删除处理
- */
-const handleBatchDelete = async <T extends { id?: any }>(
-  action: (params: { id: any }) => Promise<any>,
-  selectedRows: T[],
-  successText: string = '批量删除成功',
-  actionRef?: React.MutableRefObject<ActionType | undefined>,
-  setSelectedRows?: (rows: T[]) => void,
-) => {
-  if (!selectedRows || selectedRows.length === 0) return false;
-  const success = await handleOperation(async () => {
-    await Promise.all(
-      selectedRows.map(async (row) => {
-        await action({ id: row.id });
-      }),
-    );
-    return { code: 0, data: true };
-  }, successText);
-
-  if (success) {
-    actionRef?.current?.reloadAndRest?.();
-    setSelectedRows?.([]);
-  }
-  return success;
-};
 
 /**
  * 用户管理列表
@@ -121,6 +19,58 @@ const UserList: React.FC = () => {
   // 当前用户的所点击的数据
   const [currentRow, setCurrentRow] = useState<API.User>();
   const [selectedRowsState, setSelectedRows] = useState<API.User[]>([]);
+
+  /**
+   * 删除节点
+   *
+   * @param row
+   */
+  const handleDelete = async (row: API.User) => {
+    const hide = message.loading('正在删除');
+    if (!row) return true;
+    try {
+      await deleteUser({
+        id: row.id as any,
+      });
+      hide();
+      message.success('删除成功');
+      actionRef?.current?.reload();
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error(`删除失败: ${error.message}`);
+      return false;
+    }
+  };
+
+  /**
+   * 批量删除节点
+   *
+   * @param selectedRows
+   */
+  const handleBatchDelete = async (selectedRows: API.User[]) => {
+    const hide = message.loading('正在删除');
+    if (!selectedRows) return true;
+    try {
+      // 假设有 batchDeleteUser 接口，如果没有则需要循环调用 deleteUser
+      // 检查 userController 发现没有 batchDeleteUser，只有 deleteUser
+      // 所以这里需要循环调用
+      await Promise.all(
+        selectedRows.map(async (row) => {
+          await deleteUser({ id: row.id as any });
+        }),
+      );
+      hide();
+      message.success('批量删除成功');
+      actionRef.current?.reloadAndRest?.();
+      setSelectedRows([]);
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error(`批量删除失败: ${error.message}`);
+      return false;
+    }
+  };
 
   /**
    * 表格列数据
@@ -247,13 +197,12 @@ const UserList: React.FC = () => {
     },
     {
       title: '创建时间',
-      sorter: true,
       dataIndex: 'createTime',
       valueType: 'dateTime',
-      hideInSearch: true,
       hideInForm: true,
       width: 160,
       responsive: ['xxl'],
+      sorter: true,
     },
     {
       title: '更新时间',
@@ -289,7 +238,7 @@ const UserList: React.FC = () => {
             okText="确定"
             cancelText="取消"
             onConfirm={async () => {
-              await handleDelete(deleteUser, record.id, '删除成功', actionRef);
+              await handleDelete(record);
             }}
           >
             <Typography.Link key={'delete'} type={'danger'}>
@@ -328,13 +277,7 @@ const UserList: React.FC = () => {
                 danger
                 key="batchDelete"
                 onClick={() => {
-                  handleBatchDelete(
-                    deleteUser,
-                    selectedRowsState,
-                    '批量删除成功',
-                    actionRef,
-                    setSelectedRows,
-                  );
+                  handleBatchDelete(selectedRowsState);
                 }}
               >
                 批量删除
@@ -343,7 +286,22 @@ const UserList: React.FC = () => {
           </Space>,
         ]}
         request={async (params, sort, filter) => {
-          return await wrapProTableRequest(listUserByPage, params, sort, filter);
+          const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
+          const sortField = sortFieldCamel.replace(/([A-Z])/g, '_$1').toLowerCase();
+          const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+
+          const { data, code } = await listUserByPage({
+            ...params,
+            ...filter,
+            sortField,
+            sortOrder,
+          } as any);
+
+          return {
+            success: code === 0,
+            data: data?.records || [],
+            total: Number(data?.total) || 0,
+          };
         }}
         columns={columns}
         rowSelection={{

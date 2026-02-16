@@ -5,112 +5,61 @@ import { deletePostComment, listPostCommentByPage } from '@/services/post/postCo
 import { SortOrder } from 'antd/lib/table/interface';
 
 /**
- * 驼峰转蛇形命名
- */
-const camelToSnake = (str: string) => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-};
-
-/**
- * 通用 ProTable request 封装
- */
-const wrapProTableRequest = async <U,>(
-  serviceApi: (params: U) => Promise<any>,
-  params: any,
-  sort: Record<string, SortOrder>,
-  filter: any,
-  defaultSortField: string = 'update_time',
-  options?: { isEs?: boolean },
-) => {
-  const sortFieldCamel = Object.keys(sort)?.[0] || defaultSortField;
-  const sortOrder = sort?.[sortFieldCamel] === 'ascend' ? 'ascend' : 'descend';
-  const sortField = options?.isEs ? sortFieldCamel : camelToSnake(sortFieldCamel);
-  const { data, code } = await serviceApi({
-    ...params,
-    ...filter,
-    sortField,
-    sortOrder,
-  } as any);
-  return {
-    success: code === 0,
-    data: data?.records || [],
-    total: Number(data?.total) || 0,
-  };
-};
-
-/**
- * 通用操作处理
- */
-const handleOperation = async (action: () => Promise<any>, successText: string = '操作成功') => {
-  const hide = message.loading('正在处理');
-  try {
-    const res = await action();
-    if (res.code === 0) {
-      message.success(successText);
-      return true;
-    } else {
-      message.error(`操作失败: ${res.message || '未知错误'}`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`操作失败: ${error.message || '网络错误'}`);
-    return false;
-  } finally {
-    hide();
-  }
-};
-
-/**
- * 通用删除处理
- */
-const handleDelete = async (
-  action: (params: { id: any }) => Promise<any>,
-  id: any,
-  successText: string = '删除成功',
-  actionRef?: React.MutableRefObject<ActionType | undefined>,
-) => {
-  if (!id) return false;
-  const success = await handleOperation(() => action({ id }), successText);
-  if (success && actionRef) {
-    actionRef.current?.reload();
-  }
-  return success;
-};
-
-/**
- * 通用批量删除处理
- */
-const handleBatchDelete = async <T extends { id?: any }>(
-  action: (params: { id: any }) => Promise<any>,
-  selectedRows: T[],
-  successText: string = '批量删除成功',
-  actionRef?: React.MutableRefObject<ActionType | undefined>,
-  setSelectedRows?: (rows: T[]) => void,
-) => {
-  if (!selectedRows || selectedRows.length === 0) return false;
-  const success = await handleOperation(async () => {
-    await Promise.all(
-      selectedRows.map(async (row) => {
-        await action({ id: row.id });
-      }),
-    );
-    return { code: 0, data: true };
-  }, successText);
-
-  if (success) {
-    actionRef?.current?.reloadAndRest?.();
-    setSelectedRows?.([]);
-  }
-  return success;
-};
-
-/**
  * 评论管理列表
  * @constructor
  */
 const CommentList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<API.PostCommentVO[]>([]);
+
+  /**
+   * 删除节点
+   *
+   * @param row
+   */
+  const handleDelete = async (row: API.PostCommentVO) => {
+    const hide = message.loading('正在删除');
+    if (!row) return true;
+    try {
+      await deletePostComment({
+        id: row.id as any,
+      });
+      hide();
+      message.success('删除成功');
+      actionRef?.current?.reload();
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error(`删除失败: ${error.message}`);
+      return false;
+    }
+  };
+
+  /**
+   * 批量删除节点
+   *
+   * @param selectedRows
+   */
+  const handleBatchDelete = async (selectedRows: API.PostCommentVO[]) => {
+    const hide = message.loading('正在删除');
+    if (!selectedRows) return true;
+    try {
+      await Promise.all(
+        selectedRows.map(async (row) => {
+          await deletePostComment({ id: row.id as any });
+        }),
+      );
+      hide();
+      message.success('批量删除成功');
+      actionRef.current?.reloadAndRest?.();
+      setSelectedRows([]);
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error(`批量删除失败: ${error.message}`);
+      return false;
+    }
+  };
 
   /**
    * 表格列数据
@@ -152,11 +101,11 @@ const CommentList: React.FC = () => {
     },
     {
       title: '创建时间',
-      sorter: true,
       dataIndex: 'createTime',
       valueType: 'dateTime',
       hideInForm: true,
       width: 180,
+      sorter: true,
     },
     {
       title: '操作',
@@ -171,7 +120,7 @@ const CommentList: React.FC = () => {
             okText="确定"
             cancelText="取消"
             onConfirm={async () => {
-              await handleDelete(deletePostComment, record.id, '删除成功', actionRef);
+              await handleDelete(record);
             }}
           >
             <Typography.Link key={'delete'} type={'danger'}>
@@ -193,7 +142,22 @@ const CommentList: React.FC = () => {
           labelWidth: 120,
         }}
         request={async (params, sort, filter) => {
-          return await wrapProTableRequest(listPostCommentByPage, params, sort, filter);
+          const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
+          const sortField = sortFieldCamel.replace(/([A-Z])/g, '_$1').toLowerCase();
+          const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+
+          const { data, code } = await listPostCommentByPage({
+            ...params,
+            ...filter,
+            sortField,
+            sortOrder,
+          } as any);
+
+          return {
+            success: code === 0,
+            data: data?.records || [],
+            total: Number(data?.total) || 0,
+          };
         }}
         columns={columns}
         rowSelection={{
@@ -216,13 +180,7 @@ const CommentList: React.FC = () => {
             okText="确定"
             cancelText="取消"
             onConfirm={async () => {
-              await handleBatchDelete(
-                deletePostComment,
-                selectedRowsState,
-                '批量删除成功',
-                actionRef,
-                setSelectedRows,
-              );
+              await handleBatchDelete(selectedRowsState);
             }}
           >
             <Button danger type="primary">

@@ -1,7 +1,17 @@
-import { ModalForm, ProFormSelect, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
-import { message } from 'antd';
+import {
+  ModalForm,
+  ProFormRadio,
+  ProFormSelect,
+  ProFormText,
+  ProFormTextArea,
+  ProFormDependency,
+} from '@ant-design/pro-components';
 import React from 'react';
-import { addNotification } from '@/services/notification/notificationController';
+import { adminBroadcast, addNotification } from '@/services/notification/notificationController';
+import { listUserVoByPage } from '@/services/user/userController';
+import { ProForm } from '@ant-design/pro-components';
+import { NotificationTypeEnum, NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
+import { message } from 'antd';
 
 interface Props {
   onCancel: () => void;
@@ -9,41 +19,53 @@ interface Props {
   onSubmit: () => Promise<void>;
 }
 
-/**
- * 发送通知
- * @param values
- */
-const handleAdd = async (values: API.NotificationAddRequest) => {
-  const hide = message.loading('正在发送...');
-  try {
-    const res = await addNotification(values);
-    if (res.code === 0 && res.data) {
-      message.success('发送成功');
-      return true;
-    } else {
-      message.error(`发送失败${res.message}`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`发送失败${error.message}`);
-    return false;
-  } finally {
-    hide();
-  }
-};
-
 const CreateNotificationModal: React.FC<Props> = (props) => {
   const { visible, onCancel, onSubmit } = props;
 
   return (
     <ModalForm
       open={visible}
-      title={'发送系统通知'}
-      onFinish={async (values) => {
-        const success = await handleAdd(values);
+      title={'创建通知'}
+      onFinish={async (values: any) => {
+        const { sendMode, ...rest } = values;
+        const hide = message.loading('正在处理');
+        let success = false;
+        try {
+          // 确保 type 存在
+          if (!rest.type) {
+            rest.type = NotificationTypeEnum.SYSTEM;
+          }
+          // 自动生成 bizId
+          if (!rest.bizId) {
+            rest.bizId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          }
+          if (sendMode === 'broadcast') {
+            const res = await adminBroadcast({ title: rest.title, content: rest.content });
+            if (res.code === 0) {
+              message.success('广播成功');
+              success = true;
+            } else {
+              message.error(`广播失败: ${res.message}`);
+            }
+          } else {
+            const res = await addNotification(rest);
+            if (res.code === 0) {
+              message.success('发送成功');
+              success = true;
+            } else {
+              message.error(`发送失败: ${res.message}`);
+            }
+          }
+        } catch (error: any) {
+          message.error(`操作失败: ${error.message}`);
+        } finally {
+          hide();
+        }
+
         if (success) {
           onSubmit?.();
         }
+        return success;
       }}
       modalProps={{
         destroyOnClose: true,
@@ -51,7 +73,20 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
           onCancel?.();
         },
       }}
+      initialValues={{
+        sendMode: 'individual',
+        type: NotificationTypeEnum.SYSTEM,
+      }}
     >
+      <ProFormRadio.Group
+        name="sendMode"
+        label="发送模式"
+        options={[
+          { label: '个人通知', value: 'individual' },
+          { label: '系统广播', value: 'broadcast' },
+        ]}
+        rules={[{ required: true }]}
+      />
       <ProFormText
         name="title"
         label="通知标题"
@@ -62,23 +97,53 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
         label="通知内容"
         rules={[{ required: true, message: '请输入内容' }]}
       />
-      <ProFormSelect
-        name="type"
-        label="通知类型"
-        valueEnum={{
-          SYSTEM: '系统通知',
-          POST: '帖子通知',
-          COMMENT: '评论通知',
-        }}
-        rules={[{ required: true, message: '请选择类型' }]}
-      />
-      <ProFormText
-        name="userId"
-        label="接收用户ID"
-        placeholder="输入接收人的用户ID（不填可能代表系统公告）"
-      />
-      <ProFormText name="relatedType" label="关联类型" placeholder="例如：POST, COMMENT" />
-      <ProFormText name="relatedId" label="关联ID" placeholder="关联对象的唯一标识" />
+      <ProForm.Group>
+        <ProFormDependency name={['sendMode']}>
+          {({ sendMode }) => {
+            if (sendMode === 'broadcast') return null;
+            return (
+              <>
+                <ProFormSelect
+                  name="type"
+                  label="通知类型"
+                  valueEnum={NotificationTypeEnumMap}
+                  rules={[{ required: true, message: '请选择类型' }]}
+                />
+                <ProFormSelect
+                  name="userId"
+                  label="接收用户"
+                  showSearch
+                  debounceTime={500}
+                  placeholder="搜索并选择用户"
+                  request={async ({ keywords }) => {
+                    const res = await listUserVoByPage({
+                      userName: keywords,
+                      current: 1,
+                      pageSize: 10,
+                    });
+                    return (res.data?.records || []).map((u: any) => ({
+                      label: `${u.userName} (${u.userAccount})`,
+                      value: u.id,
+                    }));
+                  }}
+                  rules={[{ required: true, message: '请选择接收用户' }]}
+                />
+                <ProFormSelect
+                  name="relatedType"
+                  label="关联类型"
+                  options={[
+                    { label: '无', value: '' },
+                    { label: '帖子', value: 'post' },
+                    { label: '评论', value: NotificationTypeEnum.COMMENT },
+                    { label: '系统', value: NotificationTypeEnum.SYSTEM },
+                  ]}
+                />
+                <ProFormText name="relatedId" label="关联ID" placeholder="关联对象的唯一标识" />
+              </>
+            );
+          }}
+        </ProFormDependency>
+      </ProForm.Group>
     </ModalForm>
   );
 };

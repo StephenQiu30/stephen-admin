@@ -5,79 +5,17 @@ import {
   batchMarkRead,
   deleteNotification,
   listNotificationByPageAdmin,
+  batchDeleteNotification,
 } from '@/services/notification/notificationController';
-import CreateNotificationModal from './components/CreateNotificationModal';
 import UpdateNotificationModal from './components/UpdateNotificationModal';
-import { SortOrder } from 'antd/lib/table/interface';
-
-/**
- * 驼峰转蛇形命名
- */
-const camelToSnake = (str: string) => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-};
-
-/**
- * 通用 ProTable request 封装
- */
-const wrapProTableRequest = async <U,>(
-  serviceApi: (params: U) => Promise<any>,
-  params: any,
-  sort: Record<string, SortOrder>,
-  filter: any,
-  defaultSortField: string = 'update_time',
-  options?: { isEs?: boolean },
-) => {
-  const sortFieldCamel = Object.keys(sort)?.[0] || defaultSortField;
-  const sortOrder = sort?.[sortFieldCamel] === 'ascend' ? 'ascend' : 'descend';
-  const sortField = options?.isEs ? sortFieldCamel : camelToSnake(sortFieldCamel);
-  const { data, code } = await serviceApi({
-    ...params,
-    ...filter,
-    sortField,
-    sortOrder,
-  } as any);
-  return {
-    success: code === 0,
-    data: data?.records || [],
-    total: Number(data?.total) || 0,
-  };
-};
-
-/**
- * 通用操作处理
- */
-const handleOperation = async (action: () => Promise<any>, successText: string = '操作成功') => {
-  const hide = message.loading('正在处理');
-  try {
-    const res = await action();
-    if (res.code === 0) {
-      message.success(successText);
-      return true;
-    } else {
-      message.error(`操作失败: ${res.message || '未知错误'}`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`操作失败: ${error.message || '网络错误'}`);
-    return false;
-  } finally {
-    hide();
-  }
-};
-/**
- * 删除节点
- *
- * @param row
- */
-const handleDelete = async (row: API.DeleteRequest) => {
-  if (!row) return true;
-  return await handleOperation(() => deleteNotification({ id: row.id }), '删除成功');
-};
+import SendNotificationModal from './components/SendNotificationModal';
+import BroadcastNotificationModal from './components/BroadcastNotificationModal';
 
 const NotificationList: React.FC = () => {
-  // 新建窗口的Modal框
-  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+  // 发送通知 Modal
+  const [sendModalVisible, setSendModalVisible] = useState<boolean>(false);
+  // 系统广播 Modal
+  const [broadcastModalVisible, setBroadcastModalVisible] = useState<boolean>(false);
   // 更新窗口的Modal框
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
@@ -85,43 +23,71 @@ const NotificationList: React.FC = () => {
   const [selectedRowsState, setSelectedRows] = useState<API.Notification[]>([]);
 
   /**
-   * 批量删除
-   * @param selectedRows
-   */
-  const handleBatchDelete = async (selectedRows: API.Notification[]) => {
-    if (!selectedRows) return true;
-    const success = await handleOperation(async () => {
-      await Promise.all(
-        selectedRows.map(async (row) => {
-          await deleteNotification({
-            id: row.id,
-          });
-        }),
-      );
-      return { code: 0, data: true };
-    }, '批量删除成功');
-
-    if (success) {
-      actionRef.current?.reloadAndRest?.();
-      setSelectedRows([]);
-    }
-  };
-
-  /**
    * 批量已读
    * @param selectedRows
    */
   const handleBatchRead = async (selectedRows: API.Notification[]) => {
+    const hide = message.loading('正在处理');
     if (!selectedRows) return true;
-    const ids = selectedRows.map((row) => row.id!);
-    const success = await handleOperation(async () => {
+    try {
+      const ids = selectedRows.map((row) => row.id!);
       await batchMarkRead({ ids });
-      return { code: 0, data: true };
-    }, '批量已读成功');
-
-    if (success) {
+      message.success('批量已读成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);
+      return true;
+    } catch (error: any) {
+      message.error(`批量已读失败: ${error.message}`);
+      return false;
+    } finally {
+      hide();
+    }
+  };
+
+  /**
+   * 删除节点
+   *
+   * @param row
+   */
+  const handleDelete = async (row: API.Notification) => {
+    const hide = message.loading('正在删除');
+    if (!row) return true;
+    try {
+      await deleteNotification({
+        id: row.id as any,
+      });
+      hide();
+      message.success('删除成功');
+      actionRef?.current?.reload();
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error(`删除失败: ${error.message}`);
+      return false;
+    }
+  };
+
+  /**
+   * 批量删除节点
+   *
+   * @param selectedRows
+   */
+  const handleBatchDelete = async (selectedRows: API.Notification[]) => {
+    const hide = message.loading('正在删除');
+    if (!selectedRows) return true;
+    try {
+      await batchDeleteNotification({
+        ids: selectedRows.map((row) => row.id!),
+      });
+      hide();
+      message.success('批量删除成功');
+      actionRef.current?.reloadAndRest?.();
+      setSelectedRows([]);
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error(`批量删除失败: ${error.message}`);
+      return false;
     }
   };
 
@@ -143,6 +109,7 @@ const NotificationList: React.FC = () => {
       dataIndex: 'title',
       valueType: 'text',
       ellipsis: true,
+      width: 200,
     },
     {
       title: '内容',
@@ -159,12 +126,14 @@ const NotificationList: React.FC = () => {
         POST: { text: '帖子通知', status: 'Success' },
         COMMENT: { text: '评论通知', status: 'Warning' },
       },
+      width: 100,
     },
     {
       title: '接收用户ID',
       dataIndex: 'userId',
       valueType: 'text',
       width: 120,
+      copyable: true,
     },
     {
       title: '已读状态',
@@ -174,33 +143,36 @@ const NotificationList: React.FC = () => {
         0: { text: '未读', status: 'Error' },
         1: { text: '已读', status: 'Success' },
       },
+      width: 100,
     },
     {
       title: '关联类型',
       dataIndex: 'relatedType',
       valueType: 'text',
       responsive: ['md'],
+      width: 100,
     },
     {
       title: '关联ID',
       dataIndex: 'relatedId',
       valueType: 'text',
       responsive: ['md'],
+      width: 100,
     },
     {
       title: '创建时间',
-      sorter: true,
       dataIndex: 'createTime',
       valueType: 'dateTime',
-      hideInSearch: true,
       hideInForm: true,
-      width: 180,
+      width: 160,
+      sorter: true,
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
       width: 120,
+      fixed: 'right',
       render: (_, record) => (
         <Space size={'middle'}>
           <Typography.Link
@@ -219,7 +191,6 @@ const NotificationList: React.FC = () => {
             cancelText="取消"
             onConfirm={async () => {
               await handleDelete(record);
-              actionRef.current?.reload();
             }}
           >
             <Typography.Link key={'delete'} type={'danger'}>
@@ -243,16 +214,40 @@ const NotificationList: React.FC = () => {
         toolBarRender={() => [
           <Button
             type="primary"
-            key="primary"
+            key="send"
             onClick={() => {
-              setCreateModalVisible(true);
+              setSendModalVisible(true);
             }}
           >
             发送通知
           </Button>,
+          <Button
+            type="primary"
+            key="broadcast"
+            onClick={() => {
+              setBroadcastModalVisible(true);
+            }}
+          >
+            系统广播
+          </Button>,
         ]}
         request={async (params, sort, filter) => {
-          return await wrapProTableRequest(listNotificationByPageAdmin, params, sort, filter);
+          const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
+          const sortField = sortFieldCamel.replace(/([A-Z])/g, '_$1').toLowerCase();
+          const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+
+          const { data, code } = await listNotificationByPageAdmin({
+            ...params,
+            ...filter,
+            sortField,
+            sortOrder,
+          } as any);
+
+          return {
+            success: code === 0,
+            data: data?.records || [],
+            total: Number(data?.total) || 0,
+          };
         }}
         columns={columns}
         rowSelection={{
@@ -295,11 +290,19 @@ const NotificationList: React.FC = () => {
           </Popconfirm>
         </FooterToolbar>
       )}
-      <CreateNotificationModal
-        visible={createModalVisible}
-        onCancel={() => setCreateModalVisible(false)}
-        onSubmit={async () => {
-          setCreateModalVisible(false);
+      <SendNotificationModal
+        visible={sendModalVisible}
+        onCancel={() => setSendModalVisible(false)}
+        onSubmit={() => {
+          setSendModalVisible(false);
+          actionRef.current?.reload();
+        }}
+      />
+      <BroadcastNotificationModal
+        visible={broadcastModalVisible}
+        onCancel={() => setBroadcastModalVisible(false)}
+        onSubmit={() => {
+          setBroadcastModalVisible(false);
           actionRef.current?.reload();
         }}
       />

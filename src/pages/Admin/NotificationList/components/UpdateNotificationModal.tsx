@@ -1,7 +1,13 @@
-import { ModalForm, ProFormSelect, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
-import { message } from 'antd';
+import {
+  ModalForm,
+  ProFormSelect,
+  ProFormText,
+  ProFormTextArea,
+} from '@ant-design/pro-components';
 import React from 'react';
 import { updateNotification } from '@/services/notification/notificationController';
+import { listUserVoByPage } from '@/services/user/userController';
+import { message } from 'antd';
 
 interface Props {
   oldData?: API.Notification;
@@ -9,30 +15,6 @@ interface Props {
   onSubmit: () => Promise<void>;
   visible: boolean;
 }
-
-/**
- * 更新通知
- *
- * @param fields
- */
-const handleUpdate = async (fields: API.NotificationUpdateRequest) => {
-  const hide = message.loading('正在更新');
-  try {
-    const res = await updateNotification(fields);
-    if (res.code === 0 && res.data) {
-      message.success('更新成功');
-      return true;
-    } else {
-      message.error(`更新失败${res.message}, 请重试!`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`更新失败${error.message}, 请重试!`);
-    return false;
-  } finally {
-    hide();
-  }
-};
 
 const UpdateNotificationModal: React.FC<Props> = (props) => {
   const { oldData, visible, onSubmit, onCancel } = props;
@@ -47,13 +29,29 @@ const UpdateNotificationModal: React.FC<Props> = (props) => {
       open={visible}
       initialValues={oldData}
       onFinish={async (values) => {
-        const success = await handleUpdate({
-          ...values,
-          id: oldData.id,
-        });
+        const hide = message.loading('正在更新');
+        let success = false;
+        try {
+          const res = await updateNotification({
+            ...values,
+            id: oldData.id,
+          });
+          if (res.code === 0) {
+            message.success('更新成功');
+            success = true;
+          } else {
+            message.error(`更新失败: ${res.message}`);
+          }
+        } catch (error: any) {
+          message.error(`更新失败: ${error.message}`);
+        } finally {
+          hide();
+        }
+
         if (success) {
           onSubmit?.();
         }
+        return success;
       }}
       modalProps={{
         destroyOnClose: true,
@@ -82,8 +80,35 @@ const UpdateNotificationModal: React.FC<Props> = (props) => {
         }}
         rules={[{ required: true, message: '请选择类型' }]}
       />
-      <ProFormText name="userId" label="接收用户ID" />
-      <ProFormText name="relatedType" label="关联类型" />
+      <ProFormSelect
+        name="userId"
+        label="接收用户"
+        showSearch
+        debounceTime={500}
+        placeholder="搜索并选择用户"
+        request={async ({ keywords }) => {
+          const res = await listUserVoByPage({
+            userName: keywords,
+            current: 1,
+            pageSize: 10,
+          });
+          return (res.data?.records || []).map((u: any) => ({
+            label: `${u.userName} (${u.userAccount})`,
+            value: u.id,
+          }));
+        }}
+        rules={[{ required: true, message: '请选择接收用户' }]}
+      />
+      <ProFormSelect
+        name="relatedType"
+        label="关联类型"
+        options={[
+          { label: '无', value: '' },
+          { label: '帖子', value: 'POST' },
+          { label: '评论', value: 'COMMENT' },
+          { label: '系统', value: 'SYSTEM' },
+        ]}
+      />
       <ProFormText name="relatedId" label="关联ID" />
     </ModalForm>
   );

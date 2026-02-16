@@ -8,107 +8,6 @@ import { deletePost, listPostByPage } from '@/services/post/postController';
 import { SortOrder } from 'antd/lib/table/interface';
 
 /**
- * 驼峰转蛇形命名
- * @param str
- */
-const camelToSnake = (str: string) => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-};
-
-/**
- * 通用 ProTable request 封装
- */
-const wrapProTableRequest = async <U,>(
-  serviceApi: (params: U) => Promise<any>,
-  params: any,
-  sort: Record<string, SortOrder>,
-  filter: any,
-  defaultSortField: string = 'update_time',
-  options?: { isEs?: boolean },
-) => {
-  const sortFieldCamel = Object.keys(sort)?.[0] || defaultSortField;
-  const sortOrder = sort?.[sortFieldCamel] === 'ascend' ? 'ascend' : 'descend';
-  const sortField = options?.isEs ? sortFieldCamel : camelToSnake(sortFieldCamel);
-  const { data, code } = await serviceApi({
-    ...params,
-    ...filter,
-    sortField,
-    sortOrder,
-  } as any);
-  return {
-    success: code === 0,
-    data: data?.records || [],
-    total: Number(data?.total) || 0,
-  };
-};
-
-/**
- * 通用操作处理
- */
-const handleOperation = async (action: () => Promise<any>, successText: string = '操作成功') => {
-  const hide = message.loading('正在处理');
-  try {
-    const res = await action();
-    if (res.code === 0) {
-      message.success(successText);
-      return true;
-    } else {
-      message.error(`操作失败: ${res.message || '未知错误'}`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`操作失败: ${error.message || '网络错误'}`);
-    return false;
-  } finally {
-    hide();
-  }
-};
-
-/**
- * 通用删除处理
- */
-const handleDelete = async (
-  action: (params: { id: any }) => Promise<any>,
-  id: any,
-  successText: string = '删除成功',
-  actionRef?: React.MutableRefObject<ActionType | undefined>,
-) => {
-  if (!id) return false;
-  const success = await handleOperation(() => action({ id }), successText);
-  if (success && actionRef) {
-    actionRef.current?.reload();
-  }
-  return success;
-};
-
-/**
- * 通用批量删除处理
- */
-const handleBatchDelete = async <T extends { id?: any }>(
-  action: (params: { id: any }) => Promise<any>,
-  selectedRows: T[],
-  successText: string = '批量删除成功',
-  actionRef?: React.MutableRefObject<ActionType | undefined>,
-  setSelectedRows?: (rows: T[]) => void,
-) => {
-  if (!selectedRows || selectedRows.length === 0) return false;
-  const success = await handleOperation(async () => {
-    await Promise.all(
-      selectedRows.map(async (row) => {
-        await action({ id: row.id });
-      }),
-    );
-    return { code: 0, data: true };
-  }, successText);
-
-  if (success) {
-    actionRef?.current?.reloadAndRest?.();
-    setSelectedRows?.([]);
-  }
-  return success;
-};
-
-/**
  * 用户管理列表
  * @constructor
  */
@@ -123,6 +22,55 @@ const PostList: React.FC = () => {
   // 当前用户的所点击的数据
   const [currentRow, setCurrentRow] = useState<API.PostVO>();
   const [selectedRowsState, setSelectedRows] = useState<API.PostVO[]>([]);
+
+  /**
+   * 删除节点
+   *
+   * @param row
+   */
+  const handleDelete = async (row: API.PostVO) => {
+    const hide = message.loading('正在删除');
+    if (!row) return true;
+    try {
+      await deletePost({
+        id: row.id as any,
+      });
+      hide();
+      message.success('删除成功');
+      actionRef?.current?.reload();
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error(`删除失败: ${error.message}`);
+      return false;
+    }
+  };
+
+  /**
+   * 批量删除节点
+   *
+   * @param selectedRows
+   */
+  const handleBatchDelete = async (selectedRows: API.PostVO[]) => {
+    const hide = message.loading('正在删除');
+    if (!selectedRows) return true;
+    try {
+      await Promise.all(
+        selectedRows.map(async (row) => {
+          await deletePost({ id: row.id as any });
+        }),
+      );
+      hide();
+      message.success('批量删除成功');
+      actionRef.current?.reloadAndRest?.();
+      setSelectedRows([]);
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error(`批量删除失败: ${error.message}`);
+      return false;
+    }
+  };
 
   /**
    * 表格列数据
@@ -178,27 +126,24 @@ const PostList: React.FC = () => {
       dataIndex: 'userId',
       valueType: 'text',
       responsive: ['md'],
-      render: (_, record) => (
-        <Space>
-          <span>{record.userId}</span>
-        </Space>
-      ),
+      copyable: true,
+      width: 120,
     },
     {
       title: '点赞数',
       dataIndex: 'thumbNum',
-      hideInSearch: true,
-      hideInForm: true,
+      valueType: 'digit',
       width: 80,
       responsive: ['lg'],
+      hideInSearch: true,
     },
     {
       title: '收藏数',
       dataIndex: 'favourNum',
-      hideInSearch: true,
-      hideInForm: true,
+      valueType: 'digit',
       width: 80,
       responsive: ['lg'],
+      hideInSearch: true,
     },
     {
       title: '标签',
@@ -239,16 +184,16 @@ const PostList: React.FC = () => {
         1: { text: '已删除', status: 'Error' },
       },
       hideInForm: true,
+      hideInSearch: true,
     },
     {
       title: '创建时间',
-      sorter: true,
       dataIndex: 'createTime',
       valueType: 'dateTime',
-      hideInSearch: true,
       hideInForm: true,
       width: 160,
       responsive: ['xxl'],
+      sorter: true,
     },
     {
       title: '更新时间',
@@ -294,7 +239,7 @@ const PostList: React.FC = () => {
             okText="确定"
             cancelText="取消"
             onConfirm={async () => {
-              await handleDelete(deletePost, record.id, '删除成功', actionRef);
+              await handleDelete(record);
             }}
           >
             <Typography.Link key={'delete'} type={'danger'}>
@@ -332,13 +277,7 @@ const PostList: React.FC = () => {
                 danger
                 key="batchDelete"
                 onClick={() => {
-                  handleBatchDelete(
-                    deletePost,
-                    selectedRowsState,
-                    '批量删除成功',
-                    actionRef,
-                    setSelectedRows,
-                  );
+                  handleBatchDelete(selectedRowsState);
                 }}
               >
                 批量删除
@@ -347,11 +286,27 @@ const PostList: React.FC = () => {
           </Space>,
         ]}
         request={async (params, sort, filter) => {
+          const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
+          const sortField = sortFieldCamel.replace(/([A-Z])/g, '_$1').toLowerCase();
+          const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+
           // 处理 tags 查询，将字符串转换为数组
           const paramsWithTags = params as API.PostQueryRequest & { tags?: string };
           const tags = paramsWithTags.tags ? [paramsWithTags.tags] : undefined;
 
-          return await wrapProTableRequest(listPostByPage, { ...params, tags }, sort, filter);
+          const { data, code } = await listPostByPage({
+            ...params,
+            ...filter,
+            tags,
+            sortField,
+            sortOrder,
+          } as any);
+
+          return {
+            success: code === 0,
+            data: data?.records || [],
+            total: Number(data?.total) || 0,
+          };
         }}
         columns={columns}
         rowSelection={{

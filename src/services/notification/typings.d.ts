@@ -106,14 +106,8 @@ declare namespace API {
     content?: string;
     /** 通知类型 */
     type?: string;
-    /** 业务幂等 ID */
-    bizId?: string;
     /** 接收用户 ID */
     userId?: number;
-    /** 关联对象 ID */
-    relatedId?: number;
-    /** 关联对象类型 */
-    relatedType?: string;
   };
 
   type NotificationBatchAddRequest = {
@@ -180,10 +174,6 @@ declare namespace API {
     type?: string;
     /** 接收用户 ID */
     userId?: number;
-    /** 关联对象 ID */
-    relatedId?: number;
-    /** 关联对象类型 */
-    relatedType?: string;
   };
 
   type NotificationVO = {

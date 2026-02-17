@@ -2,27 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 创建通知 POST /notification/add */
+/** 创建通知 创建新通知，支持智能推断目标和元数据 POST /notification/add */
 export async function addNotification(
   body: API.NotificationAddRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseLong>('/notification/add', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** 批量创建通知（管理员） POST /notification/batch/add */
-export async function batchAddNotification(
-  body: API.NotificationBatchAddRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseListLong>('/notification/batch/add', {
+  return request<API.BaseResponseListLong>('/notification/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -62,26 +47,8 @@ export async function batchMarkRead(
   });
 }
 
-/** 广播通知（管理员） POST /notification/broadcast */
-export async function adminBroadcast(
-  body: API.NotificationBroadcastRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseBoolean>('/notification/broadcast', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
 /** 删除通知 删除指定通知，仅本人或管理员可操作 POST /notification/delete */
-export async function deleteNotification(
-  body: API.DeleteRequest,
-  options?: { [key: string]: any },
-) {
+export async function deletePost(body: API.DeleteRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>('/notification/delete', {
     method: 'POST',
     headers: {
@@ -92,37 +59,7 @@ export async function deleteNotification(
   });
 }
 
-/** 根据 ID 获取通知 GET /notification/get */
-export async function getNotificationById(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.getNotificationByIdParams,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseNotificationVO>('/notification/get', {
-    method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  });
-}
-
-/** 根据 ID 获取通知实体（管理员） GET /notification/get/admin */
-export async function getNotificationEntityById(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.getNotificationEntityByIdParams,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseNotification>('/notification/get/admin', {
-    method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  });
-}
-
-/** 根据 ID 获取通知 VO GET /notification/get/vo */
+/** 根据 ID 获取通知 GET /notification/get/vo */
 export async function getNotificationVoById(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.getNotificationVOByIdParams,

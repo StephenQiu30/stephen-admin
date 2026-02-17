@@ -176,6 +176,7 @@ declare namespace API {
     relatedId?: number;
     relatedType?: string;
     isRead?: number;
+    contentUrl?: string;
     status?: number;
   };
 

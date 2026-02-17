@@ -8,6 +8,7 @@ import React from 'react';
 import { updateNotification } from '@/services/notification/notificationController';
 import { listUserVoByPage } from '@/services/user/userController';
 import { message } from 'antd';
+import { NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
 
 interface Props {
   oldData?: API.Notification;
@@ -73,11 +74,7 @@ const UpdateNotificationModal: React.FC<Props> = (props) => {
       <ProFormSelect
         name="type"
         label="通知类型"
-        valueEnum={{
-          SYSTEM: '系统通知',
-          POST: '帖子通知',
-          COMMENT: '评论通知',
-        }}
+        valueEnum={NotificationTypeEnumMap}
         rules={[{ required: true, message: '请选择类型' }]}
       />
       <ProFormSelect

@@ -7,10 +7,9 @@ import {
   ProFormDependency,
 } from '@ant-design/pro-components';
 import React from 'react';
-import { adminBroadcast, addNotification } from '@/services/notification/notificationController';
+import { addNotification } from '@/services/notification/notificationController';
 import { listUserVoByPage } from '@/services/user/userController';
 import { ProForm } from '@ant-design/pro-components';
-import { NotificationTypeEnum, NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
 import { message } from 'antd';
 
 interface Props {
@@ -31,35 +30,28 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
         const hide = message.loading('正在处理');
         let success = false;
         try {
-          // 确保 type 存在
-          if (!rest.type) {
-            rest.type = NotificationTypeEnum.SYSTEM;
-          }
-          // 自动生成 bizId
-          if (!rest.bizId) {
-            rest.bizId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-          }
+          const params: API.NotificationAddRequest = {
+            title: rest.title,
+            content: rest.content,
+            // 默认类型为系统通知
+            ...((rest.type) && { type: rest.type }),
+          };
+
           if (sendMode === 'broadcast') {
-            // 广播不需要 userId 和 relatedInfo
-            const broadcastParams = {
-              title: rest.title,
-              content: rest.content,
-            };
-            const res = await adminBroadcast(broadcastParams);
-            if (res.code === 0) {
-              message.success('广播成功');
-              success = true;
-            } else {
-              message.error(`广播失败: ${res.message}`);
-            }
+            // 广播模式：target = "all"
+            params.target = 'all';
           } else {
-            const res = await addNotification(rest);
-            if (res.code === 0) {
-              message.success('发送成功');
-              success = true;
-            } else {
-              message.error(`发送失败: ${res.message}`);
+            // 个人模式：target = userId
+            if (rest.userId) {
+              params.target = String(rest.userId);
             }
+          }
+          const res = await addNotification(params);
+          if (res.code === 0) {
+            message.success('发送成功');
+            success = true;
+          } else {
+            message.error(`发送失败: ${res.message}`);
           }
         } catch (error: any) {
           message.error(`操作失败: ${error.message}`);
@@ -80,7 +72,6 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
       }}
       initialValues={{
         sendMode: 'individual',
-        type: NotificationTypeEnum.SYSTEM,
       }}
     >
       <ProFormRadio.Group
@@ -109,15 +100,6 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
             return (
               <>
                 <ProFormSelect
-                  name="type"
-                  label="通知类型"
-                  valueEnum={NotificationTypeEnumMap}
-                  rules={[{ required: true, message: '请选择类型' }]}
-                  fieldProps={{
-                    allowClear: false,
-                  }}
-                />
-                <ProFormSelect
                   name="userId"
                   label="接收用户"
                   showSearch
@@ -132,7 +114,7 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
                     return (res.data?.records || []).map((u: any) => ({
                       label: `${u.userName} (${u.userAccount})`,
                       value: u.id,
-                    }));
+                    }));                  
                   }}
                   rules={[{ required: true, message: '请选择接收用户' }]}
                 />

@@ -23,6 +23,11 @@ export enum NotificationTypeEnum {
      * 关注通知
      */
     FOLLOW = 'follow',
+
+    /**
+     * 全员广播
+     */
+    BROADCAST = 'broadcast',
 }
 
 export const NotificationTypeEnumMap = {
@@ -31,4 +36,5 @@ export const NotificationTypeEnumMap = {
     [NotificationTypeEnum.COMMENT]: '评论通知',
     [NotificationTypeEnum.LIKE]: '点赞通知',
     [NotificationTypeEnum.FOLLOW]: '关注通知',
+    [NotificationTypeEnum.BROADCAST]: '全员广播',
 };

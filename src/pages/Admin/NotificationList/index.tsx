@@ -9,6 +9,8 @@ import {
 } from '@/services/notification/notificationController';
 import UpdateNotificationModal from './components/UpdateNotificationModal';
 import CreateNotificationModal from './components/CreateNotificationModal';
+import { NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
+
 
 const NotificationList: React.FC = () => {
   // 创建通知 Modal
@@ -118,11 +120,7 @@ const NotificationList: React.FC = () => {
       title: '通知类型',
       dataIndex: 'type',
       valueType: 'select',
-      valueEnum: {
-        SYSTEM: { text: '系统通知', status: 'Processing' },
-        POST: { text: '帖子通知', status: 'Success' },
-        COMMENT: { text: '评论通知', status: 'Warning' },
-      },
+      valueEnum: NotificationTypeEnumMap,
       width: 100,
     },
     {

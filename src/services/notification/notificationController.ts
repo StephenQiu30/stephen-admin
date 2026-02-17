@@ -48,7 +48,10 @@ export async function batchMarkRead(
 }
 
 /** 删除通知 删除指定通知，仅本人或管理员可操作 POST /notification/delete */
-export async function deletePost(body: API.DeleteRequest, options?: { [key: string]: any }) {
+export async function deleteNotification(
+  body: API.DeleteRequest,
+  options?: { [key: string]: any },
+) {
   return request<API.BaseResponseBoolean>('/notification/delete', {
     method: 'POST',
     headers: {

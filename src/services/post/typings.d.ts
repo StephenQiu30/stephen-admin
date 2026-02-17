@@ -118,14 +118,14 @@ declare namespace API {
   type PostCommentAddRequest = {
     /** 评论内容 */
     content?: string;
-    /** 帖子 id */
+    /** 帖子ID */
     postId?: number;
-    /** 父评论 id（0表示一级评论） */
+    /** 父评论ID */
     parentId?: number;
   };
 
   type PostCommentEditRequest = {
-    /** id */
+    /** 评论ID */
     id?: number;
     /** 评论内容 */
     content?: string;
@@ -144,35 +144,35 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** id */
+    /** 评论ID */
     id?: number;
-    /** 帖子 id */
+    /** 帖子ID */
     postId?: number;
-    /** 评论用户 id */
+    /** 评论用户ID */
     userId?: number;
-    /** 父评论 id */
+    /** 父评论ID */
     parentId?: number;
-    /** 评论内容（模糊搜索） */
+    /** 评论内容 */
     content?: string;
   };
 
   type PostCommentUpdateRequest = {
-    /** id */
+    /** 评论ID */
     id?: number;
     /** 评论内容 */
     content?: string;
   };
 
   type PostCommentVO = {
-    /** id */
+    /** 评论ID */
     id?: number;
     /** 评论内容 */
     content?: string;
-    /** 帖子 id */
+    /** 帖子ID */
     postId?: number;
-    /** 评论用户 id */
+    /** 评论用户ID */
     userId?: number;
-    /** 父评论 id（0表示一级评论） */
+    /** 父评论ID */
     parentId?: number;
     /** 创建时间 */
     createTime?: string;
@@ -184,7 +184,7 @@ declare namespace API {
   };
 
   type PostEditRequest = {
-    /** id */
+    /** 帖子ID */
     id?: number;
     /** 标题 */
     title?: string;
@@ -209,7 +209,7 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** 用户 id */
+    /** 用户ID */
     userId?: number;
     postQueryRequest?: PostQueryRequest;
   };
@@ -232,9 +232,9 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** id */
+    /** 帖子ID */
     id?: number;
-    /** notId */
+    /** 排除的帖子ID */
     notId?: number;
     /** 搜索词 */
     searchText?: string;
@@ -246,9 +246,9 @@ declare namespace API {
     tags?: string[];
     /** 至少有一个标签 */
     orTags?: string[];
-    /** 创建用户 id */
+    /** 创建用户ID */
     userId?: number;
-    /** 收藏用户 id */
+    /** 收藏用户ID */
     favourUserId?: number;
   };
 
@@ -258,7 +258,7 @@ declare namespace API {
   };
 
   type PostUpdateRequest = {
-    /** id */
+    /** 帖子ID */
     id?: number;
     /** 标题 */
     title?: string;
@@ -271,7 +271,7 @@ declare namespace API {
   };
 
   type PostVO = {
-    /** id */
+    /** 帖子ID */
     id?: number;
     /** 标题 */
     title?: string;
@@ -283,7 +283,7 @@ declare namespace API {
     thumbNum?: number;
     /** 收藏数 */
     favourNum?: number;
-    /** 创建用户 id */
+    /** 创建用户ID */
     userId?: number;
     /** 创建时间 */
     createTime?: string;
@@ -299,13 +299,13 @@ declare namespace API {
   };
 
   type UserVO = {
-    /** id */
+    /** 用户ID */
     id?: number;
     /** 用户昵称 */
     userName?: string;
     /** 用户头像 */
     userAvatar?: string;
-    /** 用户角色：user/admin/ban */
+    /** 用户角色 */
     userRole?: string;
     /** 用户邮箱 */
     userEmail?: string;

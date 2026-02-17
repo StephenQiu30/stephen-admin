@@ -193,14 +193,14 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
+    /** 通知ID */
+    id?: number;
     /** 通知类型 */
     type?: string;
-    /** 接收用户 ID */
+    /** 接收用户ID */
     userId?: number;
     /** 是否已读 */
     isRead?: number;
-    /** D */
-    id?: number;
     /** 状态 */
     status?: number;
     /** 关联对象类型 */
@@ -322,9 +322,9 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** id */
+    /** 帖子ID */
     id?: number;
-    /** notId */
+    /** 排除的帖子ID */
     notId?: number;
     /** 搜索词 */
     searchText?: string;
@@ -336,9 +336,9 @@ declare namespace API {
     tags?: string[];
     /** 至少有一个标签 */
     orTags?: string[];
-    /** 创建用户 id */
+    /** 创建用户ID */
     userId?: number;
-    /** 收藏用户 id */
+    /** 收藏用户ID */
     favourUserId?: number;
   };
 
@@ -442,17 +442,17 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** id */
+    /** 用户ID */
     id?: number;
-    /** 排除的 id */
+    /** 排除的用户ID */
     notId?: number;
-    /** 微信开放平台 UnionID */
+    /** 微信开放平台UnionID */
     wxUnionId?: string;
-    /** 公众号 openId */
+    /** 公众号OpenID */
     mpOpenId?: string;
     /** 用户昵称 */
     userName?: string;
-    /** 用户角色：user/admin/ban */
+    /** 用户角色 */
     userRole?: string;
     /** 用户邮箱 */
     userEmail?: string;

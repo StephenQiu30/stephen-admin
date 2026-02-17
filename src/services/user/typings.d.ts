@@ -120,7 +120,7 @@ declare namespace API {
   type GitHubCallbackRequest = {
     /** 授权码 */
     code: string;
-    /** 防 CSRF 攻击的随机字符串 */
+    /** 防CSRF攻击的随机字符串 */
     state: string;
   };
 
@@ -131,28 +131,28 @@ declare namespace API {
   type GitHubLoginRequest = {
     /** 授权码 */
     code?: string;
-    /** 防 CSRF 攻击的随机字符串 */
+    /** 防CSRF攻击的随机字符串 */
     state?: string;
   };
 
   type LoginUserVO = {
-    /** id */
+    /** 用户ID */
     id?: number;
     /** 用户昵称 */
     userName?: string;
     /** 用户头像 */
     userAvatar?: string;
-    /** 用户角色：user/admin/ban */
+    /** 用户角色 */
     userRole?: string;
     /** 用户简介 */
     userProfile?: string;
     /** 用户邮箱 */
     userEmail?: string;
-    /** 邮箱是否验证：0-未验证，1-已验证 */
+    /** 邮箱是否验证 */
     emailVerified?: number;
-    /** GitHub 用户名 */
+    /** GitHub用户名 */
     githubLogin?: string;
-    /** GitHub 主页 */
+    /** GitHub主页 */
     githubUrl?: string;
     /** 用户电话 */
     userPhone?: string;
@@ -162,7 +162,7 @@ declare namespace API {
     createTime?: string;
     /** 更新时间 */
     updateTime?: string;
-    /** 登录 token */
+    /** 登录token */
     token?: string;
   };
 
@@ -245,10 +245,10 @@ declare namespace API {
     userName?: string;
     /** 用户头像 */
     userAvatar?: string;
-    /** 用户角色：user/admin/ban */
+    /** 用户角色 */
     userRole?: string;
     /** 用户邮箱 */
-    userEmail: string;
+    userEmail?: string;
   };
 
   type UserEditRequest = {
@@ -289,17 +289,17 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** id */
+    /** 用户ID */
     id?: number;
-    /** 排除的 id */
+    /** 排除的用户ID */
     notId?: number;
-    /** 微信开放平台 UnionID */
+    /** 微信开放平台UnionID */
     wxUnionId?: string;
-    /** 公众号 openId */
+    /** 公众号OpenID */
     mpOpenId?: string;
     /** 用户昵称 */
     userName?: string;
-    /** 用户角色：user/admin/ban */
+    /** 用户角色 */
     userRole?: string;
     /** 用户邮箱 */
     userEmail?: string;
@@ -310,7 +310,7 @@ declare namespace API {
   };
 
   type UserUpdateRequest = {
-    /** id */
+    /** 用户ID */
     id?: number;
     /** 用户昵称 */
     userName?: string;
@@ -318,7 +318,7 @@ declare namespace API {
     userAvatar?: string;
     /** 用户简介 */
     userProfile?: string;
-    /** 用户角色：user/admin/ban */
+    /** 用户角色 */
     userRole?: string;
     /** 用户邮箱 */
     userEmail?: string;
@@ -327,13 +327,13 @@ declare namespace API {
   };
 
   type UserVO = {
-    /** id */
+    /** 用户ID */
     id?: number;
     /** 用户昵称 */
     userName?: string;
     /** 用户头像 */
     userAvatar?: string;
-    /** 用户角色：user/admin/ban */
+    /** 用户角色 */
     userRole?: string;
     /** 用户邮箱 */
     userEmail?: string;
@@ -356,12 +356,12 @@ declare namespace API {
 
   type WxMpCheckRequest = {
     /** 时间戳 */
-    timestamp: string;
+    timestamp?: string;
     /** 随机数 */
-    nonce: string;
+    nonce?: string;
     /** 签名 */
-    signature: string;
+    signature?: string;
     /** 随机字符串 */
-    echostr: string;
+    echostr?: string;
   };
 }

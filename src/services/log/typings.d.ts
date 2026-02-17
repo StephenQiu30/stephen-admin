@@ -58,7 +58,7 @@ declare namespace API {
   };
 
   type ApiAccessLogVO = {
-    /** ID */
+    /** API访问日志ID */
     id?: number;
     /** 链路追踪ID */
     traceId?: string;
@@ -72,7 +72,7 @@ declare namespace API {
     query?: string;
     /** 响应状态码 */
     status?: number;
-    /** 耗时毫秒 */
+    /** 请求耗时 */
     latencyMs?: number;
     /** 客户端IP */
     clientIp?: string;
@@ -199,7 +199,7 @@ declare namespace API {
   };
 
   type EmailRecordVO = {
-    /** ID */
+    /** 邮件记录ID */
     id?: number;
     /** 消息ID */
     msgId?: string;
@@ -290,7 +290,7 @@ declare namespace API {
   };
 
   type FileUploadRecordVO = {
-    /** ID */
+    /** 文件上传记录ID */
     id?: number;
     /** 上传用户ID */
     userId?: number;
@@ -387,13 +387,13 @@ declare namespace API {
   };
 
   type OperationLogVO = {
-    /** ID */
+    /** 操作日志ID */
     id?: number;
     /** 操作人ID */
     operatorId?: number;
     /** 操作人名称 */
     operatorName?: string;
-    /** 模块 */
+    /** 操作模块 */
     module?: string;
     /** 操作类型 */
     action?: string;
@@ -537,7 +537,7 @@ declare namespace API {
   };
 
   type UserLoginLogVO = {
-    /** ID */
+    /** 登录日志ID */
     id?: number;
     /** 用户ID */
     userId?: number;

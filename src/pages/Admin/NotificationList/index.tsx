@@ -8,14 +8,11 @@ import {
   batchDeleteNotification,
 } from '@/services/notification/notificationController';
 import UpdateNotificationModal from './components/UpdateNotificationModal';
-import SendNotificationModal from './components/SendNotificationModal';
-import BroadcastNotificationModal from './components/BroadcastNotificationModal';
+import CreateNotificationModal from './components/CreateNotificationModal';
 
 const NotificationList: React.FC = () => {
-  // 发送通知 Modal
-  const [sendModalVisible, setSendModalVisible] = useState<boolean>(false);
-  // 系统广播 Modal
-  const [broadcastModalVisible, setBroadcastModalVisible] = useState<boolean>(false);
+  // 创建通知 Modal
+  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   // 更新窗口的Modal框
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
@@ -214,21 +211,12 @@ const NotificationList: React.FC = () => {
         toolBarRender={() => [
           <Button
             type="primary"
-            key="send"
+            key="create"
             onClick={() => {
-              setSendModalVisible(true);
+              setCreateModalVisible(true);
             }}
           >
-            发送通知
-          </Button>,
-          <Button
-            type="primary"
-            key="broadcast"
-            onClick={() => {
-              setBroadcastModalVisible(true);
-            }}
-          >
-            系统广播
+            创建通知
           </Button>,
         ]}
         request={async (params, sort, filter) => {
@@ -290,19 +278,11 @@ const NotificationList: React.FC = () => {
           </Popconfirm>
         </FooterToolbar>
       )}
-      <SendNotificationModal
-        visible={sendModalVisible}
-        onCancel={() => setSendModalVisible(false)}
-        onSubmit={() => {
-          setSendModalVisible(false);
-          actionRef.current?.reload();
-        }}
-      />
-      <BroadcastNotificationModal
-        visible={broadcastModalVisible}
-        onCancel={() => setBroadcastModalVisible(false)}
-        onSubmit={() => {
-          setBroadcastModalVisible(false);
+      <CreateNotificationModal
+        visible={createModalVisible}
+        onCancel={() => setCreateModalVisible(false)}
+        onSubmit={async () => {
+          setCreateModalVisible(false);
           actionRef.current?.reload();
         }}
       />

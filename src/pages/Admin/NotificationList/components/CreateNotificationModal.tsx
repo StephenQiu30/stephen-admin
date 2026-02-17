@@ -40,7 +40,12 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
             rest.bizId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           }
           if (sendMode === 'broadcast') {
-            const res = await adminBroadcast({ title: rest.title, content: rest.content });
+            // 广播不需要 userId 和 relatedInfo
+            const broadcastParams = {
+              title: rest.title,
+              content: rest.content,
+            };
+            const res = await adminBroadcast(broadcastParams);
             if (res.code === 0) {
               message.success('广播成功');
               success = true;
@@ -108,6 +113,9 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
                   label="通知类型"
                   valueEnum={NotificationTypeEnumMap}
                   rules={[{ required: true, message: '请选择类型' }]}
+                  fieldProps={{
+                    allowClear: false,
+                  }}
                 />
                 <ProFormSelect
                   name="userId"
@@ -128,17 +136,6 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
                   }}
                   rules={[{ required: true, message: '请选择接收用户' }]}
                 />
-                <ProFormSelect
-                  name="relatedType"
-                  label="关联类型"
-                  options={[
-                    { label: '无', value: '' },
-                    { label: '帖子', value: 'post' },
-                    { label: '评论', value: NotificationTypeEnum.COMMENT },
-                    { label: '系统', value: NotificationTypeEnum.SYSTEM },
-                  ]}
-                />
-                <ProFormText name="relatedId" label="关联ID" placeholder="关联对象的唯一标识" />
               </>
             );
           }}
@@ -148,3 +145,4 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
   );
 };
 export default CreateNotificationModal;
+

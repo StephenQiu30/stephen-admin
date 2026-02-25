@@ -6,9 +6,7 @@ import {
 } from '@ant-design/pro-components';
 import React from 'react';
 import { updateNotification } from '@/services/notification/notificationController';
-import { listUserVoByPage } from '@/services/user/userController';
 import { message } from 'antd';
-import { NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
 
 interface Props {
   oldData?: API.Notification;
@@ -30,8 +28,6 @@ const UpdateNotificationModal: React.FC<Props> = (props) => {
       open={visible}
       initialValues={oldData}
       onFinish={async (values) => {
-        const hide = message.loading('正在更新');
-        let success = false;
         try {
           const res = await updateNotification({
             ...values,
@@ -39,20 +35,13 @@ const UpdateNotificationModal: React.FC<Props> = (props) => {
           });
           if (res.code === 0) {
             message.success('更新成功');
-            success = true;
-          } else {
-            message.error(`更新失败: ${res.message}`);
+            onSubmit?.();
+            return true;
           }
         } catch (error: any) {
-          message.error(`更新失败: ${error.message}`);
-        } finally {
-          hide();
+          // 全局处理
         }
-
-        if (success) {
-          onSubmit?.();
-        }
-        return success;
+        return false;
       }}
       modalProps={{
         destroyOnClose: true,
@@ -70,31 +59,6 @@ const UpdateNotificationModal: React.FC<Props> = (props) => {
         name="content"
         label="通知内容"
         rules={[{ required: true, message: '请输入内容' }]}
-      />
-      <ProFormSelect
-        name="type"
-        label="通知类型"
-        valueEnum={NotificationTypeEnumMap}
-        rules={[{ required: true, message: '请选择类型' }]}
-      />
-      <ProFormSelect
-        name="userId"
-        label="接收用户"
-        showSearch
-        debounceTime={500}
-        placeholder="搜索并选择用户"
-        request={async ({ keywords }) => {
-          const res = await listUserVoByPage({
-            userName: keywords,
-            current: 1,
-            pageSize: 10,
-          });
-          return (res.data?.records || []).map((u: any) => ({
-            label: `${u.userName} (${u.userAccount})`,
-            value: u.id,
-          }));
-        }}
-        rules={[{ required: true, message: '请选择接收用户' }]}
       />
       <ProFormSelect
         name="relatedType"

@@ -20,29 +20,6 @@ interface Props {
   visible: boolean;
 }
 
-/**
- * 更新节点
- *
- * @param fields
- */
-const handleUpdate = async (fields: API.UserUpdateRequest) => {
-  const hide = message.loading('正在更新');
-  try {
-    const res = await updateUser(fields);
-    if (res.code === 0 && res.data) {
-      message.success('更新成功');
-      return true;
-    } else {
-      message.error(`更新失败${res.message}, 请重试!`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`更新失败${error.message}, 请重试!`);
-    return false;
-  } finally {
-    hide();
-  }
-};
 
 /**
  * 更新用户 Modal
@@ -100,14 +77,21 @@ const UpdateUserModal: React.FC<Props> = (props) => {
       form={form}
       initialValues={oldData}
       onFinish={async (values: API.UserUpdateRequest) => {
-        const success = await handleUpdate({
-          ...values,
-          id: oldData?.id,
-          userAvatar,
-        });
-        if (success) {
-          onSubmit?.(values);
+        try {
+          const res = await updateUser({
+            ...values,
+            id: oldData?.id,
+            userAvatar,
+          });
+          if (res.code === 0 && res.data) {
+            message.success('更新成功');
+            onSubmit?.(values);
+            return true;
+          }
+        } catch (error: any) {
+          // 全局处理
         }
+        return false;
       }}
       autoFocusFirstInput
       modalProps={{

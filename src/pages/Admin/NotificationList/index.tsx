@@ -1,5 +1,5 @@
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Space, Typography } from 'antd';
+import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import {
   batchMarkRead,
@@ -10,6 +10,8 @@ import {
 import UpdateNotificationModal from './components/UpdateNotificationModal';
 import CreateNotificationModal from './components/CreateNotificationModal';
 import { NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
+import { NotificationReadStatusEnumMap } from '@/enums/NotificationReadStatusEnum';
+import { toSnakeCase } from '@/utils';
 
 
 const NotificationList: React.FC = () => {
@@ -100,8 +102,8 @@ const NotificationList: React.FC = () => {
       valueType: 'text',
       hideInForm: true,
       copyable: true,
-      ellipsis: true,
-      width: 120,
+      width: 140,
+      hideInTable: true,
     },
     {
       title: '标题',
@@ -129,30 +131,28 @@ const NotificationList: React.FC = () => {
       valueType: 'text',
       width: 120,
       copyable: true,
+      hideInTable: true,
     },
     {
       title: '已读状态',
       dataIndex: 'isRead',
       valueType: 'select',
-      valueEnum: {
-        0: { text: '未读', status: 'Error' },
-        1: { text: '已读', status: 'Success' },
+      valueEnum: NotificationReadStatusEnumMap,
+      width: 100,
+    },
+    {
+      title: '关联信息',
+      dataIndex: 'related',
+      hideInSearch: true,
+      render: (_, record) => {
+        if (!record.relatedType) return '-';
+        return (
+          <Space>
+            <Tag color="cyan">{record.relatedType}</Tag>
+            {record.relatedId && <Typography.Text copyable>{record.relatedId}</Typography.Text>}
+          </Space>
+        );
       },
-      width: 100,
-    },
-    {
-      title: '关联类型',
-      dataIndex: 'relatedType',
-      valueType: 'text',
-      responsive: ['md'],
-      width: 100,
-    },
-    {
-      title: '关联ID',
-      dataIndex: 'relatedId',
-      valueType: 'text',
-      responsive: ['md'],
-      width: 100,
     },
     {
       title: '创建时间',
@@ -219,7 +219,7 @@ const NotificationList: React.FC = () => {
         ]}
         request={async (params, sort, filter) => {
           const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-          const sortField = sortFieldCamel.replace(/([A-Z])/g, '_$1').toLowerCase();
+          const sortField = toSnakeCase(sortFieldCamel);
           const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
 
           const { data, code } = await listNotificationByPageAdmin({

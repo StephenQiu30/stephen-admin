@@ -1,8 +1,9 @@
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Avatar, Button, message, Popconfirm, Space, Typography } from 'antd';
+import { Avatar, Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { deletePostComment, listPostCommentByPage } from '@/services/post/postCommentController';
 import { SortOrder } from 'antd/lib/table/interface';
+import { toSnakeCase } from '@/utils';
 
 /**
  * 评论管理列表
@@ -81,13 +82,13 @@ const CommentList: React.FC = () => {
       ellipsis: true,
     },
     {
-      title: '用户',
+      title: '发布者',
       dataIndex: 'userId',
       valueType: 'text',
       render: (_, record) => (
         <Space>
           {record.userVO?.userAvatar && <Avatar src={record.userVO.userAvatar} size="small" />}
-          <span>{record.userVO?.userName || record.userId}</span>
+          <Typography.Text strong>{record.userVO?.userName || record.userId}</Typography.Text>
         </Space>
       ),
     },
@@ -143,7 +144,7 @@ const CommentList: React.FC = () => {
         }}
         request={async (params, sort, filter) => {
           const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-          const sortField = sortFieldCamel.replace(/([A-Z])/g, '_$1').toLowerCase();
+          const sortField = toSnakeCase(sortFieldCamel);
           const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
 
           const { data, code } = await listPostCommentByPage({

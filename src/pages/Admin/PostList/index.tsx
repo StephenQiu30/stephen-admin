@@ -6,6 +6,9 @@ import { PlusOutlined } from '@ant-design/icons';
 import { TAG_EMPTY } from '@/constants';
 import { deletePost, listPostByPage } from '@/services/post/postController';
 import { SortOrder } from 'antd/lib/table/interface';
+import { toSnakeCase } from '@/utils';
+import { DeleteStatusEnumMap } from '@/enums/DeleteStatusEnum';
+import { reviewStatus } from '@/enums/ReviewStatusEnum';
 
 /**
  * 用户管理列表
@@ -85,6 +88,7 @@ const PostList: React.FC = () => {
       ellipsis: true,
       width: 120,
       responsive: ['md'],
+      hideInTable: true,
     },
     {
       title: '标题',
@@ -128,6 +132,7 @@ const PostList: React.FC = () => {
       responsive: ['md'],
       copyable: true,
       width: 120,
+      hideInTable: true,
     },
     {
       title: '点赞数',
@@ -136,6 +141,7 @@ const PostList: React.FC = () => {
       width: 80,
       responsive: ['lg'],
       hideInSearch: true,
+      hideInTable: true,
     },
     {
       title: '收藏数',
@@ -144,6 +150,7 @@ const PostList: React.FC = () => {
       width: 80,
       responsive: ['lg'],
       hideInSearch: true,
+      hideInTable: true,
     },
     {
       title: '标签',
@@ -151,38 +158,35 @@ const PostList: React.FC = () => {
       width: 200,
       responsive: ['md'],
       render: (_, record) => {
-        let tags: string[] = [];
-        if (typeof record.tags === 'string') {
-          try {
-            tags = JSON.parse(record.tags);
-          } catch (e) {
-            tags = [];
-          }
-        } else if (Array.isArray(record.tags)) {
-          tags = record.tags;
-        }
-        if (tags.length === 0) {
-          return <Tag>{TAG_EMPTY}</Tag>;
-        }
+        const tags: string[] = typeof record.tags === 'string'
+          ? JSON.parse(record.tags || '[]')
+          : (record.tags || []);
+        if (tags.length === 0) return <Tag>{TAG_EMPTY}</Tag>;
         return (
           <Space wrap size={4}>
-            {tags.map((tag) => (
-              <Tag key={tag} color={'blue'}>
-                {tag}
-              </Tag>
-            ))}
+            {tags.map((tag) => <Tag key={tag} color="blue">{tag}</Tag>)}
           </Space>
         );
       },
     },
     {
-      title: '状态',
+      title: '审核状态',
+      dataIndex: 'reviewStatus',
+      valueType: 'select',
+      valueEnum: reviewStatus,
+    },
+    {
+      title: '审核信息',
+      dataIndex: 'reviewMessage',
+      valueType: 'text',
+      hideInSearch: true,
+      ellipsis: true,
+    },
+    {
+      title: '删除状态',
       dataIndex: 'isDelete',
       valueType: 'select',
-      valueEnum: {
-        0: { text: '正常', status: 'Success' },
-        1: { text: '已删除', status: 'Error' },
-      },
+      valueEnum: DeleteStatusEnumMap,
       hideInForm: true,
       hideInSearch: true,
     },
@@ -192,7 +196,7 @@ const PostList: React.FC = () => {
       valueType: 'dateTime',
       hideInForm: true,
       width: 160,
-      responsive: ['xxl'],
+      responsive: ['lg'],
       sorter: true,
     },
     {
@@ -287,7 +291,7 @@ const PostList: React.FC = () => {
         ]}
         request={async (params, sort, filter) => {
           const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-          const sortField = sortFieldCamel.replace(/([A-Z])/g, '_$1').toLowerCase();
+          const sortField = toSnakeCase(sortFieldCamel);
           const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
 
           // 处理 tags 查询，将字符串转换为数组

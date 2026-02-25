@@ -5,6 +5,8 @@ import React, { useRef, useState } from 'react';
 import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
 import { CreateUserModal, UpdateUserModal } from '@/pages/Admin/UserList/components';
 import { deleteUser, listUserByPage } from '@/services/user/userController';
+import { toSnakeCase } from '@/utils';
+import { EmailVerifiedEnumMap } from '@/enums/EmailVerifiedEnum';
 
 /**
  * 用户管理列表
@@ -83,8 +85,9 @@ const UserList: React.FC = () => {
       hideInForm: true,
       copyable: true,
       ellipsis: true,
-      width: 120,
+      width: 140,
       responsive: ['md'],
+      hideInTable: true,
     },
     {
       title: '用户名',
@@ -94,10 +97,11 @@ const UserList: React.FC = () => {
     {
       title: '用户简介',
       dataIndex: 'userProfile',
-      valueType: 'text',
+      valueType: 'textarea',
       ellipsis: true,
       width: 150,
       hideInSearch: true,
+      hideInTable: true,
     },
     {
       title: '头像',
@@ -110,71 +114,49 @@ const UserList: React.FC = () => {
       width: 80,
     },
     {
-      title: '微信绑定',
+      title: '微信状态',
       dataIndex: 'wechatStatus',
+      valueType: 'text',
       hideInSearch: true,
       hideInForm: true,
-      width: 100,
-      render: (_, record) => (
-        <Space>
-          {record.mpOpenId || record.wxUnionId ? (
-            <Tag color="green">已绑定</Tag>
-          ) : (
-            <Tag color="default">未绑定</Tag>
-          )}
-        </Space>
-      ),
+      hideInTable: true,
     },
     {
-      title: 'GitHub',
+      title: 'GitHub状态',
       dataIndex: 'githubStatus',
+      valueType: 'text',
       hideInSearch: true,
       hideInForm: true,
-      width: 100,
-      render: (_, record) => (
-        <Space>
-          {record.githubId ? <Tag color="green">已绑定</Tag> : <Tag color="default">未绑定</Tag>}
-        </Space>
-      ),
+      hideInTable: true,
     },
     {
       title: '电话',
       dataIndex: 'userPhone',
       valueType: 'text',
       responsive: ['lg'],
+      hideInTable: true,
     },
     {
       title: '邮箱',
       dataIndex: 'userEmail',
       valueType: 'text',
       responsive: ['lg'],
+      hideInTable: true,
     },
     {
       title: '邮箱验证',
       dataIndex: 'emailVerified',
       hideInSearch: true,
       valueType: 'select',
-      valueEnum: {
-        0: { text: '未验证', status: 'Error' },
-        1: { text: '已验证', status: 'Success' },
-      },
+      valueEnum: EmailVerifiedEnumMap,
       width: 100,
-      render: (_, record) => {
-        return (
-          <Tag color={record.emailVerified === 1 ? 'green' : 'red'}>
-            {record.emailVerified === 1 ? '已验证' : '未验证'}
-          </Tag>
-        );
-      },
+      hideInTable: true,
     },
     {
       title: '权限',
       dataIndex: 'userRole',
+      valueType: 'select',
       valueEnum: userRole,
-      render: (_, record) => {
-        const role = userRole[record.userRole as UserRoleEnum];
-        return <Tag color={role.color}>{role.text}</Tag>;
-      },
     },
     {
       title: '最后登录',
@@ -184,7 +166,7 @@ const UserList: React.FC = () => {
       hideInSearch: true,
       hideInForm: true,
       width: 160,
-      responsive: ['xl'],
+      responsive: ['lg'],
     },
     {
       title: '登录IP',
@@ -194,6 +176,7 @@ const UserList: React.FC = () => {
       hideInForm: true,
       width: 120,
       responsive: ['xl'],
+      hideInTable: true,
     },
     {
       title: '创建时间',
@@ -201,7 +184,7 @@ const UserList: React.FC = () => {
       valueType: 'dateTime',
       hideInForm: true,
       width: 160,
-      responsive: ['xxl'],
+      responsive: ['lg'],
       sorter: true,
     },
     {
@@ -287,7 +270,7 @@ const UserList: React.FC = () => {
         ]}
         request={async (params, sort, filter) => {
           const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-          const sortField = sortFieldCamel.replace(/([A-Z])/g, '_$1').toLowerCase();
+          const sortField = toSnakeCase(sortFieldCamel);
           const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
 
           const { data, code } = await listUserByPage({

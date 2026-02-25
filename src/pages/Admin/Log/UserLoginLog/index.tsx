@@ -1,8 +1,8 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { message, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Tag, Typography } from 'antd';
 import React, { useRef } from 'react';
-import { deleteLog } from '@/services/log/userLoginLogController';
 import { searchUserLoginLogByPage } from '@/services/search/searchController';
+import { toSnakeCase } from '@/utils';
 
 /**
  * 登录日志页面
@@ -10,35 +10,10 @@ import { searchUserLoginLogByPage } from '@/services/search/searchController';
 const UserLoginLog: React.FC = () => {
   const actionRef = useRef<ActionType>();
 
-  /**
-   * 删除节点
-   *
-   * @param row
-   */
-  const handleDelete = async (row: API.UserLoginLogVO) => {
-    const hide = message.loading('正在删除');
-    if (!row) return true;
-    try {
-      await deleteLog({
-        id: row.id as any,
-      });
-      hide();
-      message.success('删除成功');
-      actionRef?.current?.reload();
-      return true;
-    } catch (error: any) {
-      hide();
-      message.error(`删除失败: ${error.message}`);
-      return false;
-    }
-  };
-
   const columns: ProColumns<API.UserLoginLogVO>[] = [
-    { title: 'ID', dataIndex: 'id', width: 80, hideInForm: true, copyable: true },
     { title: '用户账号', dataIndex: 'account', width: 120, copyable: true },
-    { title: 'IP地址', dataIndex: 'clientIp', width: 120, responsive: ['md'] },
+    { title: 'IP地址', dataIndex: 'clientIp', width: 120, responsive: ['md'], render: (ip) => <Typography.Text copyable>{ip}</Typography.Text> },
     { title: '登录类型', dataIndex: 'loginType', width: 100 },
-    { title: 'UserAgent', dataIndex: 'userAgent', width: 150, ellipsis: true, hideInSearch: true, responsive: ['lg'] },
     {
       title: '状态',
       dataIndex: 'status',
@@ -55,29 +30,7 @@ const UserLoginLog: React.FC = () => {
       valueType: 'dateTime',
       width: 160,
       sorter: true,
-    },
-    {
-      title: '操作',
-      dataIndex: 'option',
-      valueType: 'option',
-      width: 80,
-      render: (_, record) => (
-        <Space size={'middle'}>
-          <Popconfirm
-            title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={async () => {
-              await handleDelete(record);
-            }}
-          >
-            <Typography.Link key={'delete'} type={'danger'}>
-              删除
-            </Typography.Link>
-          </Popconfirm>
-        </Space>
-      ),
+      responsive: ['md'],
     },
   ];
 
@@ -88,8 +41,9 @@ const UserLoginLog: React.FC = () => {
       rowKey="id"
       search={{ labelWidth: 100 }}
       request={async (params, sort, filter) => {
-        const sortField = Object.keys(sort)?.[0] || 'createTime';
-        const sortOrder = sort?.[sortField] ?? 'descend';
+        const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
+        const sortField = toSnakeCase(sortFieldCamel);
+        const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
 
         const { data, code } = await searchUserLoginLogByPage({
           ...params,

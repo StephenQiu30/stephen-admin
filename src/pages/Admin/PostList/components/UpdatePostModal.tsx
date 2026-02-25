@@ -20,29 +20,6 @@ interface Props {
   visible: boolean;
 }
 
-/**
- * 更新节点
- *
- * @param fields
- */
-const handleUpdate = async (fields: API.PostUpdateRequest) => {
-  const hide = message.loading('正在更新');
-  try {
-    const res = await updatePost(fields);
-    if (res.code === 0 && res.data) {
-      message.success('更新成功');
-      return true;
-    } else {
-      message.error(`更新失败${res.message}, 请重试!`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`更新失败${error.message}, 请重试!`);
-    return false;
-  } finally {
-    hide();
-  }
-};
 const UpdatePostModal: React.FC<Props> = (props) => {
   const { oldData, visible, onSubmit, onCancel } = props;
   // 帖子封面
@@ -102,15 +79,22 @@ const UpdatePostModal: React.FC<Props> = (props) => {
       form={form}
       initialValues={{ ...oldData, tags }}
       onFinish={async (values: API.PostUpdateRequest) => {
-        const success = await handleUpdate({
-          ...values,
-          id: oldData.id,
-          cover: cover || oldData.cover,
-          tags: values.tags,
-        });
-        if (success) {
-          onSubmit?.(values);
+        try {
+          const res = await updatePost({
+            ...values,
+            id: oldData.id as number,
+            cover: cover || oldData.cover,
+            tags: values.tags,
+          });
+          if (res.code === 0 && res.data) {
+            message.success('更新成功');
+            onSubmit?.(values);
+            return true;
+          }
+        } catch (error: any) {
+          // 全局处理
         }
+        return false;
       }}
       autoFocusFirstInput
       modalProps={{

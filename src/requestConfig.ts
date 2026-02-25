@@ -1,5 +1,6 @@
 ﻿import type { RequestOptions } from '@@/plugin-request/request';
 import type { RequestConfig } from '@umijs/max';
+import { message } from 'antd';
 import { BASE_URL, PRODUCTION_URL } from '@/constants';
 
 // 与后端约定的响应数据格式
@@ -60,11 +61,10 @@ export const requestConfig: RequestConfig = {
           throw new Error('用户还未登录,请先登录');
         }
 
-        // 其他业务错误，如果请求配置中没有声明 skipErrorHandler，则统一提示
-        // NOTE: 这里可以根据需要决定是否启用全局 message.error
-        // if (!response.config.skipErrorHandler) {
-        //   message.error(data.message || '请求失败');
-        // }
+        // 其他业务错误，统一提示
+        if (!(response.config as any).skipErrorHandler) {
+          message.error(data.message || '请求失败');
+        }
       }
 
       return response;

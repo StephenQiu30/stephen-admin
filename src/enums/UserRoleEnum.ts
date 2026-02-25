@@ -13,17 +13,14 @@ export enum UserRoleEnum {
 export const userRole = {
   [UserRoleEnum.ADMIN]: {
     text: '管理员',
-    value: UserRoleEnum.ADMIN,
-    color: 'processing',
+    status: 'Processing',
   },
   [UserRoleEnum.USER]: {
     text: '普通用户',
-    value: UserRoleEnum.USER,
-    color: 'success',
+    status: 'Success',
   },
   [UserRoleEnum.BAN]: {
     text: '封禁',
-    value: UserRoleEnum.BAN,
-    color: 'error',
+    status: 'Error',
   },
 };

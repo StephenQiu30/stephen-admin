@@ -18,31 +18,6 @@ interface Props {
   visible: boolean;
 }
 
-/**
- * 添加节点
- *
- * @param fields
- */
-const handleAdd = async (fields: API.UserAddRequest) => {
-  const hide = message.loading('正在添加');
-  try {
-    const res = await addUser({
-      ...fields,
-    });
-    if (res.code === 0 && res.data) {
-      message.success('添加成功');
-      return true;
-    } else {
-      message.error(`添加失败${res.message}, 请重试!`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`添加失败${error.message}, 请重试!`);
-    return false;
-  } finally {
-    hide();
-  }
-};
 
 /**
  * 常见弹窗
@@ -95,13 +70,20 @@ const CreateUserModal: React.FC<Props> = (props) => {
       open={visible}
       form={form}
       onFinish={async (values: API.UserAddRequest) => {
-        const success = await handleAdd({
-          ...values,
-          userAvatar: userAvatar,
-        });
-        if (success) {
-          onSubmit?.(values);
+        try {
+          const res = await addUser({
+            ...values,
+            userAvatar,
+          });
+          if (res.code === 0 && res.data) {
+            message.success('添加成功');
+            onSubmit?.(values);
+            return true;
+          }
+        } catch (error: any) {
+          // 全局处理
         }
+        return false;
       }}
       autoFocusFirstInput
       modalProps={{

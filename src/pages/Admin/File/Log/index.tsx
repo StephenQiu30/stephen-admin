@@ -1,8 +1,8 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { message, Popconfirm, Tag } from 'antd';
+import { Tag } from 'antd';
 import React, { useRef } from 'react';
-import { deleteRecord } from '@/services/log/fileUploadRecordController';
 import { searchFileUploadRecordByPage } from '@/services/search/searchController';
+import { toSnakeCase } from '@/utils';
 
 /**
  * 文件日志页面
@@ -11,40 +11,10 @@ import { searchFileUploadRecordByPage } from '@/services/search/searchController
 const FileLog: React.FC = () => {
   const actionRef = useRef<ActionType>();
 
-  /**
-   * 删除文件记录
-   * @param record
-   */
-  const handleDeleteRecord = async (record: API.FileUploadRecordVO) => {
-    const hide = message.loading('正在删除');
-    if (!record) return true;
-    try {
-      await deleteRecord({
-        id: record.id as any,
-      });
-      hide();
-      message.success('删除成功');
-      actionRef?.current?.reload();
-      return true;
-    } catch (error: any) {
-      hide();
-      message.error(`删除失败: ${error.message}`);
-      return false;
-    }
-  };
-
   const columns: ProColumns<API.FileUploadRecordVO>[] = [
     {
-      title: 'id',
-      dataIndex: 'id',
-      valueType: 'text',
-      hideInForm: true,
-      width: 150,
-      copyable: true,
-    },
-    {
       title: '文件名',
-      dataIndex: 'originalFilename',
+      dataIndex: 'fileName',
       valueType: 'text',
     },
     {
@@ -85,22 +55,6 @@ const FileLog: React.FC = () => {
       width: 180,
       sorter: true,
     },
-    {
-      title: '操作',
-      dataIndex: 'option',
-      valueType: 'option',
-      render: (_, record) => [
-        <Popconfirm
-          key="delete"
-          title="确认删除该记录？"
-          onConfirm={() => handleDeleteRecord(record)}
-          okText="是"
-          cancelText="否"
-        >
-          <a style={{ color: 'red' }}>删除</a>
-        </Popconfirm>,
-      ],
-    },
   ];
 
   return (
@@ -112,8 +66,9 @@ const FileLog: React.FC = () => {
         labelWidth: 120,
       }}
       request={async (params, sort, filter) => {
-        const sortField = Object.keys(sort)?.[0] || 'createTime';
-        const sortOrder = sort?.[sortField] ?? 'descend';
+        const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
+        const sortField = toSnakeCase(sortFieldCamel);
+        const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
 
         const { data, code } = await searchFileUploadRecordByPage({
           ...params,

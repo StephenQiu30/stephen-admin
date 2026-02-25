@@ -19,28 +19,6 @@ interface Props {
   onSubmit: () => Promise<void>;
 }
 
-/**
- * 创建帖子
- * @param values
- */
-const handleAdd = async (values: API.PostAddRequest) => {
-  const hide = message.loading('正在创建...');
-  try {
-    const res = await addPost(values);
-    if (res.code === 0 && res.data) {
-      message.success('请在个人中心查看我创建的帖子');
-      return true;
-    } else {
-      message.error(`创建失败${res.message}`);
-      return false;
-    }
-  } catch (error: any) {
-    message.error(`创建失败${error.message}`);
-    return false;
-  } finally {
-    hide();
-  }
-};
 
 /**
  * 常见弹窗
@@ -93,14 +71,21 @@ const CreatePostModal: React.FC<Props> = (props) => {
       form={form}
       title={'新建帖子'}
       onFinish={async (values) => {
-        const success = await handleAdd({
-          ...values,
-          cover,
-          tags: values.tags,
-        });
-        if (success) {
-          onSubmit?.();
+        try {
+          const res = await addPost({
+            ...values,
+            cover,
+            tags: values.tags,
+          });
+          if (res.code === 0 && res.data) {
+            message.success('创建成功');
+            onSubmit?.();
+            return true;
+          }
+        } catch (error: any) {
+          // 全局处理
         }
+        return false;
       }}
       autoFocusFirstInput
       modalProps={{

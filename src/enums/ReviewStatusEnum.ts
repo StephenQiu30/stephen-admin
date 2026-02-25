@@ -13,17 +13,14 @@ export enum ReviewStatusEnum {
 export const reviewStatus = {
   [ReviewStatusEnum.REVIEWING]: {
     text: '审核中',
-    value: ReviewStatusEnum.REVIEWING,
-    color: 'processing',
+    status: 'Processing',
   },
   [ReviewStatusEnum.PASS]: {
     text: '审核通过',
-    value: ReviewStatusEnum.PASS,
-    color: 'success',
+    status: 'Success',
   },
   [ReviewStatusEnum.REJECT]: {
     text: '拒绝',
-    value: ReviewStatusEnum.REJECT,
-    color: 'error',
+    status: 'Error',
   },
 };

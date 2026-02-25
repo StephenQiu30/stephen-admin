@@ -164,6 +164,11 @@ export default defineConfig({
       schemaPath: 'http://localhost:8087/api/v3/api-docs',
       projectName: 'mail',
     },
+    {
+      requestLibPath: "import { request } from '@umijs/max'",
+      schemaPath: 'http://localhost:8089/api/v3/api-docs',
+      projectName: 'ai',
+    },
   ],
   mfsu: {
     strategy: 'normal',

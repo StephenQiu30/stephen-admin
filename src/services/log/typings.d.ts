@@ -139,7 +139,7 @@ declare namespace API {
 
   type DeleteRequest = {
     /** id */
-    id?: number;
+    id: number;
   };
 
   type EmailRecordCreateRequest = {

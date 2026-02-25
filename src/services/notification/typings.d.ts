@@ -61,7 +61,7 @@ declare namespace API {
 
   type DeleteRequest = {
     /** id */
-    id?: number;
+    id: number;
   };
 
   type getNotificationVOByIdParams = {
@@ -111,7 +111,8 @@ declare namespace API {
   };
 
   type NotificationBatchDeleteRequest = {
-    ids?: number[];
+    /** 通知ID列表 */
+    ids: number[];
   };
 
   type NotificationBatchReadRequest = {

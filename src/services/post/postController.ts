@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 创建帖子 创建新帖子 POST /post/add */
+/** 创建帖子 创建新帖子，初始状态为待审核 POST /post/add */
 export async function addPost(body: API.PostAddRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseLong>('/post/add', {
     method: 'POST',
@@ -53,7 +53,7 @@ export async function getPostVoById(
   });
 }
 
-/** 分页获取帖子列表（用于同步） POST /post/list/page */
+/** 分页获取帖子列表（用于同步） 获取完整字段的帖子列表，主要用于数据同步 POST /post/list/page */
 export async function listPostByPage(body: API.PostQueryRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponsePagePostVO>('/post/list/page', {
     method: 'POST',
@@ -65,7 +65,7 @@ export async function listPostByPage(body: API.PostQueryRequest, options?: { [ke
   });
 }
 
-/** 分页获取帖子列表 分页获取帖子脱敏信息列表 POST /post/list/page/vo */
+/** 分页获取帖子列表 分页获取已审核通过的帖子脱敏信息列表 POST /post/list/page/vo */
 export async function listPostVoByPage(
   body: API.PostQueryRequest,
   options?: { [key: string]: any },
@@ -86,6 +86,18 @@ export async function listMyPostVoByPage(
   options?: { [key: string]: any },
 ) {
   return request<API.BaseResponsePagePostVO>('/post/my/list/page/vo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 审核帖子 人工审核帖子（通过或拒绝） POST /post/review */
+export async function reviewPost(body: API.PostReviewRequest, options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean>('/post/review', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

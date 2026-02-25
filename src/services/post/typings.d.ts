@@ -60,15 +60,20 @@ declare namespace API {
 
   type DeleteRequest = {
     /** id */
-    id?: number;
+    id: number;
+  };
+
+  type exportPostParams = {
+    id: number;
+    type: string;
   };
 
   type getPostCommentVOByIdParams = {
-    arg0: number;
+    id: number;
   };
 
   type getPostVOByIdParams = {
-    arg0: number;
+    id: number;
   };
 
   type OrderItem = {
@@ -185,7 +190,7 @@ declare namespace API {
 
   type PostEditRequest = {
     /** 帖子ID */
-    id?: number;
+    id: number;
     /** 标题 */
     title?: string;
     /** 内容 */
@@ -250,6 +255,17 @@ declare namespace API {
     userId?: number;
     /** 收藏用户ID */
     favourUserId?: number;
+    /** 审核状态 */
+    reviewStatus?: number;
+  };
+
+  type PostReviewRequest = {
+    /** 帖子 ID */
+    id?: number;
+    /** 审核状态：1-通过，2-拒绝 */
+    reviewStatus?: number;
+    /** 审核信息 */
+    reviewMessage?: string;
   };
 
   type PostThumbRequest = {
@@ -258,8 +274,8 @@ declare namespace API {
   };
 
   type PostUpdateRequest = {
-    /** 帖子ID */
-    id?: number;
+    /** id */
+    id: number;
     /** 标题 */
     title?: string;
     /** 内容 */
@@ -296,6 +312,10 @@ declare namespace API {
     hasThumb?: boolean;
     /** 是否已收藏 */
     hasFavour?: boolean;
+    /** 审核状态 */
+    reviewStatus?: number;
+    /** 审核信息 */
+    reviewMessage?: string;
   };
 
   type UserVO = {

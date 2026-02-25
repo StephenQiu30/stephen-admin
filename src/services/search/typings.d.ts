@@ -1,4 +1,24 @@
 declare namespace API {
+  type AiChatMessageEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    sessionId?: number;
+    userId?: number;
+    role?: string;
+    content?: string;
+  };
+
+  type AiChatSessionEsDTO = {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    userId?: number;
+    title?: string;
+  };
+
   type ApiAccessLogEsDTO = {
     id?: number;
     createTime?: string;
@@ -307,6 +327,7 @@ declare namespace API {
     thumbNum?: number;
     favourNum?: number;
     userId?: number;
+    reviewStatus?: number;
   };
 
   type PostQueryRequest = {
@@ -340,6 +361,8 @@ declare namespace API {
     userId?: number;
     /** 收藏用户ID */
     favourUserId?: number;
+    /** 审核状态 */
+    reviewStatus?: number;
   };
 
   type SearchRequest = {

@@ -43,7 +43,9 @@ const CreateUserModal: React.FC<Props> = (props) => {
         formData.append('file', file);
         const res = await uploadFile(
           {
-            biz: FileUploadBiz.USER_AVATAR,
+            fileUploadRequest: {
+              biz: FileUploadBiz.USER_AVATAR,
+            },
           },
           formData,
         );

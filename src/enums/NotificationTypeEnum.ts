@@ -31,10 +31,22 @@ export enum NotificationTypeEnum {
 }
 
 export const NotificationTypeEnumMap = {
-    [NotificationTypeEnum.SYSTEM]: '系统通知',
-    [NotificationTypeEnum.USER]: '用户通知',
-    [NotificationTypeEnum.COMMENT]: '评论通知',
-    [NotificationTypeEnum.LIKE]: '点赞通知',
-    [NotificationTypeEnum.FOLLOW]: '关注通知',
-    [NotificationTypeEnum.BROADCAST]: '全员广播',
+    [NotificationTypeEnum.SYSTEM]: {
+        text: '系统通知',
+    },
+    [NotificationTypeEnum.USER]: {
+        text: '用户通知',
+    },
+    [NotificationTypeEnum.COMMENT]: {
+        text: '评论通知',
+    },
+    [NotificationTypeEnum.LIKE]: {
+        text: '点赞通知',
+    },
+    [NotificationTypeEnum.FOLLOW]: {
+        text: '关注通知',
+    },
+    [NotificationTypeEnum.BROADCAST]: {
+        text: '全员广播',
+    },
 };

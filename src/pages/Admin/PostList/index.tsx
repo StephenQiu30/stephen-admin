@@ -1,14 +1,16 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
-import { CreatePostModal, UpdatePostModal, ViewPostModal } from '@/pages/Admin/PostList/components';
 import { PlusOutlined } from '@ant-design/icons';
 import { TAG_EMPTY } from '@/constants';
 import { deletePost, listPostByPage } from '@/services/post/postController';
 import { SortOrder } from 'antd/lib/table/interface';
 import { toSnakeCase } from '@/utils';
-import { DeleteStatusEnumMap } from '@/enums/DeleteStatusEnum';
 import { reviewStatus } from '@/enums/ReviewStatusEnum';
+import CreatePostModal from '@/pages/Admin/PostList/components/CreatePostModal';
+import UpdatePostModal from '@/pages/Admin/PostList/components/UpdatePostModal';
+import ViewPostModal from '@/pages/Admin/PostList/components/ViewPostModal';
+import ReviewPostModal from '@/pages/Admin/PostList/components/ReviewPostModal';
 
 /**
  * 用户管理列表
@@ -19,8 +21,10 @@ const PostList: React.FC = () => {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   // 更新窗口的Modal框
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
-  // 查看帖子信息Modal框
+  // 查看窗口的Modal框
   const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
+  // 审核窗口的Modal框
+  const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   // 当前用户的所点击的数据
   const [currentRow, setCurrentRow] = useState<API.PostVO>();
@@ -44,7 +48,7 @@ const PostList: React.FC = () => {
       return true;
     } catch (error: any) {
       hide();
-      message.error(`删除失败: ${error.message}`);
+      message.error(`删除失败: ${error.message} `);
       return false;
     }
   };
@@ -70,7 +74,7 @@ const PostList: React.FC = () => {
       return true;
     } catch (error: any) {
       hide();
-      message.error(`批量删除失败: ${error.message}`);
+      message.error(`批量删除失败: ${error.message} `);
       return false;
     }
   };
@@ -135,24 +139,6 @@ const PostList: React.FC = () => {
       hideInTable: true,
     },
     {
-      title: '点赞数',
-      dataIndex: 'thumbNum',
-      valueType: 'digit',
-      width: 80,
-      responsive: ['lg'],
-      hideInSearch: true,
-      hideInTable: true,
-    },
-    {
-      title: '收藏数',
-      dataIndex: 'favourNum',
-      valueType: 'digit',
-      width: 80,
-      responsive: ['lg'],
-      hideInSearch: true,
-      hideInTable: true,
-    },
-    {
       title: '标签',
       dataIndex: 'tags',
       width: 200,
@@ -174,6 +160,7 @@ const PostList: React.FC = () => {
       dataIndex: 'reviewStatus',
       valueType: 'select',
       valueEnum: reviewStatus,
+      width: 100,
     },
     {
       title: '审核信息',
@@ -181,14 +168,6 @@ const PostList: React.FC = () => {
       valueType: 'text',
       hideInSearch: true,
       ellipsis: true,
-    },
-    {
-      title: '删除状态',
-      dataIndex: 'isDelete',
-      valueType: 'select',
-      valueEnum: DeleteStatusEnumMap,
-      hideInForm: true,
-      hideInSearch: true,
     },
     {
       title: '创建时间',
@@ -200,20 +179,11 @@ const PostList: React.FC = () => {
       sorter: true,
     },
     {
-      title: '更新时间',
-      sorter: true,
-      dataIndex: 'updateTime',
-      valueType: 'dateTime',
-      hideInSearch: true,
-      hideInForm: true,
-      hideInTable: true,
-    },
-    {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
       fixed: 'right',
-      width: 150,
+      width: 200,
       render: (_, record) => (
         <Space size={'middle'}>
           <Typography.Link
@@ -221,22 +191,28 @@ const PostList: React.FC = () => {
             onClick={() => {
               setViewModalVisible(true);
               setCurrentRow(record);
-              actionRef.current?.reload();
             }}
           >
             查看
+          </Typography.Link>
+          <Typography.Link
+            key="review"
+            onClick={() => {
+              setReviewModalVisible(true);
+              setCurrentRow(record);
+            }}
+          >
+            审核
           </Typography.Link>
           <Typography.Link
             key="update"
             onClick={() => {
               setUpdateModalVisible(true);
               setCurrentRow(record);
-              actionRef.current?.reload();
             }}
           >
             修改
           </Typography.Link>
-          {/*删除表单用户的PopConfirm框*/}
           <Popconfirm
             title="确定删除？"
             description="删除后将无法恢复?"
@@ -294,14 +270,14 @@ const PostList: React.FC = () => {
           const sortField = toSnakeCase(sortFieldCamel);
           const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
 
-          // 处理 tags 查询，将字符串转换为数组
-          const paramsWithTags = params as API.PostQueryRequest & { tags?: string };
-          const tags = paramsWithTags.tags ? [paramsWithTags.tags] : undefined;
+          // 处理 tags 查询，从搜索栏获取 tags 并转换为数组
+          const { tags, ...rest } = params as any;
+          const tagList = tags ? [tags] : undefined;
 
           const { data, code } = await listPostByPage({
-            ...params,
+            ...rest,
             ...filter,
-            tags,
+            tags: tagList,
             sortField,
             sortOrder,
           } as any);
@@ -338,13 +314,25 @@ const PostList: React.FC = () => {
       {/*更新表单的Modal框*/}
       {updateModalVisible && (
         <UpdatePostModal
-          onCancel={() => {
-            setUpdateModalVisible(false);
-          }}
-          visible={updateModalVisible}
           oldData={currentRow}
+          visible={updateModalVisible}
+          onCancel={() => setUpdateModalVisible(false)}
           onSubmit={async () => {
             setUpdateModalVisible(false);
+            setCurrentRow(undefined);
+            actionRef.current?.reload();
+          }}
+        />
+      )}
+      {/*审核表单的Modal框*/}
+      {reviewModalVisible && (
+        <ReviewPostModal
+          oldData={currentRow}
+          visible={reviewModalVisible}
+          onCancel={() => setReviewModalVisible(false)}
+          onSubmit={async () => {
+            setReviewModalVisible(false);
+            setCurrentRow(undefined);
             actionRef.current?.reload();
           }}
         />

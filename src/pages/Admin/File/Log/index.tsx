@@ -1,6 +1,7 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Tag } from 'antd';
+import { Popconfirm, Space, Tag, Typography, message } from 'antd';
 import React, { useRef } from 'react';
+import { deleteRecord } from '@/services/log/fileUploadRecordController';
 import { searchFileUploadRecordByPage } from '@/services/search/searchController';
 import { toSnakeCase } from '@/utils';
 
@@ -10,6 +11,27 @@ import { toSnakeCase } from '@/utils';
  */
 const FileLog: React.FC = () => {
   const actionRef = useRef<ActionType>();
+
+  /**
+   * 删除记录
+   * @param record
+   */
+  const handleDelete = async (record: API.FileUploadRecordVO) => {
+    const hide = message.loading('正在删除');
+    try {
+      await deleteRecord({
+        id: record.id as any,
+      });
+      message.success('删除成功');
+      actionRef.current?.reload();
+      return true;
+    } catch (error: any) {
+      message.error(`删除失败: ${error.message}`);
+      return false;
+    } finally {
+      hide();
+    }
+  };
 
   const columns: ProColumns<API.FileUploadRecordVO>[] = [
     {
@@ -54,6 +76,26 @@ const FileLog: React.FC = () => {
       hideInForm: true,
       width: 180,
       sorter: true,
+    },
+    {
+      title: '操作',
+      dataIndex: 'option',
+      valueType: 'option',
+      width: 100,
+      fixed: 'right',
+      render: (_, record) => (
+        <Space size={'middle'}>
+          <Popconfirm
+            title="确定删除？"
+            description="删除后将无法恢复?"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => handleDelete(record)}
+          >
+            <Typography.Link type={'danger'}>删除</Typography.Link>
+          </Popconfirm>
+        </Space>
+      ),
     },
   ];
 

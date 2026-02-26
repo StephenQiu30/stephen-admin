@@ -46,7 +46,9 @@ const CreatePostModal: React.FC<Props> = (props) => {
         formData.append('file', file);
         const res = await uploadFile(
           {
-            biz: FileUploadBiz.POST_COVER,
+            fileUploadRequest: {
+              biz: FileUploadBiz.POST_COVER,
+            },
           },
           formData,
         );

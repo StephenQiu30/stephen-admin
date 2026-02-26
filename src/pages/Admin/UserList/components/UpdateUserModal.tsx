@@ -45,13 +45,15 @@ const UpdateUserModal: React.FC<Props> = (props) => {
         formData.append('file', file);
         const res = await uploadFile(
           {
-            biz: FileUploadBiz.USER_AVATAR,
+            fileUploadRequest: {
+              biz: FileUploadBiz.USER_AVATAR,
+            },
           },
           formData,
         );
         if (res.code === 0 && res.data) {
           onSuccess(res.data);
-          setUserAvatar(res.data);
+          setUserAvatar(res.data?.url);
         } else {
           onError(new Error(res.message));
           message.error(`文件上传失败${res.message}`);

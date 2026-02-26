@@ -3,6 +3,7 @@ import { Tag } from 'antd';
 import React, { useRef } from 'react';
 import { searchApiAccessLogByPage } from '@/services/search/searchController';
 import { toSnakeCase } from '@/utils';
+import { ApiAccessStatusEnumMap } from '@/enums/ApiAccessStatusEnum';
 
 /**
  * API 访问日志页面
@@ -31,11 +32,7 @@ const ApiAccessLog: React.FC = () => {
       title: '响应状态',
       dataIndex: 'status',
       width: 100,
-      render: (_, record) => (
-        <Tag color={record.status === 200 ? 'success' : 'error'}>
-          {record.status === 200 ? '成功' : '失败'} ({record.status})
-        </Tag>
-      ),
+      valueEnum: ApiAccessStatusEnumMap,
     },
     { title: '耗时 (ms)', dataIndex: 'latencyMs', width: 100, hideInSearch: true, sorter: true },
     { title: 'IP地址', dataIndex: 'clientIp', width: 120, hideInSearch: true, responsive: ['lg'] },

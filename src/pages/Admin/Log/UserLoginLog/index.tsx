@@ -3,6 +3,7 @@ import { Tag, Typography } from 'antd';
 import React, { useRef } from 'react';
 import { searchUserLoginLogByPage } from '@/services/search/searchController';
 import { toSnakeCase } from '@/utils';
+import { LoginStatusEnumMap } from '@/enums/LoginStatusEnum';
 
 /**
  * 登录日志页面
@@ -17,12 +18,8 @@ const UserLoginLog: React.FC = () => {
     {
       title: '状态',
       dataIndex: 'status',
-      width: 80,
-      render: (_, record) => (
-        <Tag color={record.status === 'SUCCESS' || record.status === '200' ? 'success' : 'error'}>
-          {record.status}
-        </Tag>
-      ),
+      width: 100,
+      valueEnum: LoginStatusEnumMap,
     },
     {
       title: '登录时间',

@@ -3,10 +3,10 @@ import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
-import { CreateUserModal, UpdateUserModal } from '@/pages/Admin/UserList/components';
+import CreateUserModal from '@/pages/Admin/UserList/components/CreateUserModal';
+import UpdateUserModal from '@/pages/Admin/UserList/components/UpdateUserModal';
 import { deleteUser, listUserByPage } from '@/services/user/userController';
 import { toSnakeCase } from '@/utils';
-import { EmailVerifiedEnumMap } from '@/enums/EmailVerifiedEnum';
 
 /**
  * 用户管理列表
@@ -114,45 +114,6 @@ const UserList: React.FC = () => {
       width: 80,
     },
     {
-      title: '微信状态',
-      dataIndex: 'wechatStatus',
-      valueType: 'text',
-      hideInSearch: true,
-      hideInForm: true,
-      hideInTable: true,
-    },
-    {
-      title: 'GitHub状态',
-      dataIndex: 'githubStatus',
-      valueType: 'text',
-      hideInSearch: true,
-      hideInForm: true,
-      hideInTable: true,
-    },
-    {
-      title: '电话',
-      dataIndex: 'userPhone',
-      valueType: 'text',
-      responsive: ['lg'],
-      hideInTable: true,
-    },
-    {
-      title: '邮箱',
-      dataIndex: 'userEmail',
-      valueType: 'text',
-      responsive: ['lg'],
-      hideInTable: true,
-    },
-    {
-      title: '邮箱验证',
-      dataIndex: 'emailVerified',
-      hideInSearch: true,
-      valueType: 'select',
-      valueEnum: EmailVerifiedEnumMap,
-      width: 100,
-      hideInTable: true,
-    },
-    {
       title: '权限',
       dataIndex: 'userRole',
       valueType: 'select',
@@ -169,16 +130,6 @@ const UserList: React.FC = () => {
       responsive: ['lg'],
     },
     {
-      title: '登录IP',
-      dataIndex: 'lastLoginIp',
-      valueType: 'text',
-      hideInSearch: true,
-      hideInForm: true,
-      width: 120,
-      responsive: ['xl'],
-      hideInTable: true,
-    },
-    {
       title: '创建时间',
       dataIndex: 'createTime',
       valueType: 'dateTime',
@@ -186,15 +137,6 @@ const UserList: React.FC = () => {
       width: 160,
       responsive: ['lg'],
       sorter: true,
-    },
-    {
-      title: '更新时间',
-      sorter: true,
-      dataIndex: 'updateTime',
-      valueType: 'dateTime',
-      hideInSearch: true,
-      hideInForm: true,
-      hideInTable: true,
     },
     {
       title: '操作',

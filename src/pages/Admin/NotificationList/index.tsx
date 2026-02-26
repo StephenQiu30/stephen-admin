@@ -6,9 +6,11 @@ import {
   deleteNotification,
   listNotificationByPageAdmin,
   batchDeleteNotification,
+  markAllRead,
 } from '@/services/notification/notificationController';
-import UpdateNotificationModal from './components/UpdateNotificationModal';
-import CreateNotificationModal from './components/CreateNotificationModal';
+import { PlusOutlined, ReadOutlined } from '@ant-design/icons';
+import UpdateNotificationModal from '@/pages/Admin/NotificationList/components/UpdateNotificationModal';
+import CreateNotificationModal from '@/pages/Admin/NotificationList/components/CreateNotificationModal';
 import { NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
 import { NotificationReadStatusEnumMap } from '@/enums/NotificationReadStatusEnum';
 import { toSnakeCase } from '@/utils';
@@ -22,6 +24,24 @@ const NotificationList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<API.Notification>();
   const [selectedRowsState, setSelectedRows] = useState<API.Notification[]>([]);
+
+  /**
+   * 全部标记已读
+   */
+  const handleMarkAllRead = async () => {
+    const hide = message.loading('正在标记全部已读');
+    try {
+      await markAllRead();
+      message.success('全部标记已读成功');
+      actionRef.current?.reload();
+      return true;
+    } catch (error: any) {
+      message.error(`操作失败: ${error.message}`);
+      return false;
+    } finally {
+      hide();
+    }
+  };
 
   /**
    * 批量已读
@@ -210,12 +230,23 @@ const NotificationList: React.FC = () => {
           <Button
             type="primary"
             key="create"
+            icon={<PlusOutlined />}
             onClick={() => {
               setCreateModalVisible(true);
             }}
           >
             创建通知
           </Button>,
+          <Popconfirm
+            key="markAllRead"
+            title="确定全部标记已读？"
+            description="此操作将把您的所有未读通知标记为已读?"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={handleMarkAllRead}
+          >
+            <Button icon={<ReadOutlined />}>全部已读</Button>
+          </Popconfirm>,
         ]}
         request={async (params, sort, filter) => {
           const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';

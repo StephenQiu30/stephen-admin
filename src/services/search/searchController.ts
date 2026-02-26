@@ -2,36 +2,6 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 批量同步 AI 消息到 ES POST /search/ai/chat/message/batch/upsert */
-export async function batchUpsertAiChatMessage(
-  body: API.AiChatMessageEsDTO[],
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseBoolean>('/search/ai/chat/message/batch/upsert', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** 批量同步 AI 会话到 ES POST /search/ai/chat/session/batch/upsert */
-export async function batchUpsertAiChatSession(
-  body: API.AiChatSessionEsDTO[],
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseBoolean>('/search/ai/chat/session/batch/upsert', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
 /** 聚合搜索查询 POST /search/all */
 export async function doSearchAll(body: API.SearchRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseSearchVOObject>('/search/all', {
@@ -130,6 +100,14 @@ export async function batchUpsertFileUploadRecord(
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+/** 手动重建所有 ES 索引 POST /search/index/reinit */
+export async function reinitAllIndices(options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean>('/search/index/reinit', {
+    method: 'POST',
     ...(options || {}),
   });
 }

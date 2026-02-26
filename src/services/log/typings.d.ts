@@ -39,8 +39,10 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** ID */
+    /** 主键 */
     id?: number;
+    /** 链路追踪ID */
+    traceId?: string;
     /** 用户ID */
     userId?: number;
     /** HTTP方法 */
@@ -51,14 +53,12 @@ declare namespace API {
     status?: number;
     /** 客户端IP */
     clientIp?: string;
-    /** 追踪ID */
-    traceId?: string;
     /** 搜索文本 */
     searchText?: string;
   };
 
   type ApiAccessLogVO = {
-    /** API访问日志ID */
+    /** 主键 */
     id?: number;
     /** 链路追踪ID */
     traceId?: string;
@@ -72,7 +72,7 @@ declare namespace API {
     query?: string;
     /** 响应状态码 */
     status?: number;
-    /** 请求耗时 */
+    /** 请求耗时(ms) */
     latencyMs?: number;
     /** 客户端IP */
     clientIp?: string;
@@ -93,6 +93,15 @@ declare namespace API {
     code?: number;
     /** 数据 */
     data?: boolean;
+    /** 消息 */
+    message?: string;
+  };
+
+  type BaseResponseLong = {
+    /** 状态码 */
+    code?: number;
+    /** 数据 */
+    data?: number;
     /** 消息 */
     message?: string;
   };
@@ -143,6 +152,8 @@ declare namespace API {
   };
 
   type EmailRecordCreateRequest = {
+    /** 记录ID */
+    id?: number;
     /** 消息ID */
     msgId?: string;
     /** 业务幂等ID */
@@ -150,9 +161,9 @@ declare namespace API {
     /** 业务类型 */
     bizType?: string;
     /** 收件人邮箱 */
-    toEmail: string;
+    toEmail?: string;
     /** 邮件主题 */
-    subject: string;
+    subject?: string;
     /** 邮件内容 */
     content?: string;
     /** 是否HTML */
@@ -161,12 +172,16 @@ declare namespace API {
     status?: string;
     /** 重试次数 */
     retryCount?: number;
+    /** 最大重试次数 */
+    maxRetry?: number;
     /** 错误信息 */
     errorMessage?: string;
     /** 发送渠道 */
     provider?: string;
     /** 发送时间 */
     sendTime?: string;
+    /** 下次重试时间 */
+    nextRetryTime?: string;
   };
 
   type EmailRecordQueryRequest = {
@@ -182,7 +197,7 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** ID */
+    /** 主键 */
     id?: number;
     /** 消息ID */
     msgId?: string;
@@ -199,7 +214,7 @@ declare namespace API {
   };
 
   type EmailRecordVO = {
-    /** 邮件记录ID */
+    /** 主键 */
     id?: number;
     /** 消息ID */
     msgId?: string;
@@ -233,25 +248,25 @@ declare namespace API {
 
   type FileUploadRecordCreateRequest = {
     /** 上传用户ID */
-    userId: number;
+    userId?: number;
     /** 业务类型 */
-    bizType: string;
+    bizType?: string;
     /** 原始文件名 */
-    fileName: string;
+    fileName?: string;
     /** 文件大小 */
-    fileSize: number;
+    fileSize?: number;
     /** 文件后缀 */
     fileSuffix?: string;
     /** 内容类型 */
     contentType?: string;
     /** 存储类型 */
-    storageType: string;
+    storageType?: string;
     /** 存储桶 */
     bucket?: string;
     /** 对象键/路径 */
-    objectKey: string;
+    objectKey?: string;
     /** 访问URL */
-    url: string;
+    url?: string;
     /** 文件MD5 */
     md5?: string;
     /** 客户端IP */
@@ -275,9 +290,9 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** ID */
+    /** 主键 */
     id?: number;
-    /** 上传用户ID */
+    /** 用户ID */
     userId?: number;
     /** 业务类型 */
     bizType?: string;
@@ -290,7 +305,7 @@ declare namespace API {
   };
 
   type FileUploadRecordVO = {
-    /** 文件上传记录ID */
+    /** 主键 */
     id?: number;
     /** 上传用户ID */
     userId?: number;
@@ -364,7 +379,7 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** ID */
+    /** 主键 */
     id?: number;
     /** 操作人ID */
     operatorId?: number;
@@ -376,18 +391,12 @@ declare namespace API {
     success?: number;
     /** 客户端IP */
     clientIp?: string;
-    /** 追踪ID */
-    traceId?: string;
-    /** 操作描述 */
-    description?: string;
-    /** 请求方法 */
-    method?: string;
     /** 搜索文本 */
     searchText?: string;
   };
 
   type OperationLogVO = {
-    /** 操作日志ID */
+    /** 主键 */
     id?: number;
     /** 操作人ID */
     operatorId?: number;
@@ -520,7 +529,7 @@ declare namespace API {
     minUpdateTime?: string;
     /** 最大更新时间 */
     maxUpdateTime?: string;
-    /** ID */
+    /** 主键 */
     id?: number;
     /** 用户ID */
     userId?: number;
@@ -537,7 +546,7 @@ declare namespace API {
   };
 
   type UserLoginLogVO = {
-    /** 登录日志ID */
+    /** 主键 */
     id?: number;
     /** 用户ID */
     userId?: number;

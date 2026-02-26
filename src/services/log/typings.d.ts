@@ -383,6 +383,8 @@ declare namespace API {
     id?: number;
     /** 操作人ID */
     operatorId?: number;
+    /** 操作人名称 */
+    operatorName?: string;
     /** 模块 */
     module?: string;
     /** 操作类型 */

@@ -225,7 +225,7 @@ declare namespace API {
     requestParams?: string;
     responseStatus?: number;
     success?: number;
-    errorMsg?: string;
+    errorMessage?: string;
     responseData?: string;
     clientIp?: string;
   };
@@ -247,6 +247,8 @@ declare namespace API {
     id?: number;
     /** 操作人ID */
     operatorId?: number;
+    /** 操作人名称 */
+    operatorName?: string;
     /** 模块 */
     module?: string;
     /** 操作类型 */

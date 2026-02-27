@@ -2,7 +2,6 @@ import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Tag } from 'antd';
 import React, { useRef } from 'react';
 import { searchApiAccessLogByPage } from '@/services/search/searchController';
-import { toSnakeCase } from '@/utils';
 import { ApiAccessStatusEnumMap } from '@/enums/ApiAccessStatusEnum';
 
 /**
@@ -53,9 +52,8 @@ const ApiAccessLog: React.FC = () => {
       rowKey="id"
       search={{ labelWidth: 100 }}
       request={async (params, sort, filter) => {
-        const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-        const sortField = toSnakeCase(sortFieldCamel);
-        const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+        const sortField = Object.keys(sort)?.[0] || 'createTime';
+        const sortOrder = sort?.[sortField] ?? 'descend';
 
         const { data, code } = await searchApiAccessLogByPage({
           ...params,

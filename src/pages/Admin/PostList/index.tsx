@@ -4,8 +4,6 @@ import React, { useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { TAG_EMPTY } from '@/constants';
 import { deletePost, listPostByPage } from '@/services/post/postController';
-import { SortOrder } from 'antd/lib/table/interface';
-import { toSnakeCase } from '@/utils';
 import { reviewStatus } from '@/enums/ReviewStatusEnum';
 import CreatePostModal from '@/pages/Admin/PostList/components/CreatePostModal';
 import UpdatePostModal from '@/pages/Admin/PostList/components/UpdatePostModal';
@@ -144,13 +142,16 @@ const PostList: React.FC = () => {
       width: 200,
       responsive: ['md'],
       render: (_, record) => {
-        const tags: string[] = typeof record.tags === 'string'
-          ? JSON.parse(record.tags || '[]')
-          : (record.tags || []);
+        const tags: string[] =
+          typeof record.tags === 'string' ? JSON.parse(record.tags || '[]') : record.tags || [];
         if (tags.length === 0) return <Tag>{TAG_EMPTY}</Tag>;
         return (
           <Space wrap size={4}>
-            {tags.map((tag) => <Tag key={tag} color="blue">{tag}</Tag>)}
+            {tags.map((tag) => (
+              <Tag key={tag} color="blue">
+                {tag}
+              </Tag>
+            ))}
           </Space>
         );
       },
@@ -266,9 +267,8 @@ const PostList: React.FC = () => {
           </Space>,
         ]}
         request={async (params, sort, filter) => {
-          const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-          const sortField = toSnakeCase(sortFieldCamel);
-          const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          const sortOrder = sort?.[sortField] ?? 'descend';
 
           // 处理 tags 查询，从搜索栏获取 tags 并转换为数组
           const { tags, ...rest } = params as any;

@@ -19,7 +19,6 @@ interface Props {
   onSubmit: () => Promise<void>;
 }
 
-
 /**
  * 常见弹窗
  * @param props

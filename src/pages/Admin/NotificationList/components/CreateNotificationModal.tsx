@@ -55,4 +55,3 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
   );
 };
 export default CreateNotificationModal;
-

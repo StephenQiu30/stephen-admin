@@ -13,8 +13,6 @@ import UpdateNotificationModal from '@/pages/Admin/NotificationList/components/U
 import CreateNotificationModal from '@/pages/Admin/NotificationList/components/CreateNotificationModal';
 import { NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
 import { NotificationReadStatusEnumMap } from '@/enums/NotificationReadStatusEnum';
-import { toSnakeCase } from '@/utils';
-
 
 const NotificationList: React.FC = () => {
   // 创建通知 Modal
@@ -249,9 +247,8 @@ const NotificationList: React.FC = () => {
           </Popconfirm>,
         ]}
         request={async (params, sort, filter) => {
-          const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-          const sortField = toSnakeCase(sortFieldCamel);
-          const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          const sortOrder = sort?.[sortField] ?? 'descend';
 
           const { data, code } = await listNotificationByPageAdmin({
             ...params,

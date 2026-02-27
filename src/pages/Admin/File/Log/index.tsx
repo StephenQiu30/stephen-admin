@@ -3,7 +3,6 @@ import { Popconfirm, Space, Tag, Typography, message } from 'antd';
 import React, { useRef } from 'react';
 import { deleteRecord } from '@/services/log/fileUploadRecordController';
 import { searchFileUploadRecordByPage } from '@/services/search/searchController';
-import { toSnakeCase } from '@/utils';
 
 /**
  * 文件日志页面
@@ -108,9 +107,8 @@ const FileLog: React.FC = () => {
         labelWidth: 120,
       }}
       request={async (params, sort, filter) => {
-        const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-        const sortField = toSnakeCase(sortFieldCamel);
-        const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+        const sortField = Object.keys(sort)?.[0] || 'createTime';
+        const sortOrder = sort?.[sortField] ?? 'descend';
 
         const { data, code } = await searchFileUploadRecordByPage({
           ...params,

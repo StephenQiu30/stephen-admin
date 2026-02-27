@@ -1,9 +1,7 @@
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Avatar, Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Avatar, Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { deletePostComment, listPostCommentByPage } from '@/services/post/postCommentController';
-import { SortOrder } from 'antd/lib/table/interface';
-import { toSnakeCase } from '@/utils';
 
 /**
  * 评论管理列表
@@ -143,9 +141,8 @@ const CommentList: React.FC = () => {
           labelWidth: 120,
         }}
         request={async (params, sort, filter) => {
-          const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-          const sortField = toSnakeCase(sortFieldCamel);
-          const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          const sortOrder = sort?.[sortField] ?? 'descend';
 
           const { data, code } = await listPostCommentByPage({
             ...params,

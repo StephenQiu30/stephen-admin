@@ -1,12 +1,11 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
-import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
+import { userRole } from '@/enums/UserRoleEnum';
 import CreateUserModal from '@/pages/Admin/UserList/components/CreateUserModal';
 import UpdateUserModal from '@/pages/Admin/UserList/components/UpdateUserModal';
 import { deleteUser, listUserByPage } from '@/services/user/userController';
-import { toSnakeCase } from '@/utils';
 
 /**
  * 用户管理列表
@@ -211,9 +210,8 @@ const UserList: React.FC = () => {
           </Space>,
         ]}
         request={async (params, sort, filter) => {
-          const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-          const sortField = toSnakeCase(sortFieldCamel);
-          const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          const sortOrder = sort?.[sortField] ?? 'descend';
 
           const { data, code } = await listUserByPage({
             ...params,

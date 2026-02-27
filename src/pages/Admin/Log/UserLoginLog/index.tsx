@@ -1,8 +1,7 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Tag, Typography } from 'antd';
+import { Typography } from 'antd';
 import React, { useRef } from 'react';
 import { searchUserLoginLogByPage } from '@/services/search/searchController';
-import { toSnakeCase } from '@/utils';
 import { LoginStatusEnumMap } from '@/enums/LoginStatusEnum';
 
 /**
@@ -13,7 +12,13 @@ const UserLoginLog: React.FC = () => {
 
   const columns: ProColumns<API.UserLoginLogVO>[] = [
     { title: '用户账号', dataIndex: 'account', width: 120, copyable: true },
-    { title: 'IP地址', dataIndex: 'clientIp', width: 120, responsive: ['md'], render: (ip) => <Typography.Text copyable>{ip}</Typography.Text> },
+    {
+      title: 'IP地址',
+      dataIndex: 'clientIp',
+      width: 120,
+      responsive: ['md'],
+      render: (ip) => <Typography.Text copyable>{ip}</Typography.Text>,
+    },
     { title: '登录类型', dataIndex: 'loginType', width: 100 },
     {
       title: '状态',
@@ -38,9 +43,8 @@ const UserLoginLog: React.FC = () => {
       rowKey="id"
       search={{ labelWidth: 100 }}
       request={async (params, sort, filter) => {
-        const sortFieldCamel = Object.keys(sort)?.[0] || 'createTime';
-        const sortField = toSnakeCase(sortFieldCamel);
-        const sortOrder = sort?.[sortFieldCamel] ?? 'descend';
+        const sortField = Object.keys(sort)?.[0] || 'createTime';
+        const sortOrder = sort?.[sortField] ?? 'descend';
 
         const { data, code } = await searchUserLoginLogByPage({
           ...params,

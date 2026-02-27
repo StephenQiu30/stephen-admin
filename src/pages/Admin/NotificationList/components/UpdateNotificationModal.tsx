@@ -1,9 +1,4 @@
-import {
-  ModalForm,
-  ProFormSelect,
-  ProFormText,
-  ProFormTextArea,
-} from '@ant-design/pro-components';
+import { ModalForm, ProFormSelect, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
 import React from 'react';
 import { updateNotification } from '@/services/notification/notificationController';
 import { message } from 'antd';

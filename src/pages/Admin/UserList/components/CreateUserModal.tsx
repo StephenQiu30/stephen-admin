@@ -18,7 +18,6 @@ interface Props {
   visible: boolean;
 }
 
-
 /**
  * 常见弹窗
  * @param props

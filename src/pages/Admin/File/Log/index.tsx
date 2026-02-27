@@ -1,5 +1,5 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Popconfirm, Space, Tag, Typography, message } from 'antd';
+import { message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef } from 'react';
 import { deleteRecord } from '@/services/log/fileUploadRecordController';
 import { searchFileUploadRecordByPage } from '@/services/search/searchController';

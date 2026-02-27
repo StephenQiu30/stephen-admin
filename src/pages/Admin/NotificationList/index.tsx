@@ -2,10 +2,10 @@ import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro
 import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import {
+  batchDeleteNotification,
   batchMarkRead,
   deleteNotification,
   listNotificationByPageAdmin,
-  batchDeleteNotification,
   markAllRead,
 } from '@/services/notification/notificationController';
 import { PlusOutlined, ReadOutlined } from '@ant-design/icons';

@@ -53,11 +53,11 @@ const CreateUserModal: React.FC<Props> = (props) => {
           setUserAvatar(res.data);
         } else {
           onError(new Error(res.message));
-          message.error(`文件上传失败${res.message}`);
+          message.error(`文件上传失败: ${res.message}`);
         }
       } catch (error: any) {
         onError(error);
-        message.error('文件上传失败', error.message);
+        message.error(`文件上传失败: ${error.message}`);
       }
     },
     onRemove() {
@@ -82,7 +82,7 @@ const CreateUserModal: React.FC<Props> = (props) => {
             return true;
           }
         } catch (error: any) {
-          // 全局处理
+          message.error(`添加失败: ${error.message}`);
         }
         return false;
       }}

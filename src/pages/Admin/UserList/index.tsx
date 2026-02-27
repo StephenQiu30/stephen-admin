@@ -33,14 +33,14 @@ const UserList: React.FC = () => {
       await deleteUser({
         id: row.id as any,
       });
-      hide();
       message.success('删除成功');
       actionRef?.current?.reload();
       return true;
     } catch (error: any) {
-      hide();
       message.error(`删除失败: ${error.message}`);
       return false;
+    } finally {
+      hide();
     }
   };
 
@@ -61,15 +61,15 @@ const UserList: React.FC = () => {
           await deleteUser({ id: row.id as any });
         }),
       );
-      hide();
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);
       return true;
     } catch (error: any) {
-      hide();
       message.error(`批量删除失败: ${error.message}`);
       return false;
+    } finally {
+      hide();
     }
   };
 
@@ -150,7 +150,6 @@ const UserList: React.FC = () => {
             onClick={() => {
               setUpdateModalVisible(true);
               setCurrentRow(record);
-              actionRef.current?.reload();
             }}
           >
             修改

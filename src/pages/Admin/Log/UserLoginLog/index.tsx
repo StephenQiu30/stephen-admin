@@ -60,6 +60,7 @@ const UserLoginLog: React.FC = () => {
         };
       }}
       columns={columns}
+      scroll={{ x: 800 }}
     />
   );
 };

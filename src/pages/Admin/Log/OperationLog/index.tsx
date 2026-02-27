@@ -54,6 +54,7 @@ const OperationLog: React.FC = () => {
         };
       }}
       columns={columns}
+      scroll={{ x: 800 }}
     />
   );
 };

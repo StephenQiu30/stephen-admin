@@ -28,7 +28,7 @@ const CreateNotificationModal: React.FC<Props> = (props) => {
             return true;
           }
         } catch (error: any) {
-          // 异常由全局处理
+          message.error(`创建失败: ${error.message}`);
         }
         return false;
       }}

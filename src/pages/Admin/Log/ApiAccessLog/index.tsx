@@ -69,6 +69,7 @@ const ApiAccessLog: React.FC = () => {
         };
       }}
       columns={columns}
+      scroll={{ x: 800 }}
     />
   );
 };

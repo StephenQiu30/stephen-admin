@@ -9,6 +9,7 @@ import CreatePostModal from '@/pages/Admin/PostList/components/CreatePostModal';
 import UpdatePostModal from '@/pages/Admin/PostList/components/UpdatePostModal';
 import ViewPostModal from '@/pages/Admin/PostList/components/ViewPostModal';
 import ReviewPostModal from '@/pages/Admin/PostList/components/ReviewPostModal';
+import BatchReviewPostModal from '@/pages/Admin/PostList/components/BatchReviewPostModal';
 
 /**
  * 用户管理列表
@@ -23,6 +24,8 @@ const PostList: React.FC = () => {
   const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
   // 审核窗口的Modal框
   const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(false);
+  // 批量审核窗口的Modal框
+  const [batchReviewModalVisible, setBatchReviewModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   // 当前用户的所点击的数据
   const [currentRow, setCurrentRow] = useState<API.PostVO>();
@@ -40,14 +43,14 @@ const PostList: React.FC = () => {
       await deletePost({
         id: row.id as any,
       });
-      hide();
       message.success('删除成功');
       actionRef?.current?.reload();
       return true;
     } catch (error: any) {
-      hide();
-      message.error(`删除失败: ${error.message} `);
+      message.error(`删除失败: ${error.message}`);
       return false;
+    } finally {
+      hide();
     }
   };
 
@@ -65,15 +68,15 @@ const PostList: React.FC = () => {
           await deletePost({ id: row.id as any });
         }),
       );
-      hide();
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);
       return true;
     } catch (error: any) {
-      hide();
-      message.error(`批量删除失败: ${error.message} `);
+      message.error(`批量删除失败: ${error.message}`);
       return false;
+    } finally {
+      hide();
     }
   };
 
@@ -253,16 +256,27 @@ const PostList: React.FC = () => {
               新建
             </Button>
             {selectedRowsState?.length > 0 && (
-              <Button
-                type={'primary'}
-                danger
-                key="batchDelete"
-                onClick={() => {
-                  handleBatchDelete(selectedRowsState);
-                }}
-              >
-                批量删除
-              </Button>
+              <>
+                <Button
+                  type={'primary'}
+                  key="batchReview"
+                  onClick={() => {
+                    setBatchReviewModalVisible(true);
+                  }}
+                >
+                  批量审核
+                </Button>
+                <Button
+                  type={'primary'}
+                  danger
+                  key="batchDelete"
+                  onClick={() => {
+                    handleBatchDelete(selectedRowsState);
+                  }}
+                >
+                  批量删除
+                </Button>
+              </>
             )}
           </Space>,
         ]}
@@ -333,6 +347,19 @@ const PostList: React.FC = () => {
           onSubmit={async () => {
             setReviewModalVisible(false);
             setCurrentRow(undefined);
+            actionRef.current?.reload();
+          }}
+        />
+      )}
+      {/*批量审核表单的Modal框*/}
+      {batchReviewModalVisible && (
+        <BatchReviewPostModal
+          posts={selectedRowsState}
+          visible={batchReviewModalVisible}
+          onCancel={() => setBatchReviewModalVisible(false)}
+          onSubmit={async () => {
+            setBatchReviewModalVisible(false);
+            setSelectedRows([]);
             actionRef.current?.reload();
           }}
         />

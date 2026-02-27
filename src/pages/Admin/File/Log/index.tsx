@@ -1,6 +1,6 @@
-import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
-import { message, Popconfirm, Space, Tag, Typography } from 'antd';
-import React, { useRef } from 'react';
+import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
+import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
+import React, { useRef, useState } from 'react';
 import { deleteRecord } from '@/services/log/fileUploadRecordController';
 import { searchFileUploadRecordByPage } from '@/services/search/searchController';
 
@@ -10,6 +10,7 @@ import { searchFileUploadRecordByPage } from '@/services/search/searchController
  */
 const FileLog: React.FC = () => {
   const actionRef = useRef<ActionType>();
+  const [selectedRowsState, setSelectedRows] = useState<API.FileUploadRecordVO[]>([]);
 
   /**
    * 删除记录
@@ -26,6 +27,31 @@ const FileLog: React.FC = () => {
       return true;
     } catch (error: any) {
       message.error(`删除失败: ${error.message}`);
+      return false;
+    } finally {
+      hide();
+    }
+  };
+
+  /**
+   * 批量删除记录
+   * @param selectedRows
+   */
+  const handleBatchDelete = async (selectedRows: API.FileUploadRecordVO[]) => {
+    const hide = message.loading('正在删除');
+    if (!selectedRows) return true;
+    try {
+      await Promise.all(
+        selectedRows.map(async (row) => {
+          await deleteRecord({ id: row.id as any });
+        }),
+      );
+      message.success('批量删除成功');
+      actionRef.current?.reloadAndRest?.();
+      setSelectedRows([]);
+      return true;
+    } catch (error: any) {
+      message.error(`批量删除失败: ${error.message}`);
       return false;
     } finally {
       hide();
@@ -99,32 +125,63 @@ const FileLog: React.FC = () => {
   ];
 
   return (
-    <ProTable<API.FileUploadRecordVO>
-      headerTitle="文件日志"
-      actionRef={actionRef}
-      rowKey="id"
-      search={{
-        labelWidth: 120,
-      }}
-      request={async (params, sort, filter) => {
-        const sortField = Object.keys(sort)?.[0] || 'createTime';
-        const sortOrder = sort?.[sortField] ?? 'descend';
+    <>
+      <ProTable<API.FileUploadRecordVO>
+        headerTitle="文件日志"
+        actionRef={actionRef}
+        rowKey="id"
+        search={{
+          labelWidth: 120,
+        }}
+        request={async (params, sort, filter) => {
+          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          const sortOrder = sort?.[sortField] ?? 'descend';
 
-        const { data, code } = await searchFileUploadRecordByPage({
-          ...params,
-          ...filter,
-          sortField,
-          sortOrder,
-        } as any);
+          const { data, code } = await searchFileUploadRecordByPage({
+            ...params,
+            ...filter,
+            sortField,
+            sortOrder,
+          } as any);
 
-        return {
-          success: code === 0,
-          data: data?.records || [],
-          total: Number(data?.total) || 0,
-        };
-      }}
-      columns={columns}
-    />
+          return {
+            success: code === 0,
+            data: data?.records || [],
+            total: Number(data?.total) || 0,
+          };
+        }}
+        columns={columns}
+        rowSelection={{
+          onChange: (_, selectedRows) => {
+            setSelectedRows(selectedRows);
+          },
+        }}
+        scroll={{ x: 800 }}
+      />
+      {selectedRowsState?.length > 0 && (
+        <FooterToolbar
+          extra={
+            <div>
+              已选择 <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a> 项
+            </div>
+          }
+        >
+          <Popconfirm
+            title="确定删除？"
+            description="删除后将无法恢复?"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={async () => {
+              await handleBatchDelete(selectedRowsState);
+            }}
+          >
+            <Button danger type="primary">
+              批量删除
+            </Button>
+          </Popconfirm>
+        </FooterToolbar>
+      )}
+    </>
   );
 };
 

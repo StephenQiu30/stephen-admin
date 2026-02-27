@@ -34,7 +34,7 @@ const NotificationList: React.FC = () => {
       actionRef.current?.reload();
       return true;
     } catch (error: any) {
-      message.error(`操作失败: ${error.message}`);
+      message.error(`全部标记已读失败: ${error.message}`);
       return false;
     } finally {
       hide();
@@ -75,14 +75,14 @@ const NotificationList: React.FC = () => {
       await deleteNotification({
         id: row.id as any,
       });
-      hide();
       message.success('删除成功');
       actionRef?.current?.reload();
       return true;
     } catch (error: any) {
-      hide();
       message.error(`删除失败: ${error.message}`);
       return false;
+    } finally {
+      hide();
     }
   };
 
@@ -98,15 +98,15 @@ const NotificationList: React.FC = () => {
       await batchDeleteNotification({
         ids: selectedRows.map((row) => row.id!),
       });
-      hide();
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);
       return true;
     } catch (error: any) {
-      hide();
       message.error(`批量删除失败: ${error.message}`);
       return false;
+    } finally {
+      hide();
     }
   };
 
@@ -269,6 +269,7 @@ const NotificationList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
+        scroll={{ x: 1200 }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar

@@ -2,6 +2,7 @@ import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro
 import { Avatar, Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { deletePostComment, listPostCommentByPage } from '@/services/post/postCommentController';
+import UpdateCommentModal from '@/pages/Admin/CommentList/components/UpdateCommentModal';
 
 /**
  * 评论管理列表
@@ -10,6 +11,8 @@ import { deletePostComment, listPostCommentByPage } from '@/services/post/postCo
 const CommentList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<API.PostCommentVO[]>([]);
+  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
+  const [currentRow, setCurrentRow] = useState<API.PostCommentVO>();
 
   /**
    * 删除节点
@@ -23,14 +26,14 @@ const CommentList: React.FC = () => {
       await deletePostComment({
         id: row.id as any,
       });
-      hide();
       message.success('删除成功');
       actionRef?.current?.reload();
       return true;
     } catch (error: any) {
-      hide();
       message.error(`删除失败: ${error.message}`);
       return false;
+    } finally {
+      hide();
     }
   };
 
@@ -48,15 +51,15 @@ const CommentList: React.FC = () => {
           await deletePostComment({ id: row.id as any });
         }),
       );
-      hide();
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);
       return true;
     } catch (error: any) {
-      hide();
       message.error(`批量删除失败: ${error.message}`);
       return false;
+    } finally {
+      hide();
     }
   };
 
@@ -113,6 +116,15 @@ const CommentList: React.FC = () => {
       width: 100,
       render: (_, record) => (
         <Space size={'middle'}>
+          <Typography.Link
+            key="update"
+            onClick={() => {
+              setCurrentRow(record);
+              setUpdateModalVisible(true);
+            }}
+          >
+            编辑
+          </Typography.Link>
           <Popconfirm
             title="确定删除？"
             description="删除后将无法恢复?"
@@ -163,6 +175,7 @@ const CommentList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
+        scroll={{ x: 800 }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
@@ -186,6 +199,18 @@ const CommentList: React.FC = () => {
             </Button>
           </Popconfirm>
         </FooterToolbar>
+      )}
+      {updateModalVisible && (
+        <UpdateCommentModal
+          oldData={currentRow}
+          visible={updateModalVisible}
+          onCancel={() => setUpdateModalVisible(false)}
+          onSubmit={async () => {
+            setUpdateModalVisible(false);
+            setCurrentRow(undefined);
+            actionRef.current?.reload();
+          }}
+        />
       )}
     </>
   );

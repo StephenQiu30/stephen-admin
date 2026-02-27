@@ -34,7 +34,7 @@ const UpdateNotificationModal: React.FC<Props> = (props) => {
             return true;
           }
         } catch (error: any) {
-          // 全局处理
+          message.error(`更新失败: ${error.message}`);
         }
         return false;
       }}

@@ -51,7 +51,7 @@ const UpdatePostModal: React.FC<Props> = (props) => {
           setCover(res.data);
         }
       } catch (error: any) {
-        message.error('文件上传失败', error.message);
+        message.error(`文件上传失败: ${error.message}`);
         onError(error);
       }
     },
@@ -94,7 +94,7 @@ const UpdatePostModal: React.FC<Props> = (props) => {
             return true;
           }
         } catch (error: any) {
-          // 全局处理
+          message.error(`更新失败: ${error.message}`);
         }
         return false;
       }}

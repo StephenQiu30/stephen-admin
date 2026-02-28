@@ -5,6 +5,7 @@ import React, { useRef, useState } from 'react';
 import { userRole } from '@/enums/UserRoleEnum';
 import CreateUserModal from '@/pages/Admin/UserList/components/CreateUserModal';
 import UpdateUserModal from '@/pages/Admin/UserList/components/UpdateUserModal';
+import ViewUserModal from '@/pages/Admin/UserList/components/ViewUserModal';
 import { deleteUser, listUserByPage } from '@/services/user/userController';
 
 /**
@@ -16,6 +17,8 @@ const UserList: React.FC = () => {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   // 更新窗口的Modal框
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
+  // 查看窗口的Modal框
+  const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   // 当前用户的所点击的数据
   const [currentRow, setCurrentRow] = useState<API.User>();
@@ -92,28 +95,35 @@ const UserList: React.FC = () => {
       title: '用户名',
       dataIndex: 'userName',
       valueType: 'text',
-    },
-    {
-      title: '用户简介',
-      dataIndex: 'userProfile',
-      valueType: 'textarea',
+      copyable: true,
       ellipsis: true,
-      width: 150,
-      hideInSearch: true,
-      hideInTable: true,
     },
     {
       title: '头像',
       dataIndex: 'userAvatar',
       valueType: 'image',
       fieldProps: {
-        width: 64,
+        width: 48,
       },
       hideInSearch: true,
       width: 80,
     },
     {
-      title: '权限',
+      title: '邮箱',
+      dataIndex: 'userEmail',
+      valueType: 'text',
+      copyable: true,
+      ellipsis: true,
+    },
+    {
+      title: '电话',
+      dataIndex: 'userPhone',
+      valueType: 'text',
+      copyable: true,
+      hideInSearch: true,
+    },
+    {
+      title: '角色',
       dataIndex: 'userRole',
       valueType: 'select',
       valueEnum: userRole,
@@ -142,9 +152,18 @@ const UserList: React.FC = () => {
       dataIndex: 'option',
       valueType: 'option',
       fixed: 'right',
-      width: 150,
+      width: 180,
       render: (_, record) => (
         <Space size={'middle'}>
+          <Typography.Link
+            key="view"
+            onClick={() => {
+              setCurrentRow(record);
+              setViewModalVisible(true);
+            }}
+          >
+            详情
+          </Typography.Link>
           <Typography.Link
             key="update"
             onClick={() => {
@@ -176,7 +195,7 @@ const UserList: React.FC = () => {
   return (
     <>
       <ProTable<API.User, API.UserQueryRequest>
-        headerTitle={'查询表格'}
+        headerTitle={'用户列表'}
         actionRef={actionRef}
         rowKey={'id'}
         search={{
@@ -231,7 +250,7 @@ const UserList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        scroll={{ x: 800 }}
+        scroll={{ x: 1000 }}
       />
 
       {/*新建表单的Modal框*/}
@@ -248,11 +267,24 @@ const UserList: React.FC = () => {
         />
       )}
 
+      {/*查看详情的Modal框*/}
+      {viewModalVisible && (
+        <ViewUserModal
+          visible={viewModalVisible}
+          user={currentRow}
+          onCancel={() => {
+            setViewModalVisible(false);
+            setCurrentRow(undefined);
+          }}
+        />
+      )}
+
       {/*更新表单的Modal框*/}
       {updateModalVisible && (
         <UpdateUserModal
           onCancel={() => {
             setUpdateModalVisible(false);
+            setCurrentRow(undefined);
           }}
           onSubmit={async () => {
             setUpdateModalVisible(false);
@@ -264,6 +296,7 @@ const UserList: React.FC = () => {
         />
       )}
     </>
+
   );
 };
 export default UserList;

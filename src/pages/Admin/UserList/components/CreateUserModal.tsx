@@ -114,6 +114,11 @@ const CreateUserModal: React.FC<Props> = (props) => {
           { type: 'email', message: '请输入正确的邮箱' },
         ]}
       />
+      <ProFormText
+        name={'userPhone'}
+        label={'电话'}
+        rules={[{ pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}
+      />
       <ProFormUploadDragger
         title={'上传头像'}
         label={'头像'}

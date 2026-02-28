@@ -3,6 +3,7 @@ import { Avatar, Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { deletePostComment, listPostCommentByPage } from '@/services/post/postCommentController';
 import UpdateCommentModal from '@/pages/Admin/CommentList/components/UpdateCommentModal';
+import ViewCommentModal from '@/pages/Admin/CommentList/components/ViewCommentModal';
 
 /**
  * 评论管理列表
@@ -12,6 +13,7 @@ const CommentList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<API.PostCommentVO[]>([]);
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
+  const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<API.PostCommentVO>();
 
   /**
@@ -74,7 +76,8 @@ const CommentList: React.FC = () => {
       hideInForm: true,
       copyable: true,
       ellipsis: true,
-      width: 120,
+      width: 140,
+      hideInTable: true,
     },
     {
       title: '评论内容',
@@ -106,16 +109,35 @@ const CommentList: React.FC = () => {
       dataIndex: 'createTime',
       valueType: 'dateTime',
       hideInForm: true,
-      width: 180,
+      width: 160,
+      sorter: true,
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updateTime',
+      valueType: 'dateTime',
+      hideInForm: true,
+      hideInSearch: true,
+      width: 160,
       sorter: true,
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      width: 100,
+      width: 160,
+      fixed: 'right',
       render: (_, record) => (
         <Space size={'middle'}>
+          <Typography.Link
+            key="view"
+            onClick={() => {
+              setCurrentRow(record);
+              setViewModalVisible(true);
+            }}
+          >
+            详情
+          </Typography.Link>
           <Typography.Link
             key="update"
             onClick={() => {
@@ -175,7 +197,7 @@ const CommentList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        scroll={{ x: 800 }}
+        scroll={{ x: 1000 }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
@@ -200,6 +222,18 @@ const CommentList: React.FC = () => {
           </Popconfirm>
         </FooterToolbar>
       )}
+
+      {viewModalVisible && (
+        <ViewCommentModal
+          visible={viewModalVisible}
+          comment={currentRow}
+          onCancel={() => {
+            setViewModalVisible(false);
+            setCurrentRow(undefined);
+          }}
+        />
+      )}
+
       {updateModalVisible && (
         <UpdateCommentModal
           oldData={currentRow}
@@ -213,6 +247,7 @@ const CommentList: React.FC = () => {
         />
       )}
     </>
+
   );
 };
 export default CommentList;

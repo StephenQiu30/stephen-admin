@@ -7,7 +7,7 @@ export async function createLog(
   body: API.UserLoginLogCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean>('/user/login/log/create', {
+  return request<API.BaseResponseBoolean>('/log/user/login/log/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ export async function createLog(
 
 /** 删除用户登录日志 删除指定用户登录日志（仅管理员） POST /user/login/log/delete */
 export async function deleteLog(body: API.DeleteRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseBoolean>('/user/login/log/delete', {
+  return request<API.BaseResponseBoolean>('/log/user/login/log/delete', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export async function listLogByPage(
   body: API.UserLoginLogQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageUserLoginLogVO>('/user/login/log/list/page', {
+  return request<API.BaseResponsePageUserLoginLogVO>('/log/user/login/log/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

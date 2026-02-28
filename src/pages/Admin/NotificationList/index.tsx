@@ -128,7 +128,7 @@ const NotificationList: React.FC = () => {
       dataIndex: 'title',
       valueType: 'text',
       ellipsis: true,
-      width: 200,
+      width: 180,
     },
     {
       title: '内容',
@@ -141,7 +141,7 @@ const NotificationList: React.FC = () => {
       dataIndex: 'type',
       valueType: 'select',
       valueEnum: NotificationTypeEnumMap,
-      width: 100,
+      width: 110,
     },
     {
       title: '接收用户ID',
@@ -156,12 +156,13 @@ const NotificationList: React.FC = () => {
       dataIndex: 'isRead',
       valueType: 'select',
       valueEnum: NotificationReadStatusEnumMap,
-      width: 100,
+      width: 110,
     },
     {
       title: '关联信息',
       dataIndex: 'related',
       hideInSearch: true,
+      width: 140,
       render: (_, record) => {
         if (!record.relatedType) return '-';
         return (
@@ -269,7 +270,7 @@ const NotificationList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        scroll={{ x: 1200 }}
+        scroll={{ x: 1000 }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar

@@ -2,12 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 创建操作日志 记录用户操作日志 POST /operation/log/add */
-export async function createLog1(
+/** 创建操作日志 记录用户操作日志 POST /log/operation/add */
+export async function addOperationLog(
   body: API.OperationLogCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean>('/operation/log/add', {
+  return request<API.BaseResponseBoolean>('/log/operation/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,9 +17,9 @@ export async function createLog1(
   });
 }
 
-/** 删除操作日志 删除指定操作日志（仅管理员） POST /operation/log/delete */
-export async function deleteLog1(body: API.DeleteRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseBoolean>('/operation/log/delete', {
+/** 删除操作日志 删除指定操作日志（仅管理员） POST /log/operation/delete */
+export async function deleteLog(body: API.DeleteRequest, options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean>('/log/operation/delete', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -29,12 +29,12 @@ export async function deleteLog1(body: API.DeleteRequest, options?: { [key: stri
   });
 }
 
-/** 分页获取操作日志列表 分页查询操作日志（仅管理员） POST /operation/log/list/page */
-export async function listLogByPage1(
+/** 分页获取操作日志列表 分页查询操作日志（仅管理员） POST /log/operation/list/page */
+export async function listLogByPage(
   body: API.OperationLogQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageOperationLogVO>('/operation/log/list/page', {
+  return request<API.BaseResponsePageOperationLogVO>('/log/operation/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

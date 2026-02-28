@@ -2,12 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 创建邮件记录 记录邮件发送信息 POST /email/record/add */
-export async function createRecord1(
+/** 创建邮件记录 记录邮件发送信息 POST /log/email/add */
+export async function addEmailRecord(
   body: API.EmailRecordCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean>('/email/record/add', {
+  return request<API.BaseResponseBoolean>('/log/email/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,12 +17,12 @@ export async function createRecord1(
   });
 }
 
-/** 创建邮件记录并返回 ID 记录邮件发送信息并返回记录 ID POST /email/record/add/id */
-export async function createRecordReturnId(
+/** 创建邮件记录并返回 ID 记录邮件发送信息并返回记录 ID POST /log/email/add/id */
+export async function addEmailRecordReturnId(
   body: API.EmailRecordCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseLong>('/email/record/add/id', {
+  return request<API.BaseResponseLong>('/log/email/add/id', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,9 +32,9 @@ export async function createRecordReturnId(
   });
 }
 
-/** 删除邮件记录 删除指定邮件记录（仅管理员） POST /email/record/delete */
+/** 删除邮件记录 删除指定邮件记录（仅管理员） POST /log/email/delete */
 export async function deleteRecord1(body: API.DeleteRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseBoolean>('/email/record/delete', {
+  return request<API.BaseResponseBoolean>('/log/email/delete', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -44,12 +44,12 @@ export async function deleteRecord1(body: API.DeleteRequest, options?: { [key: s
   });
 }
 
-/** 分页获取邮件记录列表 分页查询邮件记录（仅管理员） POST /email/record/list/page */
+/** 分页获取邮件记录列表 分页查询邮件记录（仅管理员） POST /log/email/list/page */
 export async function listRecordByPage1(
   body: API.EmailRecordQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageEmailRecordVO>('/email/record/list/page', {
+  return request<API.BaseResponsePageEmailRecordVO>('/log/email/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -59,12 +59,12 @@ export async function listRecordByPage1(
   });
 }
 
-/** 更新邮件记录状态 更新指定邮件记录的状态 POST /email/record/update/status */
+/** 更新邮件记录状态 更新指定邮件记录的状态 POST /log/email/update/status */
 export async function updateRecordStatus(
   body: API.EmailRecordCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean>('/email/record/update/status', {
+  return request<API.BaseResponseBoolean>('/log/email/update/status', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

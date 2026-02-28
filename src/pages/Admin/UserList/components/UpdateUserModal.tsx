@@ -6,9 +6,9 @@ import {
   ProFormTextArea,
   ProFormUploadDragger,
 } from '@ant-design/pro-components';
-import { message, Select, UploadProps } from 'antd';
+import { message, UploadProps } from 'antd';
 import React, { useState } from 'react';
-import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
+import { userRole } from '@/enums/UserRoleEnum';
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
 import { updateUser } from '@/services/user/userController';
 import { uploadFile } from '@/services/file/fileController';
@@ -136,17 +136,12 @@ const UpdateUserModal: React.FC<Props> = (props) => {
         }}
         name="pic"
       />
-      <ProFormSelect name={'userRole'} label={'权限'} valueEnum={userRole}>
-        <Select>
-          <Select.Option value={UserRoleEnum.ADMIN}>
-            {userRole[UserRoleEnum.ADMIN].text}
-          </Select.Option>
-          <Select.Option value={UserRoleEnum.USER}>
-            {userRole[UserRoleEnum.USER].text}
-          </Select.Option>
-          <Select.Option value={UserRoleEnum.BAN}>{userRole[UserRoleEnum.BAN].text}</Select.Option>
-        </Select>
-      </ProFormSelect>
+      <ProFormSelect
+        name={'userRole'}
+        label={'权限'}
+        valueEnum={userRole}
+        rules={[{ required: true, message: '请选择权限' }]}
+      />
     </ModalForm>
   );
 };

@@ -1,9 +1,10 @@
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, Descriptions, message, Modal, Popconfirm, Space, Typography } from 'antd';
+import { Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
-import { listLogByPage } from '@/services/log/userLoginLogController';
-import { deleteLog } from '@/services/log/userLoginLogController';
+import { listLogByPage1 } from '@/services/log/userLoginLogController';
+import { deleteLog1 } from '@/services/log/userLoginLogController';
 import { LoginStatusEnumMap } from '@/enums/LoginStatusEnum';
+import ViewUserLoginLogModal from './components/ViewUserLoginLogModal';
 
 /**
  * 登录日志页面
@@ -11,13 +12,11 @@ import { LoginStatusEnumMap } from '@/enums/LoginStatusEnum';
 const UserLoginLog: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<API.UserLoginLogVO[]>([]);
-  const [detailModalVisible, setDetailModalVisible] = useState(false);
-  const [currentRecord, setCurrentRecord] = useState<API.UserLoginLogVO>();
 
   const handleDelete = async (record: API.UserLoginLogVO) => {
     const hide = message.loading('正在删除');
     try {
-      await deleteLog({
+      await deleteLog1({
         id: record.id as any,
       });
       message.success('删除成功');
@@ -37,7 +36,7 @@ const UserLoginLog: React.FC = () => {
     try {
       await Promise.all(
         selectedRows.map(async (row) => {
-          await deleteLog({ id: row.id as any });
+          await deleteLog1({ id: row.id as any });
         }),
       );
       message.success('批量删除成功');
@@ -52,12 +51,9 @@ const UserLoginLog: React.FC = () => {
     }
   };
 
-  const handleViewDetail = (record: API.UserLoginLogVO) => {
-    setCurrentRecord(record);
-    setDetailModalVisible(true);
-  };
 
   const columns: ProColumns<API.UserLoginLogVO>[] = [
+    { title: '用户ID', dataIndex: 'userId', width: 120, copyable: true },
     { title: '用户账号', dataIndex: 'account', width: 120, copyable: true },
     {
       title: 'IP地址',
@@ -89,7 +85,9 @@ const UserLoginLog: React.FC = () => {
       fixed: 'right',
       render: (_, record) => (
         <Space size={'middle'}>
-          <Typography.Link onClick={() => handleViewDetail(record)}>详情</Typography.Link>
+          <ViewUserLoginLogModal record={record}>
+            <Typography.Link>详情</Typography.Link>
+          </ViewUserLoginLogModal>
           <Popconfirm
             title="确定删除？"
             description="删除后将无法恢复?"
@@ -112,9 +110,14 @@ const UserLoginLog: React.FC = () => {
         rowKey="id"
         search={{ labelWidth: 100 }}
         request={async (params, sort, filter) => {
-          const { data, code } = await listLogByPage({
+          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          const sortOrder = sort?.[sortField] ?? 'descend';
+
+          const { data, code } = await listLogByPage1({
             ...params,
             ...filter,
+            sortField,
+            sortOrder,
           } as any);
 
           return {
@@ -129,7 +132,7 @@ const UserLoginLog: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        scroll={{ x: 900 }}
+        scroll={{ x: 1100 }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
@@ -154,43 +157,6 @@ const UserLoginLog: React.FC = () => {
           </Popconfirm>
         </FooterToolbar>
       )}
-      <Modal
-        title="登录日志详情"
-        open={detailModalVisible}
-        onCancel={() => setDetailModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setDetailModalVisible(false)}>
-            关闭
-          </Button>,
-        ]}
-        width={800}
-      >
-        <Descriptions column={2} bordered>
-          <Descriptions.Item label="日志ID">{currentRecord?.id}</Descriptions.Item>
-          <Descriptions.Item label="用户ID">{currentRecord?.userId}</Descriptions.Item>
-          <Descriptions.Item label="登录账号">{currentRecord?.account}</Descriptions.Item>
-          <Descriptions.Item label="登录类型">{currentRecord?.loginType}</Descriptions.Item>
-          <Descriptions.Item label="登录状态">
-            {currentRecord?.status === 'SUCCESS' ? (
-              <Typography.Text type="success">成功</Typography.Text>
-            ) : (
-              <Typography.Text type="danger">失败</Typography.Text>
-            )}
-          </Descriptions.Item>
-          <Descriptions.Item label="客户端IP">{currentRecord?.clientIp}</Descriptions.Item>
-          {currentRecord?.status === 'FAILURE' && (
-            <Descriptions.Item label="失败原因" span={2}>
-              {currentRecord?.failReason}
-            </Descriptions.Item>
-          )}
-          <Descriptions.Item label="User-Agent" span={2}>
-            {currentRecord?.userAgent}
-          </Descriptions.Item>
-          <Descriptions.Item label="创建时间" span={2}>
-            {currentRecord?.createTime}
-          </Descriptions.Item>
-        </Descriptions>
-      </Modal>
     </>
   );
 };

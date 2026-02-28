@@ -23,7 +23,7 @@ interface Props {
 const UpdatePostModal: React.FC<Props> = (props) => {
   const { oldData, visible, onSubmit, onCancel } = props;
   // 帖子封面
-  const [cover, setCover] = useState<any>();
+  const [cover, setCover] = useState<string>();
 
   const [form] = ProForm.useForm<API.PostUpdateRequest>();
   /**
@@ -48,7 +48,7 @@ const UpdatePostModal: React.FC<Props> = (props) => {
         );
         if (res.code === 0 && res.data) {
           onSuccess(res.data);
-          setCover(res.data);
+          setCover(res.data.url);
         }
       } catch (error: any) {
         message.error(`文件上传失败: ${error.message}`);
@@ -129,7 +129,6 @@ const UpdatePostModal: React.FC<Props> = (props) => {
         fieldProps={{
           suffixIcon: null,
         }}
-        initialValue={tags}
       />
       <ProFormUploadDragger
         title={'上传帖子封面'}

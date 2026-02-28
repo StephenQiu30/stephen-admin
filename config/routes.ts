@@ -36,7 +36,17 @@ export default [
     access: 'canAdmin',
     routes: [
       {
-        name: '文件日志',
+        name: '文件上传日志',
+        path: '/admin/log/file/upload',
+        component: './Admin/Log/FileUploadRecord',
+      },
+      {
+        name: '邮件发送日志',
+        path: '/admin/log/email',
+        component: './Admin/Log/EmailRecord',
+      },
+      {
+        name: '文件系统日志',
         path: '/admin/log/file',
         component: './Admin/File/Log',
       },

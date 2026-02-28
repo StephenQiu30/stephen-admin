@@ -11,6 +11,7 @@ import {
 import { PlusOutlined, ReadOutlined } from '@ant-design/icons';
 import UpdateNotificationModal from '@/pages/Admin/NotificationList/components/UpdateNotificationModal';
 import CreateNotificationModal from '@/pages/Admin/NotificationList/components/CreateNotificationModal';
+import ViewNotificationModal from '@/pages/Admin/NotificationList/components/ViewNotificationModal';
 import { NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
 import { NotificationReadStatusEnumMap } from '@/enums/NotificationReadStatusEnum';
 
@@ -189,6 +190,9 @@ const NotificationList: React.FC = () => {
       fixed: 'right',
       render: (_, record) => (
         <Space size={'middle'}>
+          <ViewNotificationModal notification={record}>
+            <Typography.Link key={'view'}>查看</Typography.Link>
+          </ViewNotificationModal>
           <Typography.Link
             key={'update'}
             onClick={() => {
@@ -223,7 +227,7 @@ const NotificationList: React.FC = () => {
         actionRef={actionRef}
         rowKey={'id'}
         search={{
-          labelWidth: 120,
+          labelWidth: 100,
         }}
         toolBarRender={() => [
           <Button
@@ -270,7 +274,7 @@ const NotificationList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1200 }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar

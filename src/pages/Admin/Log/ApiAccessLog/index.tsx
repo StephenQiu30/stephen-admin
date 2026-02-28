@@ -1,9 +1,10 @@
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, Descriptions, message, Modal, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { listLogByPage2 } from '@/services/log/apiAccessLogController';
 import { deleteLog2 } from '@/services/log/apiAccessLogController';
 import { ApiAccessStatusEnumMap } from '@/enums/ApiAccessStatusEnum';
+import ViewApiAccessLogModal from './components/ViewApiAccessLogModal';
 
 /**
  * API 访问日志页面
@@ -11,8 +12,6 @@ import { ApiAccessStatusEnumMap } from '@/enums/ApiAccessStatusEnum';
 const ApiAccessLog: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<API.ApiAccessLogVO[]>([]);
-  const [detailModalVisible, setDetailModalVisible] = useState(false);
-  const [currentRecord, setCurrentRecord] = useState<API.ApiAccessLogVO>();
 
   const handleDelete = async (record: API.ApiAccessLogVO) => {
     const hide = message.loading('正在删除');
@@ -52,10 +51,6 @@ const ApiAccessLog: React.FC = () => {
     }
   };
 
-  const handleViewDetail = (record: API.ApiAccessLogVO) => {
-    setCurrentRecord(record);
-    setDetailModalVisible(true);
-  };
 
   const columns: ProColumns<API.ApiAccessLogVO>[] = [
     { title: '用户ID', dataIndex: 'userId', width: 120, copyable: true },
@@ -98,7 +93,9 @@ const ApiAccessLog: React.FC = () => {
       fixed: 'right',
       render: (_, record) => (
         <Space size={'middle'}>
-          <Typography.Link onClick={() => handleViewDetail(record)}>详情</Typography.Link>
+          <ViewApiAccessLogModal record={record}>
+            <Typography.Link>详情</Typography.Link>
+          </ViewApiAccessLogModal>
           <Popconfirm
             title="确定删除？"
             description="删除后将无法恢复?"
@@ -121,9 +118,14 @@ const ApiAccessLog: React.FC = () => {
         rowKey="id"
         search={{ labelWidth: 100 }}
         request={async (params, sort, filter) => {
+          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          const sortOrder = sort?.[sortField] ?? 'descend';
+
           const { data, code } = await listLogByPage2({
             ...params,
             ...filter,
+            sortField,
+            sortOrder,
           } as any);
 
           return {
@@ -138,7 +140,7 @@ const ApiAccessLog: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1200 }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
@@ -163,52 +165,6 @@ const ApiAccessLog: React.FC = () => {
           </Popconfirm>
         </FooterToolbar>
       )}
-      <Modal
-        title="API 访问日志详情"
-        open={detailModalVisible}
-        onCancel={() => setDetailModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setDetailModalVisible(false)}>
-            关闭
-          </Button>,
-        ]}
-        width={800}
-      >
-        <Descriptions column={2} bordered>
-          <Descriptions.Item label="日志ID">{currentRecord?.id}</Descriptions.Item>
-          <Descriptions.Item label="链路追踪ID">{currentRecord?.traceId}</Descriptions.Item>
-          <Descriptions.Item label="用户ID">{currentRecord?.userId}</Descriptions.Item>
-          <Descriptions.Item label="请求方式">
-            <Tag color="blue">{currentRecord?.method}</Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="请求路径" span={2}>
-            {currentRecord?.path}
-          </Descriptions.Item>
-          <Descriptions.Item label="查询参数" span={2}>
-            <pre style={{ maxHeight: 200, overflow: 'auto' }}>{currentRecord?.query || '-'}</pre>
-          </Descriptions.Item>
-          <Descriptions.Item label="响应状态码">
-            <Tag
-              color={currentRecord?.status && currentRecord.status >= 200 && currentRecord.status < 300 ? 'green' : 'red'}
-            >
-              {currentRecord?.status}
-            </Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="请求耗时">{currentRecord?.latencyMs} ms</Descriptions.Item>
-          <Descriptions.Item label="客户端IP">{currentRecord?.clientIp}</Descriptions.Item>
-          <Descriptions.Item label="请求大小">{currentRecord?.requestSize} bytes</Descriptions.Item>
-          <Descriptions.Item label="响应大小">{currentRecord?.responseSize} bytes</Descriptions.Item>
-          <Descriptions.Item label="User-Agent" span={2}>
-            {currentRecord?.userAgent}
-          </Descriptions.Item>
-          <Descriptions.Item label="Referer" span={2}>
-            {currentRecord?.referer || '-'}
-          </Descriptions.Item>
-          <Descriptions.Item label="创建时间" span={2}>
-            {currentRecord?.createTime}
-          </Descriptions.Item>
-        </Descriptions>
-      </Modal>
     </>
   );
 };

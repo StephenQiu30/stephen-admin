@@ -17,8 +17,6 @@ const UserList: React.FC = () => {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   // 更新窗口的Modal框
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
-  // 查看窗口的Modal框
-  const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   // 当前用户的所点击的数据
   const [currentRow, setCurrentRow] = useState<API.User>();
@@ -155,15 +153,9 @@ const UserList: React.FC = () => {
       width: 180,
       render: (_, record) => (
         <Space size={'middle'}>
-          <Typography.Link
-            key="view"
-            onClick={() => {
-              setCurrentRow(record);
-              setViewModalVisible(true);
-            }}
-          >
-            详情
-          </Typography.Link>
+          <ViewUserModal user={record}>
+            <Typography.Link key="view">详情</Typography.Link>
+          </ViewUserModal>
           <Typography.Link
             key="update"
             onClick={() => {
@@ -199,7 +191,7 @@ const UserList: React.FC = () => {
         actionRef={actionRef}
         rowKey={'id'}
         search={{
-          labelWidth: 120,
+          labelWidth: 100,
         }}
         toolBarRender={() => [
           <Space key={'space'} wrap>
@@ -250,7 +242,7 @@ const UserList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1200 }}
       />
 
       {/*新建表单的Modal框*/}
@@ -267,17 +259,6 @@ const UserList: React.FC = () => {
         />
       )}
 
-      {/*查看详情的Modal框*/}
-      {viewModalVisible && (
-        <ViewUserModal
-          visible={viewModalVisible}
-          user={currentRow}
-          onCancel={() => {
-            setViewModalVisible(false);
-            setCurrentRow(undefined);
-          }}
-        />
-      )}
 
       {/*更新表单的Modal框*/}
       {updateModalVisible && (

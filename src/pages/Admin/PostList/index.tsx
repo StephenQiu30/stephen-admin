@@ -20,8 +20,6 @@ const PostList: React.FC = () => {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   // 更新窗口的Modal框
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
-  // 查看窗口的Modal框
-  const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
   // 审核窗口的Modal框
   const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(false);
   // 批量审核窗口的Modal框
@@ -199,15 +197,9 @@ const PostList: React.FC = () => {
       width: 200,
       render: (_, record) => (
         <Space size={'middle'}>
-          <Typography.Link
-            key="info"
-            onClick={() => {
-              setViewModalVisible(true);
-              setCurrentRow(record);
-            }}
-          >
-            查看
-          </Typography.Link>
+          <ViewPostModal post={record}>
+            <Typography.Link key="info">查看</Typography.Link>
+          </ViewPostModal>
           <Typography.Link
             key="review"
             onClick={() => {
@@ -250,7 +242,7 @@ const PostList: React.FC = () => {
         actionRef={actionRef}
         rowKey={'id'}
         search={{
-          labelWidth: 120,
+          labelWidth: 100,
         }}
         toolBarRender={() => [
           <Space key={'space'} wrap>
@@ -300,7 +292,7 @@ const PostList: React.FC = () => {
           const { data, code } = await listPostByPage({
             ...rest,
             ...filter,
-            tags: tagList,
+            tags: tags ? [tags] : undefined,
             sortField,
             sortOrder,
           } as any);
@@ -317,7 +309,7 @@ const PostList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1200 }}
       />
 
       {/*新建表单的Modal框*/}
@@ -371,20 +363,6 @@ const PostList: React.FC = () => {
             setSelectedRows([]);
             actionRef.current?.reload();
           }}
-        />
-      )}
-      {/*查看表单的Modal框*/}
-      {viewModalVisible && (
-        <ViewPostModal
-          onCancel={() => {
-            setViewModalVisible(false);
-          }}
-          visible={viewModalVisible}
-          onSubmit={async () => {
-            setViewModalVisible(false);
-            actionRef.current?.reload();
-          }}
-          post={currentRow as API.PostVO}
         />
       )}
     </>

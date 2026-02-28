@@ -1,8 +1,8 @@
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
+import { listRecordByPage } from '@/services/log/fileUploadRecordController';
 import { deleteRecord } from '@/services/log/fileUploadRecordController';
-import { searchFileUploadRecordByPage } from '@/services/search/searchController';
 
 /**
  * 文件日志页面
@@ -137,7 +137,7 @@ const FileLog: React.FC = () => {
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
 
-          const { data, code } = await searchFileUploadRecordByPage({
+          const { data, code } = await listRecordByPage({
             ...params,
             ...filter,
             sortField,

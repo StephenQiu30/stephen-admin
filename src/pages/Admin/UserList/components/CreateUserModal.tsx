@@ -5,9 +5,9 @@ import {
   ProFormText,
   ProFormUploadDragger,
 } from '@ant-design/pro-components';
-import { message, Select, UploadProps } from 'antd';
+import { message, UploadProps } from 'antd';
 import React, { useState } from 'react';
-import { userRole, UserRoleEnum } from '@/enums/UserRoleEnum';
+import { userRole } from '@/enums/UserRoleEnum';
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
 import { addUser } from '@/services/user/userController';
 import { uploadFile } from '@/services/file/fileController';
@@ -26,7 +26,7 @@ interface Props {
 const CreateUserModal: React.FC<Props> = (props) => {
   const { visible, onSubmit, onCancel } = props;
   // 用户头像
-  const [userAvatar, setUserAvatar] = useState<any>();
+  const [userAvatar, setUserAvatar] = useState<string>();
   const [form] = ProForm.useForm<API.UserAddRequest>();
   /**
    * 用户更新头像
@@ -50,7 +50,7 @@ const CreateUserModal: React.FC<Props> = (props) => {
         );
         if (res.code === 0 && res.data) {
           onSuccess(res.data);
-          setUserAvatar(res.data);
+          setUserAvatar(res.data.url);
         } else {
           onError(new Error(res.message));
           message.error(`文件上传失败: ${res.message}`);
@@ -128,17 +128,12 @@ const CreateUserModal: React.FC<Props> = (props) => {
         }}
         name="pic"
       />
-      <ProFormSelect name={'userRole'} label={'权限'} valueEnum={userRole}>
-        <Select>
-          <Select.Option value={UserRoleEnum.ADMIN}>
-            {userRole[UserRoleEnum.ADMIN].text}
-          </Select.Option>
-          <Select.Option value={UserRoleEnum.USER}>
-            {userRole[UserRoleEnum.USER].text}
-          </Select.Option>
-          <Select.Option value={UserRoleEnum.BAN}>{userRole[UserRoleEnum.BAN].text}</Select.Option>
-        </Select>
-      </ProFormSelect>
+      <ProFormSelect
+        name={'userRole'}
+        label={'权限'}
+        valueEnum={userRole}
+        rules={[{ required: true, message: '请选择权限' }]}
+      />
     </ModalForm>
   );
 };

@@ -13,7 +13,6 @@ const CommentList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<API.PostCommentVO[]>([]);
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
-  const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<API.PostCommentVO>();
 
   /**
@@ -129,15 +128,9 @@ const CommentList: React.FC = () => {
       fixed: 'right',
       render: (_, record) => (
         <Space size={'middle'}>
-          <Typography.Link
-            key="view"
-            onClick={() => {
-              setCurrentRow(record);
-              setViewModalVisible(true);
-            }}
-          >
-            详情
-          </Typography.Link>
+          <ViewCommentModal comment={record}>
+            <Typography.Link key="view">详情</Typography.Link>
+          </ViewCommentModal>
           <Typography.Link
             key="update"
             onClick={() => {
@@ -172,7 +165,7 @@ const CommentList: React.FC = () => {
         actionRef={actionRef}
         rowKey={'id'}
         search={{
-          labelWidth: 120,
+          labelWidth: 100,
         }}
         request={async (params, sort, filter) => {
           const sortField = Object.keys(sort)?.[0] || 'createTime';
@@ -197,7 +190,7 @@ const CommentList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1200 }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
@@ -222,18 +215,6 @@ const CommentList: React.FC = () => {
           </Popconfirm>
         </FooterToolbar>
       )}
-
-      {viewModalVisible && (
-        <ViewCommentModal
-          visible={viewModalVisible}
-          comment={currentRow}
-          onCancel={() => {
-            setViewModalVisible(false);
-            setCurrentRow(undefined);
-          }}
-        />
-      )}
-
       {updateModalVisible && (
         <UpdateCommentModal
           oldData={currentRow}

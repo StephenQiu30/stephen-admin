@@ -6,7 +6,7 @@ import { updatePostComment } from '@/services/post/postCommentController';
 interface Props {
   oldData?: API.PostCommentVO;
   onCancel: () => void;
-  onSubmit: (values: API.PostCommentUpdateRequest) => Promise<void>;
+  onSubmit: (values?: API.PostCommentUpdateRequest) => void;
   visible: boolean;
 }
 

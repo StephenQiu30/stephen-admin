@@ -71,8 +71,23 @@ export default [
   {
     path: '/user',
     layout: false,
-    routes: [{ name: '用户登录', path: '/user/login', component: './User/Login' }],
+    routes: [
+      {
+        name: '登录',
+        path: '/user/login',
+        component: './User/Login',
+      },
+    ],
   },
+  {
+    name: '个人中心',
+    path: '/account/center',
+    component: './Account/Center',
+    icon: 'UserOutlined',
+    hidden: true,
+    access: 'canUser',
+  },
+
   {
     name: 'exception',
     icon: 'warning',

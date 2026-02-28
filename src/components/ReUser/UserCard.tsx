@@ -48,7 +48,7 @@ const UserCard: React.FC<Props> = (props) => {
             shape="circle"
             icon={<EditOutlined style={{ color: '#fff' }} />}
             type="text"
-            onClick={() => history.push('/account/settings')}
+            onClick={() => history.push('/account/center')}
             style={{
               position: 'absolute',
               top: 16,

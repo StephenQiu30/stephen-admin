@@ -16,33 +16,27 @@ import BatchReviewPostModal from '@/pages/Admin/PostList/components/BatchReviewP
  * @constructor
  */
 const PostList: React.FC = () => {
-  // 新建窗口的Modal框
-  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
-  // 更新窗口的Modal框
-  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
-  // 审核窗口的Modal框
-  const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(false);
-  // 批量审核窗口的Modal框
-  const [batchReviewModalVisible, setBatchReviewModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
-  // 当前用户的所点击的数据
+
+  // Modal 状态管理
+  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
+  const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(false);
+  const [batchReviewModalVisible, setBatchReviewModalVisible] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<API.PostVO>();
   const [selectedRowsState, setSelectedRows] = useState<API.PostVO[]>([]);
 
   /**
    * 删除节点
-   *
    * @param row
    */
   const handleDelete = async (row: API.PostVO) => {
     const hide = message.loading('正在删除');
-    if (!row) return true;
+    if (!row?.id) return true;
     try {
-      await deletePost({
-        id: row.id as any,
-      });
+      await deletePost({ id: row.id as any });
       message.success('删除成功');
-      actionRef?.current?.reload();
+      actionRef.current?.reload();
       return true;
     } catch (error: any) {
       message.error(`删除失败: ${error.message}`);
@@ -54,18 +48,13 @@ const PostList: React.FC = () => {
 
   /**
    * 批量删除节点
-   *
    * @param selectedRows
    */
   const handleBatchDelete = async (selectedRows: API.PostVO[]) => {
     const hide = message.loading('正在删除');
-    if (!selectedRows) return true;
+    if (!selectedRows?.length) return true;
     try {
-      await Promise.all(
-        selectedRows.map(async (row) => {
-          await deletePost({ id: row.id as any });
-        }),
-      );
+      await Promise.all(selectedRows.map((row) => deletePost({ id: row.id as any })));
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);
@@ -79,25 +68,18 @@ const PostList: React.FC = () => {
   };
 
   /**
-   * 表格列数据
+   * 表格列定义
    */
   const columns: ProColumns<API.PostVO>[] = [
     {
-      title: 'id',
+      title: 'ID',
       dataIndex: 'id',
       valueType: 'text',
       hideInForm: true,
+      hideInTable: true,
       copyable: true,
       ellipsis: true,
       width: 120,
-      responsive: ['md'],
-      hideInTable: true,
-    },
-    {
-      title: '全局搜索',
-      dataIndex: 'searchText',
-      valueType: 'text',
-      hideInTable: true,
     },
     {
       title: '标题',
@@ -113,20 +95,16 @@ const PostList: React.FC = () => {
       hideInTable: true,
     },
     {
-      title: '审核信息',
-      dataIndex: 'reviewMessage',
+      title: '全局搜索',
+      dataIndex: 'searchText',
       valueType: 'text',
-      hideInSearch: true,
-      ellipsis: true,
       hideInTable: true,
     },
     {
       title: '封面',
       dataIndex: 'cover',
       valueType: 'image',
-      fieldProps: {
-        width: 48,
-      },
+      fieldProps: { width: 48 },
       hideInSearch: true,
       width: 80,
     },
@@ -157,37 +135,12 @@ const PostList: React.FC = () => {
       width: 100,
     },
     {
-      title: '创建人ID',
-      dataIndex: 'userId',
-      valueType: 'text',
-      hideInTable: true,
-      copyable: true,
-    },
-    {
-      title: '收藏人ID',
-      dataIndex: 'favourUserId',
-      valueType: 'text',
-      hideInTable: true,
-      copyable: true,
-    },
-    {
       title: '创建时间',
       dataIndex: 'createTime',
       valueType: 'dateTime',
       hideInForm: true,
-      width: 160,
-      responsive: ['lg'],
       sorter: true,
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updateTime',
-      valueType: 'dateTime',
-      hideInForm: true,
-      hideInSearch: true,
       width: 160,
-      responsive: ['lg'],
-      sorter: true,
     },
     {
       title: '操作',
@@ -196,15 +149,15 @@ const PostList: React.FC = () => {
       fixed: 'right',
       width: 200,
       render: (_, record) => (
-        <Space size={'middle'}>
+        <Space size="middle">
           <ViewPostModal post={record}>
-            <Typography.Link key="info">查看</Typography.Link>
+            <Typography.Link key="view">查看</Typography.Link>
           </ViewPostModal>
           <Typography.Link
             key="review"
             onClick={() => {
-              setReviewModalVisible(true);
               setCurrentRow(record);
+              setReviewModalVisible(true);
             }}
           >
             审核
@@ -212,22 +165,18 @@ const PostList: React.FC = () => {
           <Typography.Link
             key="update"
             onClick={() => {
-              setUpdateModalVisible(true);
               setCurrentRow(record);
+              setUpdateModalVisible(true);
             }}
           >
             修改
           </Typography.Link>
           <Popconfirm
             title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={async () => {
-              await handleDelete(record);
-            }}
+            description="删除后将无法恢复？"
+            onConfirm={() => handleDelete(record)}
           >
-            <Typography.Link key={'delete'} type={'danger'}>
+            <Typography.Link key="delete" type="danger">
               删除
             </Typography.Link>
           </Popconfirm>
@@ -235,67 +184,50 @@ const PostList: React.FC = () => {
       ),
     },
   ];
+
   return (
     <>
       <ProTable<API.PostVO, API.PostQueryRequest>
-        headerTitle={'帖子列表'}
+        headerTitle="帖子管理"
         actionRef={actionRef}
-        rowKey={'id'}
-        search={{
-          labelWidth: 100,
-        }}
+        rowKey="id"
+        search={{ labelWidth: 100 }}
         toolBarRender={() => [
-          <Space key={'space'} wrap>
-            <Button
-              type={'primary'}
-              icon={<PlusOutlined />}
-              key="create"
-              onClick={() => {
-                setCreateModalVisible(true);
-              }}
-            >
-              新建
-            </Button>
-            {selectedRowsState?.length > 0 && (
-              <>
-                <Button
-                  type={'primary'}
-                  key="batchReview"
-                  onClick={() => {
-                    setBatchReviewModalVisible(true);
-                  }}
-                >
-                  批量审核
-                </Button>
-                <Button
-                  type={'primary'}
-                  danger
-                  key="batchDelete"
-                  onClick={() => {
-                    handleBatchDelete(selectedRowsState);
-                  }}
-                >
+          <Button
+            key="create"
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setCreateModalVisible(true)}
+          >
+            新建
+          </Button>,
+          selectedRowsState?.length > 0 && (
+            <Space key="batchActions">
+              <Button type="primary" onClick={() => setBatchReviewModalVisible(true)}>
+                批量审核
+              </Button>
+              <Popconfirm
+                title="确定批量删除？"
+                onConfirm={() => handleBatchDelete(selectedRowsState)}
+              >
+                <Button type="primary" danger>
                   批量删除
                 </Button>
-              </>
-            )}
-          </Space>,
+              </Popconfirm>
+            </Space>
+          ),
         ]}
         request={async (params, sort, filter) => {
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
 
-          // 处理 tags 查询，从搜索栏获取 tags 并转换为数组
-          const { tags, ...rest } = params as any;
-          const tagList = tags ? [tags] : undefined;
-
           const { data, code } = await listPostByPage({
-            ...rest,
+            ...(params as any),
             ...filter,
-            tags: tags ? [tags] : undefined,
+            tags: params.tags ? [params.tags] : undefined,
             sortField,
             sortOrder,
-          } as any);
+          });
 
           return {
             success: code === 0,
@@ -305,67 +237,54 @@ const PostList: React.FC = () => {
         }}
         columns={columns}
         rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
+          onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
         scroll={{ x: 1200 }}
       />
 
-      {/*新建表单的Modal框*/}
-      {createModalVisible && (
-        <CreatePostModal
-          onCancel={() => {
-            setCreateModalVisible(false);
-          }}
-          visible={createModalVisible}
-          onSubmit={async () => {
-            setCreateModalVisible(false);
-            actionRef.current?.reload();
-          }}
-        />
-      )}
+      <CreatePostModal
+        visible={createModalVisible}
+        onCancel={() => setCreateModalVisible(false)}
+        onSubmit={() => {
+          setCreateModalVisible(false);
+          actionRef.current?.reload();
+        }}
+      />
 
-      {/*更新表单的Modal框*/}
-      {updateModalVisible && (
-        <UpdatePostModal
-          oldData={currentRow}
-          visible={updateModalVisible}
-          onCancel={() => setUpdateModalVisible(false)}
-          onSubmit={async () => {
-            setUpdateModalVisible(false);
-            setCurrentRow(undefined);
-            actionRef.current?.reload();
-          }}
-        />
-      )}
-      {/*审核表单的Modal框*/}
-      {reviewModalVisible && (
-        <ReviewPostModal
-          oldData={currentRow}
-          visible={reviewModalVisible}
-          onCancel={() => setReviewModalVisible(false)}
-          onSubmit={async () => {
-            setReviewModalVisible(false);
-            setCurrentRow(undefined);
-            actionRef.current?.reload();
-          }}
-        />
-      )}
-      {/*批量审核表单的Modal框*/}
-      {batchReviewModalVisible && (
-        <BatchReviewPostModal
-          posts={selectedRowsState}
-          visible={batchReviewModalVisible}
-          onCancel={() => setBatchReviewModalVisible(false)}
-          onSubmit={async () => {
-            setBatchReviewModalVisible(false);
-            setSelectedRows([]);
-            actionRef.current?.reload();
-          }}
-        />
-      )}
+      <UpdatePostModal
+        visible={updateModalVisible}
+        oldData={currentRow}
+        onCancel={() => setUpdateModalVisible(false)}
+        onSubmit={() => {
+          setUpdateModalVisible(false);
+          setCurrentRow(undefined);
+          actionRef.current?.reload();
+        }}
+      />
+
+      <ReviewPostModal
+        visible={reviewModalVisible}
+        oldData={currentRow}
+        onCancel={() => setReviewModalVisible(false)}
+        onSubmit={() => {
+          setReviewModalVisible(false);
+          setCurrentRow(undefined);
+          actionRef.current?.reload();
+        }}
+      />
+
+      <BatchReviewPostModal
+        visible={batchReviewModalVisible}
+        posts={selectedRowsState}
+        onCancel={() => setBatchReviewModalVisible(false)}
+        onSubmit={() => {
+          setBatchReviewModalVisible(false);
+          setSelectedRows([]);
+          actionRef.current?.reload();
+        }}
+      />
     </>
   );
 };
+
 export default PostList;

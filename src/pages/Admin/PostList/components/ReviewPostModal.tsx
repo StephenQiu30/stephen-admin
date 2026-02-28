@@ -7,7 +7,7 @@ import { ReviewStatusEnum } from '@/enums/ReviewStatusEnum';
 interface Props {
   oldData?: API.PostVO;
   onCancel: () => void;
-  onSubmit: (values: API.PostReviewRequest) => Promise<void>;
+  onSubmit: (values?: API.PostReviewRequest) => void;
   visible: boolean;
 }
 

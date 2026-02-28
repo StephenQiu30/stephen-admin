@@ -13,12 +13,15 @@ const FileUploadRecord: React.FC = () => {
     const actionRef = useRef<ActionType>();
     const [selectedRowsState, setSelectedRows] = useState<API.FileUploadRecordVO[]>([]);
 
+    /**
+     * 删除记录
+     * @param record
+     */
     const handleDelete = async (record: API.FileUploadRecordVO) => {
         const hide = message.loading('正在删除');
+        if (!record?.id) return true;
         try {
-            await deleteRecord({
-                id: record.id as any,
-            });
+            await deleteRecord({ id: record.id as any });
             message.success('删除成功');
             actionRef.current?.reload();
             return true;
@@ -30,15 +33,15 @@ const FileUploadRecord: React.FC = () => {
         }
     };
 
+    /**
+     * 批量删除记录
+     * @param selectedRows
+     */
     const handleBatchDelete = async (selectedRows: API.FileUploadRecordVO[]) => {
         const hide = message.loading('正在删除');
-        if (!selectedRows) return true;
+        if (!selectedRows?.length) return true;
         try {
-            await Promise.all(
-                selectedRows.map(async (row) => {
-                    await deleteRecord({ id: row.id as any });
-                }),
-            );
+            await Promise.all(selectedRows.map((row) => deleteRecord({ id: row.id as any })));
             message.success('批量删除成功');
             actionRef.current?.reloadAndRest?.();
             setSelectedRows([]);
@@ -72,8 +75,8 @@ const FileUploadRecord: React.FC = () => {
             render: (size) => {
                 const s = Number(size);
                 if (s < 1024) return `${s} B`;
-                if (s < 1024 * 1024) return `${(s / 1024).toFixed(2)} KB`;
-                return `${(s / (1024 * 1024)).toFixed(2)} MB`;
+                if (s < 1024 * 1024) return `${((s as number) / 1024).toFixed(2)} KB`;
+                return `${((s as number) / (1024 * 1024)).toFixed(2)} MB`;
             },
         },
         { title: '后缀', dataIndex: 'fileSuffix', width: 80, hideInSearch: true },
@@ -84,7 +87,6 @@ const FileUploadRecord: React.FC = () => {
             hideInSearch: true,
             render: (url) => {
                 if (!url) return '-';
-                // 简单判断是否为图片
                 const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url as string);
                 if (isImage) {
                     return <Image src={url as string} width={40} height={40} style={{ objectFit: 'cover' }} />;
@@ -117,18 +119,18 @@ const FileUploadRecord: React.FC = () => {
             width: 120,
             fixed: 'right',
             render: (_, record) => (
-                <Space size={'middle'}>
+                <Space size="middle">
                     <ViewFileUploadRecordModal record={record}>
-                        <Typography.Link>详情</Typography.Link>
+                        <Typography.Link key="view">详情</Typography.Link>
                     </ViewFileUploadRecordModal>
                     <Popconfirm
                         title="确定删除？"
-                        description="删除后将无法恢复?"
-                        okText="确定"
-                        cancelText="取消"
+                        description="删除后将无法恢复？"
                         onConfirm={() => handleDelete(record)}
                     >
-                        <Typography.Link type={'danger'}>删除</Typography.Link>
+                        <Typography.Link key="delete" type="danger">
+                            删除
+                        </Typography.Link>
                     </Popconfirm>
                 </Space>
             ),
@@ -151,7 +153,7 @@ const FileUploadRecord: React.FC = () => {
                         ...filter,
                         sortField,
                         sortOrder,
-                    } as any);
+                    });
 
                     return {
                         success: code === 0,
@@ -161,9 +163,7 @@ const FileUploadRecord: React.FC = () => {
                 }}
                 columns={columns}
                 rowSelection={{
-                    onChange: (_, selectedRows) => {
-                        setSelectedRows(selectedRows);
-                    },
+                    onChange: (_, selectedRows) => setSelectedRows(selectedRows),
                 }}
                 scroll={{ x: 1200 }}
             />
@@ -176,13 +176,9 @@ const FileUploadRecord: React.FC = () => {
                     }
                 >
                     <Popconfirm
-                        title="确定删除？"
-                        description="删除后将无法恢复?"
-                        okText="确定"
-                        cancelText="取消"
-                        onConfirm={async () => {
-                            await handleBatchDelete(selectedRowsState);
-                        }}
+                        title="确定批量删除？"
+                        description="删除后将无法恢复？"
+                        onConfirm={() => handleBatchDelete(selectedRowsState)}
                     >
                         <Button danger type="primary">
                             批量删除

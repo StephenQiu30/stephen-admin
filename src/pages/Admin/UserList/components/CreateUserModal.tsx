@@ -14,7 +14,7 @@ import { uploadFile } from '@/services/file/fileController';
 
 interface Props {
   onCancel: () => void;
-  onSubmit: (values: API.UserAddRequest) => Promise<void>;
+  onSubmit: (values?: API.UserAddRequest) => void;
   visible: boolean;
 }
 
@@ -37,6 +37,7 @@ const CreateUserModal: React.FC<Props> = (props) => {
     maxCount: 1,
     customRequest: async (options: any) => {
       const { onSuccess, onError, file } = options;
+      const hide = message.loading('正在上传头像...');
       try {
         const formData = new FormData();
         formData.append('file', file);
@@ -48,17 +49,31 @@ const CreateUserModal: React.FC<Props> = (props) => {
           },
           formData,
         );
-        if (res.code === 0 && res.data) {
+        if (res.code === 0 && res.data?.url) {
           onSuccess(res.data);
           setUserAvatar(res.data.url);
+          message.success('头像上传成功');
         } else {
           onError(new Error(res.message));
-          message.error(`文件上传失败: ${res.message}`);
+          message.error(`头像上传失败: ${res.message}`);
         }
       } catch (error: any) {
         onError(error);
         message.error(`文件上传失败: ${error.message}`);
+      } finally {
+        hide();
       }
+    },
+    beforeUpload: (file) => {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+      if (!isJpgOrPng) {
+        message.error('只允许上传 JPG/PNG 格式的图片!');
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        message.error('头像大小不能超过 2MB!');
+      }
+      return isJpgOrPng && isLt2M;
     },
     onRemove() {
       setUserAvatar(undefined);

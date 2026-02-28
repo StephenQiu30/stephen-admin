@@ -6,7 +6,7 @@ import { message } from 'antd';
 interface Props {
   onCancel: () => void;
   visible: boolean;
-  onSubmit: () => Promise<void>;
+  onSubmit: () => void;
 }
 
 const CreateNotificationModal: React.FC<Props> = (props) => {

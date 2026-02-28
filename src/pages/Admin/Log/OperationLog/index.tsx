@@ -13,12 +13,15 @@ const OperationLog: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<API.OperationLogVO[]>([]);
 
+  /**
+   * 删除日志
+   * @param record
+   */
   const handleDelete = async (record: API.OperationLogVO) => {
     const hide = message.loading('正在删除');
+    if (!record?.id) return true;
     try {
-      await deleteLog({
-        id: record.id as any,
-      });
+      await deleteLog({ id: record.id as any });
       message.success('删除成功');
       actionRef.current?.reload();
       return true;
@@ -30,15 +33,15 @@ const OperationLog: React.FC = () => {
     }
   };
 
+  /**
+   * 批量删除日志
+   * @param selectedRows
+   */
   const handleBatchDelete = async (selectedRows: API.OperationLogVO[]) => {
     const hide = message.loading('正在删除');
-    if (!selectedRows) return true;
+    if (!selectedRows?.length) return true;
     try {
-      await Promise.all(
-        selectedRows.map(async (row) => {
-          await deleteLog({ id: row.id as any });
-        }),
-      );
+      await Promise.all(selectedRows.map((row) => deleteLog({ id: row.id as any })));
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);
@@ -50,7 +53,6 @@ const OperationLog: React.FC = () => {
       hide();
     }
   };
-
 
   const columns: ProColumns<API.OperationLogVO>[] = [
     { title: '操作者ID', dataIndex: 'operatorId', width: 120, copyable: true },
@@ -69,7 +71,6 @@ const OperationLog: React.FC = () => {
       valueType: 'dateTime',
       width: 160,
       sorter: true,
-      responsive: ['md'],
     },
     {
       title: '操作',
@@ -78,18 +79,18 @@ const OperationLog: React.FC = () => {
       width: 160,
       fixed: 'right',
       render: (_, record) => (
-        <Space size={'middle'}>
+        <Space size="middle">
           <ViewOperationLogModal record={record}>
-            <Typography.Link>详情</Typography.Link>
+            <Typography.Link key="view">详情</Typography.Link>
           </ViewOperationLogModal>
           <Popconfirm
             title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
+            description="删除后将无法恢复？"
             onConfirm={() => handleDelete(record)}
           >
-            <Typography.Link type={'danger'}>删除</Typography.Link>
+            <Typography.Link key="delete" type="danger">
+              删除
+            </Typography.Link>
           </Popconfirm>
         </Space>
       ),
@@ -112,7 +113,7 @@ const OperationLog: React.FC = () => {
             ...filter,
             sortField,
             sortOrder,
-          } as any);
+          });
 
           return {
             success: code === 0,
@@ -122,9 +123,7 @@ const OperationLog: React.FC = () => {
         }}
         columns={columns}
         rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
+          onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
         scroll={{ x: 1200 }}
       />
@@ -137,13 +136,9 @@ const OperationLog: React.FC = () => {
           }
         >
           <Popconfirm
-            title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={async () => {
-              await handleBatchDelete(selectedRowsState);
-            }}
+            title="确定批量删除？"
+            description="删除后将无法恢复？"
+            onConfirm={() => handleBatchDelete(selectedRowsState)}
           >
             <Button danger type="primary">
               批量删除

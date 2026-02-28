@@ -16,11 +16,11 @@ import { NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
 import { NotificationReadStatusEnumMap } from '@/enums/NotificationReadStatusEnum';
 
 const NotificationList: React.FC = () => {
-  // 创建通知 Modal
-  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
-  // 更新窗口的Modal框
-  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
+
+  // Modal 状态管理
+  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<API.Notification>();
   const [selectedRowsState, setSelectedRows] = useState<API.Notification[]>([]);
 
@@ -48,7 +48,7 @@ const NotificationList: React.FC = () => {
    */
   const handleBatchRead = async (selectedRows: API.Notification[]) => {
     const hide = message.loading('正在处理');
-    if (!selectedRows) return true;
+    if (!selectedRows?.length) return true;
     try {
       const ids = selectedRows.map((row) => row.id!);
       await batchMarkRead({ ids });
@@ -66,18 +66,15 @@ const NotificationList: React.FC = () => {
 
   /**
    * 删除节点
-   *
    * @param row
    */
   const handleDelete = async (row: API.Notification) => {
     const hide = message.loading('正在删除');
-    if (!row) return true;
+    if (!row?.id) return true;
     try {
-      await deleteNotification({
-        id: row.id as any,
-      });
+      await deleteNotification({ id: row.id as any });
       message.success('删除成功');
-      actionRef?.current?.reload();
+      actionRef.current?.reload();
       return true;
     } catch (error: any) {
       message.error(`删除失败: ${error.message}`);
@@ -89,12 +86,11 @@ const NotificationList: React.FC = () => {
 
   /**
    * 批量删除节点
-   *
    * @param selectedRows
    */
   const handleBatchDelete = async (selectedRows: API.Notification[]) => {
     const hide = message.loading('正在删除');
-    if (!selectedRows) return true;
+    if (!selectedRows?.length) return true;
     try {
       await batchDeleteNotification({
         ids: selectedRows.map((row) => row.id!),
@@ -112,17 +108,17 @@ const NotificationList: React.FC = () => {
   };
 
   /**
-   * 表格列数据
+   * 表格列定义
    */
   const columns: ProColumns<API.Notification>[] = [
     {
-      title: 'id',
+      title: 'ID',
       dataIndex: 'id',
       valueType: 'text',
       hideInForm: true,
+      hideInTable: true,
       copyable: true,
       width: 140,
-      hideInTable: true,
     },
     {
       title: '标题',
@@ -143,14 +139,6 @@ const NotificationList: React.FC = () => {
       valueType: 'select',
       valueEnum: NotificationTypeEnumMap,
       width: 110,
-    },
-    {
-      title: '接收用户ID',
-      dataIndex: 'userId',
-      valueType: 'text',
-      width: 120,
-      copyable: true,
-      hideInTable: true,
     },
     {
       title: '已读状态',
@@ -189,12 +177,12 @@ const NotificationList: React.FC = () => {
       width: 120,
       fixed: 'right',
       render: (_, record) => (
-        <Space size={'middle'}>
+        <Space size="middle">
           <ViewNotificationModal notification={record}>
-            <Typography.Link key={'view'}>查看</Typography.Link>
+            <Typography.Link key="view">查看</Typography.Link>
           </ViewNotificationModal>
           <Typography.Link
-            key={'update'}
+            key="update"
             onClick={() => {
               setCurrentRow(record);
               setUpdateModalVisible(true);
@@ -204,14 +192,10 @@ const NotificationList: React.FC = () => {
           </Typography.Link>
           <Popconfirm
             title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={async () => {
-              await handleDelete(record);
-            }}
+            description="删除后将无法恢复？"
+            onConfirm={() => handleDelete(record)}
           >
-            <Typography.Link key={'delete'} type={'danger'}>
+            <Typography.Link key="delete" type="danger">
               删除
             </Typography.Link>
           </Popconfirm>
@@ -223,29 +207,23 @@ const NotificationList: React.FC = () => {
   return (
     <>
       <ProTable<API.Notification, API.NotificationQueryRequest>
-        headerTitle={'通知列表'}
+        headerTitle="通知管理"
         actionRef={actionRef}
-        rowKey={'id'}
-        search={{
-          labelWidth: 100,
-        }}
+        rowKey="id"
+        search={{ labelWidth: 100 }}
         toolBarRender={() => [
           <Button
-            type="primary"
             key="create"
+            type="primary"
             icon={<PlusOutlined />}
-            onClick={() => {
-              setCreateModalVisible(true);
-            }}
+            onClick={() => setCreateModalVisible(true)}
           >
             创建通知
           </Button>,
           <Popconfirm
             key="markAllRead"
             title="确定全部标记已读？"
-            description="此操作将把您的所有未读通知标记为已读?"
-            okText="确定"
-            cancelText="取消"
+            description="此操作将把您的所有未读通知标记为已读？"
             onConfirm={handleMarkAllRead}
           >
             <Button icon={<ReadOutlined />}>全部已读</Button>
@@ -260,7 +238,7 @@ const NotificationList: React.FC = () => {
             ...filter,
             sortField,
             sortOrder,
-          } as any);
+          });
 
           return {
             success: code === 0,
@@ -270,9 +248,7 @@ const NotificationList: React.FC = () => {
         }}
         columns={columns}
         rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
+          onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
         scroll={{ x: 1200 }}
       />
@@ -285,26 +261,20 @@ const NotificationList: React.FC = () => {
           }
         >
           <Popconfirm
-            title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={async () => {
-              await handleBatchDelete(selectedRowsState);
-            }}
+            key="batchDelete"
+            title="确定批量删除？"
+            description="删除后将无法恢复？"
+            onConfirm={() => handleBatchDelete(selectedRowsState)}
           >
             <Button danger type="primary">
               批量删除
             </Button>
           </Popconfirm>
           <Popconfirm
-            title="确定全部已读？"
-            description="确定将选中项标记为已读?"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={async () => {
-              await handleBatchRead(selectedRowsState);
-            }}
+            key="batchRead"
+            title="确定批量已读？"
+            description="确定将选中项标记为已读？"
+            onConfirm={() => handleBatchRead(selectedRowsState)}
           >
             <Button type="primary">批量已读</Button>
           </Popconfirm>
@@ -313,16 +283,16 @@ const NotificationList: React.FC = () => {
       <CreateNotificationModal
         visible={createModalVisible}
         onCancel={() => setCreateModalVisible(false)}
-        onSubmit={async () => {
+        onSubmit={() => {
           setCreateModalVisible(false);
           actionRef.current?.reload();
         }}
       />
       <UpdateNotificationModal
-        oldData={currentRow}
         visible={updateModalVisible}
+        oldData={currentRow}
         onCancel={() => setUpdateModalVisible(false)}
-        onSubmit={async () => {
+        onSubmit={() => {
           setUpdateModalVisible(false);
           setCurrentRow(undefined);
           actionRef.current?.reload();
@@ -331,4 +301,5 @@ const NotificationList: React.FC = () => {
     </>
   );
 };
+
 export default NotificationList;

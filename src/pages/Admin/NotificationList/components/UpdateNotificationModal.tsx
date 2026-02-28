@@ -6,7 +6,7 @@ import { message } from 'antd';
 interface Props {
   oldData?: API.Notification;
   onCancel: () => void;
-  onSubmit: () => Promise<void>;
+  onSubmit: () => void;
   visible: boolean;
 }
 

@@ -13,12 +13,15 @@ const UserLoginLog: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<API.UserLoginLogVO[]>([]);
 
+  /**
+   * 删除日志
+   * @param record
+   */
   const handleDelete = async (record: API.UserLoginLogVO) => {
     const hide = message.loading('正在删除');
+    if (!record?.id) return true;
     try {
-      await deleteLog1({
-        id: record.id as any,
-      });
+      await deleteLog1({ id: record.id as any });
       message.success('删除成功');
       actionRef.current?.reload();
       return true;
@@ -30,15 +33,15 @@ const UserLoginLog: React.FC = () => {
     }
   };
 
+  /**
+   * 批量删除日志
+   * @param selectedRows
+   */
   const handleBatchDelete = async (selectedRows: API.UserLoginLogVO[]) => {
     const hide = message.loading('正在删除');
-    if (!selectedRows) return true;
+    if (!selectedRows?.length) return true;
     try {
-      await Promise.all(
-        selectedRows.map(async (row) => {
-          await deleteLog1({ id: row.id as any });
-        }),
-      );
+      await Promise.all(selectedRows.map((row) => deleteLog1({ id: row.id as any })));
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);
@@ -51,7 +54,6 @@ const UserLoginLog: React.FC = () => {
     }
   };
 
-
   const columns: ProColumns<API.UserLoginLogVO>[] = [
     { title: '用户ID', dataIndex: 'userId', width: 120, copyable: true },
     { title: '用户账号', dataIndex: 'account', width: 120, copyable: true },
@@ -59,7 +61,6 @@ const UserLoginLog: React.FC = () => {
       title: 'IP地址',
       dataIndex: 'clientIp',
       width: 120,
-      responsive: ['md'],
       render: (ip) => <Typography.Text copyable>{ip}</Typography.Text>,
     },
     { title: '登录类型', dataIndex: 'loginType', width: 100 },
@@ -75,7 +76,6 @@ const UserLoginLog: React.FC = () => {
       valueType: 'dateTime',
       width: 160,
       sorter: true,
-      responsive: ['md'],
     },
     {
       title: '操作',
@@ -84,18 +84,18 @@ const UserLoginLog: React.FC = () => {
       width: 160,
       fixed: 'right',
       render: (_, record) => (
-        <Space size={'middle'}>
+        <Space size="middle">
           <ViewUserLoginLogModal record={record}>
-            <Typography.Link>详情</Typography.Link>
+            <Typography.Link key="view">详情</Typography.Link>
           </ViewUserLoginLogModal>
           <Popconfirm
             title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
+            description="删除后将无法恢复？"
             onConfirm={() => handleDelete(record)}
           >
-            <Typography.Link type={'danger'}>删除</Typography.Link>
+            <Typography.Link key="delete" type="danger">
+              删除
+            </Typography.Link>
           </Popconfirm>
         </Space>
       ),
@@ -118,7 +118,7 @@ const UserLoginLog: React.FC = () => {
             ...filter,
             sortField,
             sortOrder,
-          } as any);
+          });
 
           return {
             success: code === 0,
@@ -128,9 +128,7 @@ const UserLoginLog: React.FC = () => {
         }}
         columns={columns}
         rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
+          onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
         scroll={{ x: 1100 }}
       />
@@ -143,13 +141,9 @@ const UserLoginLog: React.FC = () => {
           }
         >
           <Popconfirm
-            title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={async () => {
-              await handleBatchDelete(selectedRowsState);
-            }}
+            title="确定批量删除？"
+            description="删除后将无法恢复？"
+            onConfirm={() => handleBatchDelete(selectedRowsState)}
           >
             <Button danger type="primary">
               批量删除

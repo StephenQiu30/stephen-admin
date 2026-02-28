@@ -11,24 +11,23 @@ import ViewCommentModal from '@/pages/Admin/CommentList/components/ViewCommentMo
  */
 const CommentList: React.FC = () => {
   const actionRef = useRef<ActionType>();
-  const [selectedRowsState, setSelectedRows] = useState<API.PostCommentVO[]>([]);
+
+  // Modal 状态管理
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<API.PostCommentVO>();
+  const [selectedRowsState, setSelectedRows] = useState<API.PostCommentVO[]>([]);
 
   /**
    * 删除节点
-   *
    * @param row
    */
   const handleDelete = async (row: API.PostCommentVO) => {
     const hide = message.loading('正在删除');
-    if (!row) return true;
+    if (!row?.id) return true;
     try {
-      await deletePostComment({
-        id: row.id as any,
-      });
+      await deletePostComment({ id: row.id as any });
       message.success('删除成功');
-      actionRef?.current?.reload();
+      actionRef.current?.reload();
       return true;
     } catch (error: any) {
       message.error(`删除失败: ${error.message}`);
@@ -40,18 +39,13 @@ const CommentList: React.FC = () => {
 
   /**
    * 批量删除节点
-   *
    * @param selectedRows
    */
   const handleBatchDelete = async (selectedRows: API.PostCommentVO[]) => {
     const hide = message.loading('正在删除');
-    if (!selectedRows) return true;
+    if (!selectedRows?.length) return true;
     try {
-      await Promise.all(
-        selectedRows.map(async (row) => {
-          await deletePostComment({ id: row.id as any });
-        }),
-      );
+      await Promise.all(selectedRows.map((row) => deletePostComment({ id: row.id as any })));
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);
@@ -65,18 +59,18 @@ const CommentList: React.FC = () => {
   };
 
   /**
-   * 表格列数据
+   * 表格列定义
    */
   const columns: ProColumns<API.PostCommentVO>[] = [
     {
-      title: 'id',
+      title: 'ID',
       dataIndex: 'id',
       valueType: 'text',
       hideInForm: true,
+      hideInTable: true,
       copyable: true,
       ellipsis: true,
       width: 140,
-      hideInTable: true,
     },
     {
       title: '评论内容',
@@ -112,22 +106,13 @@ const CommentList: React.FC = () => {
       sorter: true,
     },
     {
-      title: '更新时间',
-      dataIndex: 'updateTime',
-      valueType: 'dateTime',
-      hideInForm: true,
-      hideInSearch: true,
-      width: 160,
-      sorter: true,
-    },
-    {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
       width: 160,
       fixed: 'right',
       render: (_, record) => (
-        <Space size={'middle'}>
+        <Space size="middle">
           <ViewCommentModal comment={record}>
             <Typography.Link key="view">详情</Typography.Link>
           </ViewCommentModal>
@@ -142,14 +127,10 @@ const CommentList: React.FC = () => {
           </Typography.Link>
           <Popconfirm
             title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={async () => {
-              await handleDelete(record);
-            }}
+            description="删除后将无法恢复？"
+            onConfirm={() => handleDelete(record)}
           >
-            <Typography.Link key={'delete'} type={'danger'}>
+            <Typography.Link key="delete" type="danger">
               删除
             </Typography.Link>
           </Popconfirm>
@@ -161,12 +142,10 @@ const CommentList: React.FC = () => {
   return (
     <>
       <ProTable<API.PostCommentVO, any>
-        headerTitle={'评论列表'}
+        headerTitle="评论管理"
         actionRef={actionRef}
-        rowKey={'id'}
-        search={{
-          labelWidth: 100,
-        }}
+        rowKey="id"
+        search={{ labelWidth: 100 }}
         request={async (params, sort, filter) => {
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
@@ -176,7 +155,7 @@ const CommentList: React.FC = () => {
             ...filter,
             sortField,
             sortOrder,
-          } as any);
+          });
 
           return {
             success: code === 0,
@@ -186,9 +165,7 @@ const CommentList: React.FC = () => {
         }}
         columns={columns}
         rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
+          onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
         scroll={{ x: 1200 }}
       />
@@ -201,13 +178,9 @@ const CommentList: React.FC = () => {
           }
         >
           <Popconfirm
-            title="确定删除？"
-            description="删除后将无法恢复?"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={async () => {
-              await handleBatchDelete(selectedRowsState);
-            }}
+            title="确定批量删除？"
+            description="删除后将无法恢复？"
+            onConfirm={() => handleBatchDelete(selectedRowsState)}
           >
             <Button danger type="primary">
               批量删除
@@ -215,20 +188,18 @@ const CommentList: React.FC = () => {
           </Popconfirm>
         </FooterToolbar>
       )}
-      {updateModalVisible && (
-        <UpdateCommentModal
-          oldData={currentRow}
-          visible={updateModalVisible}
-          onCancel={() => setUpdateModalVisible(false)}
-          onSubmit={async () => {
-            setUpdateModalVisible(false);
-            setCurrentRow(undefined);
-            actionRef.current?.reload();
-          }}
-        />
-      )}
+      <UpdateCommentModal
+        visible={updateModalVisible}
+        oldData={currentRow}
+        onCancel={() => setUpdateModalVisible(false)}
+        onSubmit={() => {
+          setUpdateModalVisible(false);
+          setCurrentRow(undefined);
+          actionRef.current?.reload();
+        }}
+      />
     </>
-
   );
 };
+
 export default CommentList;

@@ -12,12 +12,15 @@ const EmailRecord: React.FC = () => {
     const actionRef = useRef<ActionType>();
     const [selectedRowsState, setSelectedRows] = useState<API.EmailRecordVO[]>([]);
 
+    /**
+     * 删除记录
+     * @param record
+     */
     const handleDelete = async (record: API.EmailRecordVO) => {
         const hide = message.loading('正在删除');
+        if (!record?.id) return true;
         try {
-            await deleteRecord1({
-                id: record.id as any,
-            });
+            await deleteRecord1({ id: record.id as any });
             message.success('删除成功');
             actionRef.current?.reload();
             return true;
@@ -29,15 +32,15 @@ const EmailRecord: React.FC = () => {
         }
     };
 
+    /**
+     * 批量删除记录
+     * @param selectedRows
+     */
     const handleBatchDelete = async (selectedRows: API.EmailRecordVO[]) => {
         const hide = message.loading('正在删除');
-        if (!selectedRows) return true;
+        if (!selectedRows?.length) return true;
         try {
-            await Promise.all(
-                selectedRows.map(async (row) => {
-                    await deleteRecord1({ id: row.id as any });
-                }),
-            );
+            await Promise.all(selectedRows.map((row) => deleteRecord1({ id: row.id as any })));
             message.success('批量删除成功');
             actionRef.current?.reloadAndRest?.();
             setSelectedRows([]);
@@ -50,10 +53,9 @@ const EmailRecord: React.FC = () => {
         }
     };
 
-
     const columns: ProColumns<API.EmailRecordVO>[] = [
         { title: '记录ID', dataIndex: 'id', width: 120, copyable: true, hideInSearch: true },
-        { title: '消息ID', dataIndex: 'msgId', width: 120, ellipsis: true, responsive: ['lg'] },
+        { title: '消息ID', dataIndex: 'msgId', width: 120, ellipsis: true },
         { title: '收件人', dataIndex: 'toEmail', width: 180, copyable: true },
         { title: '主题', dataIndex: 'subject', ellipsis: true },
         {
@@ -90,18 +92,18 @@ const EmailRecord: React.FC = () => {
             width: 120,
             fixed: 'right',
             render: (_, record) => (
-                <Space size={'middle'}>
+                <Space size="middle">
                     <ViewEmailRecordModal record={record}>
-                        <Typography.Link>详情</Typography.Link>
+                        <Typography.Link key="view">详情</Typography.Link>
                     </ViewEmailRecordModal>
                     <Popconfirm
                         title="确定删除？"
-                        description="删除后将无法恢复?"
-                        okText="确定"
-                        cancelText="取消"
+                        description="删除后将无法恢复？"
                         onConfirm={() => handleDelete(record)}
                     >
-                        <Typography.Link type={'danger'}>删除</Typography.Link>
+                        <Typography.Link key="delete" type="danger">
+                            删除
+                        </Typography.Link>
                     </Popconfirm>
                 </Space>
             ),
@@ -124,7 +126,7 @@ const EmailRecord: React.FC = () => {
                         ...filter,
                         sortField,
                         sortOrder,
-                    } as any);
+                    });
 
                     return {
                         success: code === 0,
@@ -134,9 +136,7 @@ const EmailRecord: React.FC = () => {
                 }}
                 columns={columns}
                 rowSelection={{
-                    onChange: (_, selectedRows) => {
-                        setSelectedRows(selectedRows);
-                    },
+                    onChange: (_, selectedRows) => setSelectedRows(selectedRows),
                 }}
                 scroll={{ x: 1200 }}
             />
@@ -149,13 +149,9 @@ const EmailRecord: React.FC = () => {
                     }
                 >
                     <Popconfirm
-                        title="确定删除？"
-                        description="删除后将无法恢复?"
-                        okText="确定"
-                        cancelText="取消"
-                        onConfirm={async () => {
-                            await handleBatchDelete(selectedRowsState);
-                        }}
+                        title="确定批量删除？"
+                        description="删除后将无法恢复？"
+                        onConfirm={() => handleBatchDelete(selectedRowsState)}
                     >
                         <Button danger type="primary">
                             批量删除

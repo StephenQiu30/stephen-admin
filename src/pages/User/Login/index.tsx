@@ -1,34 +1,36 @@
 import { Footer } from '@/components';
-import { LoginFormPage } from '@ant-design/pro-components';
+import { LoginForm } from '@ant-design/pro-components';
 import { history, useModel } from '@umijs/max';
 import { Image, message, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { createStyles } from 'antd-style';
-import { BACKGROUND_IMAGE, STEPHEN_SUBTITLE, STEPHEN_TITLE } from '@/constants';
+import { STEPHEN_SUBTITLE, STEPHEN_TITLE } from '@/constants';
 import { EmailLoginPage } from '@/pages/User/Login/components';
 import { userLoginByEmail } from '@/services/user/userController';
 
 const useStyles = createStyles(({ token }) => {
   return {
-    action: {
-      marginLeft: '8px',
-      color: 'rgba(0, 0, 0, 0.2)',
-      fontSize: '24px',
-      verticalAlign: 'middle',
-      cursor: 'pointer',
-      transition: 'color 0.3s',
-      '&:hover': {
-        color: token.colorPrimaryActive,
-      },
-    },
     container: {
       display: 'flex',
       flexDirection: 'column',
       height: '100vh',
       overflow: 'auto',
-      backgroundImage:
-        "url('https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/V-_oS6r-i7wAAAAAAAAAAAAAFl94AQBr')",
-      backgroundSize: '100% 100%',
+      backgroundColor: token.colorBgContainer,
+    },
+    content: {
+      flex: '1',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '32px 12px',
+    },
+    loginCard: {
+      width: '100%',
+      maxWidth: '480px',
+      padding: '32px',
+      borderRadius: token.borderRadiusLG,
+      boxShadow: token.boxShadowTertiary,
+      backgroundColor: token.colorBgContainer,
     },
   };
 });
@@ -39,28 +41,25 @@ const useStyles = createStyles(({ token }) => {
  */
 const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
-  const [redirected, setRedirected] = useState(false); // 控制重定向状态
+  const [redirected, setRedirected] = useState(false);
   const { styles } = useStyles();
 
   // 用户登录
   const handleLoginSubmit = async (values: API.UserEmailLoginRequest) => {
     const hide = message.loading('正在登录中..');
     try {
-      // 登录
       const res = await userLoginByEmail({ ...values });
       if (res.code === 0 && res.data) {
         if (res.data.userRole !== 'admin') {
           message.error('无权限，仅管理员可登录！');
           return;
         }
-        // 保存已登录的用户信息
         setInitialState({
           ...initialState,
           currentUser: res?.data,
         });
-        // 保存token信息
         localStorage.setItem('stephen-token', res?.data?.token || '');
-        setRedirected(true); // 设置重定向状态为 true
+        setRedirected(true);
         message.success('登录成功！');
       } else {
         message.error(`登录失败${res.message}, 请重试！`);
@@ -72,7 +71,6 @@ const Login: React.FC = () => {
     }
   };
 
-  // useEffect 监听 redirected 状态的变化
   useEffect(() => {
     if (redirected) {
       const urlParams = new URL(window.location.href).searchParams;
@@ -82,34 +80,26 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div
-        style={{
-          flex: '1 auto',
-          padding: '16',
-        }}
-      >
-        {/*用户登录的表单*/}
-        <LoginFormPage
-          backgroundImageUrl={BACKGROUND_IMAGE}
-          containerStyle={{
-            backdropFilter: 'blur(4px)',
-          }}
-          logo={<Image preview={false} width={48} alt="logo" src="/logo.svg" />}
-          title={<Typography.Title level={3}>{STEPHEN_TITLE}</Typography.Title>}
-          subTitle={STEPHEN_SUBTITLE}
-          initialValues={{
-            autoLogin: true,
-          }}
-          onFinish={async (values) => {
-            await handleLoginSubmit(values as API.UserEmailLoginRequest);
-          }}
-        >
-          {/*用户选择账号密码登录*/}
-          <EmailLoginPage />
-        </LoginFormPage>
+      <div className={styles.content}>
+        <div className={styles.loginCard}>
+          <LoginForm
+            logo={<Image preview={false} width={48} alt="logo" src="/logo.svg" />}
+            title={<Typography.Title level={3} style={{ marginBottom: 0 }}>{STEPHEN_TITLE}</Typography.Title>}
+            subTitle={STEPHEN_SUBTITLE}
+            initialValues={{
+              autoLogin: true,
+            }}
+            onFinish={async (values) => {
+              await handleLoginSubmit(values as API.UserEmailLoginRequest);
+            }}
+          >
+            <EmailLoginPage />
+          </LoginForm>
+        </div>
       </div>
       <Footer />
     </div>
   );
 };
+
 export default Login;

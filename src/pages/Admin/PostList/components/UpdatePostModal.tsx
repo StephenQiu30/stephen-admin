@@ -16,13 +16,12 @@ import { uploadFile } from '@/services/file/fileController';
 interface Props {
   oldData?: API.PostVO;
   onCancel: () => void;
-  onSubmit: (values: API.PostUpdateRequest) => Promise<void>;
+  onSubmit: (values?: API.PostUpdateRequest) => void;
   visible: boolean;
 }
 
 const UpdatePostModal: React.FC<Props> = (props) => {
   const { oldData, visible, onSubmit, onCancel } = props;
-  // 帖子封面
   const [cover, setCover] = useState<string>();
 
   const [form] = ProForm.useForm<API.PostUpdateRequest>();
@@ -35,6 +34,7 @@ const UpdatePostModal: React.FC<Props> = (props) => {
     maxCount: 1,
     customRequest: async (options: any) => {
       const { onSuccess, onError, file } = options;
+      const hide = message.loading('正在上传封面...');
       try {
         const formData = new FormData();
         formData.append('file', file);
@@ -46,14 +46,31 @@ const UpdatePostModal: React.FC<Props> = (props) => {
           },
           formData,
         );
-        if (res.code === 0 && res.data) {
+        if (res.code === 0 && res.data?.url) {
           onSuccess(res.data);
           setCover(res.data.url);
+          message.success('封面上传成功');
+        } else {
+          onError(new Error(res.message));
+          message.error(`封面上传失败: ${res.message}`);
         }
       } catch (error: any) {
-        message.error(`文件上传失败: ${error.message}`);
         onError(error);
+        message.error(`文件上传失败: ${error.message}`);
+      } finally {
+        hide();
       }
+    },
+    beforeUpload: (file) => {
+      const isImage = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp';
+      if (!isImage) {
+        message.error('只允许上传 JPG/PNG/WEBP 格式的图片!');
+      }
+      const isLt5M = file.size / 1024 / 1024 < 5;
+      if (!isLt5M) {
+        message.error('图片大小不能超过 5MB!');
+      }
+      return isImage && isLt5M;
     },
     onRemove() {
       setCover(undefined);

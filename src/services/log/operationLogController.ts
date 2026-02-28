@@ -2,12 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 创建操作日志 记录用户操作日志 POST /operation/log/create */
+/** 创建操作日志 记录用户操作日志 POST /operation/log/add */
 export async function createLog1(
   body: API.OperationLogCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean>('/operation/log/create', {
+  return request<API.BaseResponseBoolean>('/operation/log/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

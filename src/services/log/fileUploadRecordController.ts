@@ -2,12 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 创建文件上传记录 记录文件上传信息 POST /file/upload/record/create */
+/** 创建文件上传记录 记录文件上传信息 POST /file/upload/record/add */
 export async function createRecord(
   body: API.FileUploadRecordCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean>('/file/upload/record/create', {
+  return request<API.BaseResponseBoolean>('/file/upload/record/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

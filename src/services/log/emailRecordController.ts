@@ -2,12 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 创建邮件记录 记录邮件发送信息 POST /email/record/create */
+/** 创建邮件记录 记录邮件发送信息 POST /email/record/add */
 export async function createRecord1(
   body: API.EmailRecordCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean>('/email/record/create', {
+  return request<API.BaseResponseBoolean>('/email/record/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,12 +17,12 @@ export async function createRecord1(
   });
 }
 
-/** 创建邮件记录并返回 ID 记录邮件发送信息并返回记录 ID POST /email/record/create/id */
+/** 创建邮件记录并返回 ID 记录邮件发送信息并返回记录 ID POST /email/record/add/id */
 export async function createRecordReturnId(
   body: API.EmailRecordCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseLong>('/email/record/create/id', {
+  return request<API.BaseResponseLong>('/email/record/add/id', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

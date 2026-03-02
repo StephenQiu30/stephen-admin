@@ -31,16 +31,18 @@ const PostList: React.FC = () => {
    * @param row
    */
   const handleDelete = async (row: API.PostVO) => {
+    if (!row?.id) return;
     const hide = message.loading('正在删除');
-    if (!row?.id) return true;
     try {
-      await deletePost({ id: row.id as any });
-      message.success('删除成功');
-      actionRef.current?.reload();
-      return true;
+      const res = await deletePost({ id: row.id as any });
+      if (res.code === 0) {
+        message.success('删除成功');
+        actionRef.current?.reload();
+      } else {
+        message.error(`删除失败: ${res.message}`);
+      }
     } catch (error: any) {
-      message.error(`删除失败: ${error.message}`);
-      return false;
+      message.error(`删除报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -51,17 +53,20 @@ const PostList: React.FC = () => {
    * @param selectedRows
    */
   const handleBatchDelete = async (selectedRows: API.PostVO[]) => {
+    if (!selectedRows?.length) return;
     const hide = message.loading('正在删除');
-    if (!selectedRows?.length) return true;
     try {
-      await Promise.all(selectedRows.map((row) => deletePost({ id: row.id as any })));
-      message.success('批量删除成功');
-      actionRef.current?.reloadAndRest?.();
-      setSelectedRows([]);
-      return true;
+      const res = await Promise.all(selectedRows.map((row) => deletePost({ id: row.id as any })));
+      // Note: Assuming all deletes should succeed. In a real scenario, check individual results.
+      if (res.every((r) => r.code === 0)) {
+        message.success('批量删除成功');
+        actionRef.current?.reloadAndRest?.();
+        setSelectedRows([]);
+      } else {
+        message.error('部分内容删除失败');
+      }
     } catch (error: any) {
-      message.error(`批量删除失败: ${error.message}`);
-      return false;
+      message.error(`批量删除报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -218,16 +223,19 @@ const PostList: React.FC = () => {
           ),
         ]}
         request={async (params, sort, filter) => {
+          const { current: pageNum, pageSize, ...rest } = params;
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
 
           const { data, code } = await listPostByPage({
-            ...(params as any),
+            ...rest,
             ...filter,
             tags: params.tags ? [params.tags] : undefined,
+            pageNum,
+            pageSize,
             sortField,
             sortOrder,
-          });
+          } as API.PostQueryRequest);
 
           return {
             success: code === 0,
@@ -239,7 +247,7 @@ const PostList: React.FC = () => {
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
-        scroll={{ x: 1200 }}
+        scroll={{ x: 'max-content' }}
       />
 
       <CreatePostModal
@@ -254,7 +262,10 @@ const PostList: React.FC = () => {
       <UpdatePostModal
         visible={updateModalVisible}
         oldData={currentRow}
-        onCancel={() => setUpdateModalVisible(false)}
+        onCancel={() => {
+          setUpdateModalVisible(false);
+          setCurrentRow(undefined);
+        }}
         onSubmit={() => {
           setUpdateModalVisible(false);
           setCurrentRow(undefined);
@@ -265,7 +276,10 @@ const PostList: React.FC = () => {
       <ReviewPostModal
         visible={reviewModalVisible}
         oldData={currentRow}
-        onCancel={() => setReviewModalVisible(false)}
+        onCancel={() => {
+          setReviewModalVisible(false);
+          setCurrentRow(undefined);
+        }}
         onSubmit={() => {
           setReviewModalVisible(false);
           setCurrentRow(undefined);

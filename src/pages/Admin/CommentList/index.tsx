@@ -22,16 +22,18 @@ const CommentList: React.FC = () => {
    * @param row
    */
   const handleDelete = async (row: API.PostCommentVO) => {
+    if (!row?.id) return;
     const hide = message.loading('正在删除');
-    if (!row?.id) return true;
     try {
-      await deletePostComment({ id: row.id as any });
-      message.success('删除成功');
-      actionRef.current?.reload();
-      return true;
+      const res = await deletePostComment({ id: row.id as any });
+      if (res.code === 0) {
+        message.success('删除成功');
+        actionRef.current?.reload();
+      } else {
+        message.error(`删除失败: ${res.message}`);
+      }
     } catch (error: any) {
-      message.error(`删除失败: ${error.message}`);
-      return false;
+      message.error(`删除报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -42,17 +44,19 @@ const CommentList: React.FC = () => {
    * @param selectedRows
    */
   const handleBatchDelete = async (selectedRows: API.PostCommentVO[]) => {
+    if (!selectedRows?.length) return;
     const hide = message.loading('正在删除');
-    if (!selectedRows?.length) return true;
     try {
-      await Promise.all(selectedRows.map((row) => deletePostComment({ id: row.id as any })));
-      message.success('批量删除成功');
-      actionRef.current?.reloadAndRest?.();
-      setSelectedRows([]);
-      return true;
+      const res = await Promise.all(selectedRows.map((row) => deletePostComment({ id: row.id as any })));
+      if (res.every((r) => r.code === 0)) {
+        message.success('批量删除成功');
+        actionRef.current?.reloadAndRest?.();
+        setSelectedRows([]);
+      } else {
+        message.error('部分内容删除失败');
+      }
     } catch (error: any) {
-      message.error(`批量删除失败: ${error.message}`);
-      return false;
+      message.error(`批量删除报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -147,15 +151,18 @@ const CommentList: React.FC = () => {
         rowKey="id"
         search={{ labelWidth: 100 }}
         request={async (params, sort, filter) => {
+          const { current: pageNum, pageSize, ...rest } = params;
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
 
           const { data, code } = await listPostCommentByPage({
-            ...params,
+            ...rest,
             ...filter,
+            pageNum,
+            pageSize,
             sortField,
             sortOrder,
-          });
+          } as any);
 
           return {
             success: code === 0,
@@ -167,7 +174,7 @@ const CommentList: React.FC = () => {
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
-        scroll={{ x: 1200 }}
+        scroll={{ x: 'max-content' }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
@@ -191,7 +198,10 @@ const CommentList: React.FC = () => {
       <UpdateCommentModal
         visible={updateModalVisible}
         oldData={currentRow}
-        onCancel={() => setUpdateModalVisible(false)}
+        onCancel={() => {
+          setUpdateModalVisible(false);
+          setCurrentRow(undefined);
+        }}
         onSubmit={() => {
           setUpdateModalVisible(false);
           setCurrentRow(undefined);

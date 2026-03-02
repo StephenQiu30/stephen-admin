@@ -30,13 +30,15 @@ const NotificationList: React.FC = () => {
   const handleMarkAllRead = async () => {
     const hide = message.loading('正在标记全部已读');
     try {
-      await markAllRead();
-      message.success('全部标记已读成功');
-      actionRef.current?.reload();
-      return true;
+      const res = await markAllRead();
+      if (res.code === 0) {
+        message.success('全部标记已读成功');
+        actionRef.current?.reload();
+      } else {
+        message.error(`全部标记已读失败: ${res.message}`);
+      }
     } catch (error: any) {
-      message.error(`全部标记已读失败: ${error.message}`);
-      return false;
+      message.error(`全部标记已读报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -47,18 +49,20 @@ const NotificationList: React.FC = () => {
    * @param selectedRows
    */
   const handleBatchRead = async (selectedRows: API.Notification[]) => {
+    if (!selectedRows?.length) return;
     const hide = message.loading('正在处理');
-    if (!selectedRows?.length) return true;
     try {
       const ids = selectedRows.map((row) => row.id!);
-      await batchMarkRead({ ids });
-      message.success('批量已读成功');
-      actionRef.current?.reloadAndRest?.();
-      setSelectedRows([]);
-      return true;
+      const res = await batchMarkRead({ ids });
+      if (res.code === 0) {
+        message.success('批量已读成功');
+        actionRef.current?.reloadAndRest?.();
+        setSelectedRows([]);
+      } else {
+        message.error(`批量已读失败: ${res.message}`);
+      }
     } catch (error: any) {
-      message.error(`批量已读失败: ${error.message}`);
-      return false;
+      message.error(`批量已读报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -69,16 +73,18 @@ const NotificationList: React.FC = () => {
    * @param row
    */
   const handleDelete = async (row: API.Notification) => {
+    if (!row?.id) return;
     const hide = message.loading('正在删除');
-    if (!row?.id) return true;
     try {
-      await deleteNotification({ id: row.id as any });
-      message.success('删除成功');
-      actionRef.current?.reload();
-      return true;
+      const res = await deleteNotification({ id: row.id as any });
+      if (res.code === 0) {
+        message.success('删除成功');
+        actionRef.current?.reload();
+      } else {
+        message.error(`删除失败: ${res.message}`);
+      }
     } catch (error: any) {
-      message.error(`删除失败: ${error.message}`);
-      return false;
+      message.error(`删除报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -89,19 +95,21 @@ const NotificationList: React.FC = () => {
    * @param selectedRows
    */
   const handleBatchDelete = async (selectedRows: API.Notification[]) => {
+    if (!selectedRows?.length) return;
     const hide = message.loading('正在删除');
-    if (!selectedRows?.length) return true;
     try {
-      await batchDeleteNotification({
+      const res = await batchDeleteNotification({
         ids: selectedRows.map((row) => row.id!),
       });
-      message.success('批量删除成功');
-      actionRef.current?.reloadAndRest?.();
-      setSelectedRows([]);
-      return true;
+      if (res.code === 0) {
+        message.success('批量删除成功');
+        actionRef.current?.reloadAndRest?.();
+        setSelectedRows([]);
+      } else {
+        message.error(`批量删除失败: ${res.message}`);
+      }
     } catch (error: any) {
-      message.error(`批量删除失败: ${error.message}`);
-      return false;
+      message.error(`批量删除报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -230,15 +238,18 @@ const NotificationList: React.FC = () => {
           </Popconfirm>,
         ]}
         request={async (params, sort, filter) => {
+          const { current: pageNum, pageSize, ...rest } = params;
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
 
           const { data, code } = await listNotificationByPageAdmin({
-            ...params,
+            ...rest,
             ...filter,
+            pageNum,
+            pageSize,
             sortField,
             sortOrder,
-          });
+          } as API.NotificationQueryRequest);
 
           return {
             success: code === 0,
@@ -250,7 +261,7 @@ const NotificationList: React.FC = () => {
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
-        scroll={{ x: 1200 }}
+        scroll={{ x: 'max-content' }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
@@ -291,7 +302,10 @@ const NotificationList: React.FC = () => {
       <UpdateNotificationModal
         visible={updateModalVisible}
         oldData={currentRow}
-        onCancel={() => setUpdateModalVisible(false)}
+        onCancel={() => {
+          setUpdateModalVisible(false);
+          setCurrentRow(undefined);
+        }}
         onSubmit={() => {
           setUpdateModalVisible(false);
           setCurrentRow(undefined);

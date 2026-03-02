@@ -23,10 +23,31 @@ interface Props {
 const UpdatePostModal: React.FC<Props> = (props) => {
   const { oldData, visible, onSubmit, onCancel } = props;
   const [cover, setCover] = useState<string>();
-
   const [form] = ProForm.useForm<API.PostUpdateRequest>();
+
+  // Reset form when modal opens
+  React.useEffect(() => {
+    if (visible && oldData) {
+      let tags: string[] = [];
+      if (Array.isArray(oldData.tags)) {
+        tags = oldData.tags;
+      } else if (typeof oldData.tags === 'string') {
+        try {
+          tags = JSON.parse(oldData.tags);
+        } catch (e) {
+          tags = [];
+        }
+      }
+      form.setFieldsValue({
+        ...oldData,
+        tags,
+      });
+      setCover(oldData.cover);
+    }
+  }, [visible, oldData, form]);
+
   /**
-   * 上传文章封面
+   * 上传属性
    */
   const uploadProps: UploadProps = {
     name: 'file',
@@ -34,7 +55,6 @@ const UpdatePostModal: React.FC<Props> = (props) => {
     maxCount: 1,
     customRequest: async (options: any) => {
       const { onSuccess, onError, file } = options;
-      const hide = message.loading('正在上传封面...');
       try {
         const formData = new FormData();
         formData.append('file', file);
@@ -57,83 +77,57 @@ const UpdatePostModal: React.FC<Props> = (props) => {
       } catch (error: any) {
         onError(error);
         message.error(`文件上传失败: ${error.message}`);
-      } finally {
-        hide();
       }
-    },
-    beforeUpload: (file) => {
-      const isImage = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp';
-      if (!isImage) {
-        message.error('只允许上传 JPG/PNG/WEBP 格式的图片!');
-      }
-      const isLt5M = file.size / 1024 / 1024 < 5;
-      if (!isLt5M) {
-        message.error('图片大小不能超过 5MB!');
-      }
-      return isImage && isLt5M;
     },
     onRemove() {
       setCover(undefined);
     },
   };
+
   if (!oldData) {
     return null;
   }
 
-  let tags: string[] = [];
-  if (Array.isArray(oldData.tags)) {
-    tags = oldData.tags;
-  } else if (typeof oldData.tags === 'string') {
-    try {
-      tags = JSON.parse(oldData.tags);
-    } catch (e) {
-      tags = [];
-    }
-  }
-
   return (
     <ModalForm<API.PostUpdateRequest>
-      title={'更新帖子信息'}
+      title="更新帖子信息"
       open={visible}
       form={form}
-      initialValues={{ ...oldData, tags }}
-      onFinish={async (values: API.PostUpdateRequest) => {
+      onFinish={async (values) => {
         try {
           const res = await updatePost({
             ...values,
             id: oldData.id as number,
-            cover: cover || oldData.cover,
-            tags: values.tags,
+            cover,
           });
-          if (res.code === 0 && res.data) {
+          if (res.code === 0) {
             message.success('更新成功');
             onSubmit?.(values);
             return true;
+          } else {
+            message.error(`更新失败: ${res.message}`);
           }
         } catch (error: any) {
-          message.error(`更新失败: ${error.message}`);
+          message.error(`更新报错: ${error.message}`);
         }
         return false;
       }}
-      autoFocusFirstInput
       modalProps={{
         destroyOnClose: true,
-        onCancel: () => {
-          onCancel?.();
-        },
+        onCancel: () => onCancel?.(),
       }}
       submitter={{
         searchConfig: {
-          submitText: '更新帖子信息',
+          submitText: '更新',
           resetText: '取消',
         },
       }}
     >
       <ProFormText
-        initialValue={oldData?.title}
         name="title"
         label="标题"
         rules={[{ required: true, message: '请输入标题' }]}
+        placeholder="请输入标题"
       />
       <ProForm.Item name="content" label="内容" rules={[{ required: true, message: '请输入内容' }]}>
         <MarkdownEditor />
@@ -148,13 +142,13 @@ const UpdatePostModal: React.FC<Props> = (props) => {
         }}
       />
       <ProFormUploadDragger
-        title={'上传帖子封面'}
+        title="点击或拖拽文件到此区域进行上传"
         max={1}
         fieldProps={{
           ...uploadProps,
         }}
-        name="pic"
-        label={'封面'}
+        name="file"
+        label="封面"
       />
     </ModalForm>
   );

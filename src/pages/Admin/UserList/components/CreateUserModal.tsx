@@ -37,7 +37,6 @@ const CreateUserModal: React.FC<Props> = (props) => {
     maxCount: 1,
     customRequest: async (options: any) => {
       const { onSuccess, onError, file } = options;
-      const hide = message.loading('正在上传头像...');
       try {
         const formData = new FormData();
         formData.append('file', file);
@@ -60,8 +59,6 @@ const CreateUserModal: React.FC<Props> = (props) => {
       } catch (error: any) {
         onError(error);
         message.error(`文件上传失败: ${error.message}`);
-      } finally {
-        hide();
       }
     },
     beforeUpload: (file) => {
@@ -81,71 +78,73 @@ const CreateUserModal: React.FC<Props> = (props) => {
   };
 
   return (
-    <ModalForm
-      title={'新建用户'}
+    <ModalForm<API.UserAddRequest>
+      title="新建用户"
       open={visible}
       form={form}
-      onFinish={async (values: API.UserAddRequest) => {
+      onFinish={async (values) => {
         try {
           const res = await addUser({
             ...values,
             userAvatar,
           });
-          if (res.code === 0 && res.data) {
+          if (res.code === 0) {
             message.success('添加成功');
             onSubmit?.(values);
             return true;
+          } else {
+            message.error(`添加失败: ${res.message}`);
           }
         } catch (error: any) {
-          message.error(`添加失败: ${error.message}`);
+          message.error(`添加报错: ${error.message}`);
         }
         return false;
       }}
       autoFocusFirstInput
       modalProps={{
         destroyOnClose: true,
-        onCancel: () => {
-          onCancel?.();
-        },
+        onCancel: () => onCancel?.(),
       }}
       submitter={{
         searchConfig: {
-          submitText: '新建用户',
+          submitText: '新建',
           resetText: '取消',
         },
       }}
     >
       <ProFormText
-        name={'userName'}
-        label={'用户名'}
+        name="userName"
+        label="用户名"
         rules={[{ required: true, message: '请输入用户名' }]}
+        placeholder="请输入用户名"
       />
-
       <ProFormText
-        name={'userEmail'}
-        label={'邮箱'}
+        name="userEmail"
+        label="邮箱"
+        placeholder="请输入邮箱"
         rules={[
           { required: true, message: '请输入邮箱' },
           { type: 'email', message: '请输入正确的邮箱' },
         ]}
       />
       <ProFormText
-        name={'userPhone'}
-        label={'电话'}
+        name="userPhone"
+        label="电话"
+        placeholder="请输入电话"
         rules={[{ pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}
       />
       <ProFormUploadDragger
-        title={'上传头像'}
-        label={'头像'}
+        title="点击或拖拽文件到此区域进行上传"
+        label="头像"
         max={1}
         fieldProps={{
           ...uploadProps,
         }}
-        name="pic"
+        name="file"
       />
       <ProFormSelect
-        name={'userRole'}
-        label={'权限'}
+        name="userRole"
+        label="权限"
         valueEnum={userRole}
         rules={[{ required: true, message: '请选择权限' }]}
       />

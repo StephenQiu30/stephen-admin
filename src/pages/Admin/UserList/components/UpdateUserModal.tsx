@@ -27,9 +27,17 @@ interface Props {
  */
 const UpdateUserModal: React.FC<Props> = (props) => {
   const { oldData, visible, onSubmit, onCancel } = props;
-  // 用户头像
   const [userAvatar, setUserAvatar] = useState<string>();
   const [form] = ProForm.useForm<API.UserUpdateRequest>();
+
+  // Reset form when modal opens
+  React.useEffect(() => {
+    if (visible && oldData) {
+      form.setFieldsValue(oldData);
+      setUserAvatar(oldData.userAvatar);
+    }
+  }, [visible, oldData, form]);
+
   /**
    * 用户更新头像
    */
@@ -39,7 +47,6 @@ const UpdateUserModal: React.FC<Props> = (props) => {
     maxCount: 1,
     customRequest: async (options: any) => {
       const { onSuccess, onError, file } = options;
-      const hide = message.loading('正在上传头像...');
       try {
         const formData = new FormData();
         formData.append('file', file);
@@ -62,20 +69,7 @@ const UpdateUserModal: React.FC<Props> = (props) => {
       } catch (error: any) {
         onError(error);
         message.error(`文件上传失败: ${error.message}`);
-      } finally {
-        hide();
       }
-    },
-    beforeUpload: (file) => {
-      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-      if (!isJpgOrPng) {
-        message.error('只允许上传 JPG/PNG 格式的图片!');
-      }
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isLt2M) {
-        message.error('头像大小不能超过 2MB!');
-      }
-      return isJpgOrPng && isLt2M;
     },
     onRemove() {
       setUserAvatar(undefined);
@@ -83,77 +77,78 @@ const UpdateUserModal: React.FC<Props> = (props) => {
   };
 
   if (!oldData) {
-    return <></>;
+    return null;
   }
 
   return (
     <ModalForm<API.UserUpdateRequest>
-      title={'更新用户信息'}
+      title="更新用户信息"
       open={visible}
       form={form}
-      initialValues={oldData}
-      onFinish={async (values: API.UserUpdateRequest) => {
+      onFinish={async (values) => {
         try {
           const res = await updateUser({
             ...values,
             id: oldData?.id,
             userAvatar,
           });
-          if (res.code === 0 && res.data) {
+          if (res.code === 0) {
             message.success('更新成功');
             onSubmit?.(values);
             return true;
+          } else {
+            message.error(`更新失败: ${res.message}`);
           }
         } catch (error: any) {
-          message.error(`更新失败: ${error.message}`);
+          message.error(`更新报错: ${error.message}`);
         }
         return false;
       }}
-      autoFocusFirstInput
       modalProps={{
         destroyOnClose: true,
-        onCancel: () => {
-          onCancel?.();
-        },
+        onCancel: () => onCancel?.(),
       }}
       submitter={{
         searchConfig: {
-          submitText: '更新用户信息',
+          submitText: '更新',
           resetText: '取消',
         },
       }}
     >
       <ProFormText
-        name={'userName'}
-        label={'用户名'}
+        name="userName"
+        label="用户名"
         rules={[{ required: true, message: '请输入用户名' }]}
+        placeholder="请输入用户名"
       />
-      <ProFormTextArea name={'userProfile'} label={'简介'} />
+      <ProFormTextArea name="userProfile" label="简介" placeholder="请输入简介" />
       <ProFormText
-        name={'userPhone'}
-        label={'电话'}
+        name="userPhone"
+        label="电话"
+        placeholder="请输入电话"
         rules={[{ pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}
       />
       <ProFormText
-        name={'userEmail'}
-        label={'邮箱'}
+        name="userEmail"
+        label="邮箱"
+        placeholder="请输入邮箱"
         rules={[
           { required: true, message: '请输入邮箱' },
           { type: 'email', message: '请输入正确的邮箱' },
         ]}
       />
       <ProFormUploadDragger
-        title={'上传头像'}
-        label={'头像'}
+        title="点击或拖拽文件到此区域进行上传"
+        label="头像"
         max={1}
         fieldProps={{
           ...uploadProps,
         }}
-        name="pic"
+        name="file"
       />
       <ProFormSelect
-        name={'userRole'}
-        label={'权限'}
+        name="userRole"
+        label="权限"
         valueEnum={userRole}
         rules={[{ required: true, message: '请选择权限' }]}
       />

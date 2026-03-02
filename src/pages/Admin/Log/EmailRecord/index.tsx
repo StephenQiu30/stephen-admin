@@ -57,23 +57,23 @@ const EmailRecord: React.FC = () => {
         { title: '记录ID', dataIndex: 'id', width: 120, copyable: true, hideInSearch: true },
         { title: '消息ID', dataIndex: 'msgId', width: 120, ellipsis: true },
         { title: '收件人', dataIndex: 'toEmail', width: 180, copyable: true },
-        { title: '主题', dataIndex: 'subject', ellipsis: true },
+        { title: '主题', dataIndex: 'subject', ellipsis: true, width: 200 },
         {
             title: '业务类型',
             dataIndex: 'bizType',
-            width: 100,
+            width: 120,
             render: (text) => text && <Tag color="blue">{text}</Tag>,
         },
         {
             title: '状态',
             dataIndex: 'status',
-            width: 100,
+            width: 120,
             valueEnum: EmailStatusEnumMap,
         },
         {
             title: '重试',
             dataIndex: 'retryCount',
-            width: 80,
+            width: 60,
             hideInSearch: true,
             render: (count) => <Tag color={Number(count) > 0 ? 'warning' : 'default'}>{count}</Tag>,
         },
@@ -81,7 +81,7 @@ const EmailRecord: React.FC = () => {
             title: '发送时间',
             dataIndex: 'sendTime',
             valueType: 'dateTime',
-            width: 160,
+            width: 180,
             sorter: true,
             hideInSearch: true,
         },
@@ -89,7 +89,7 @@ const EmailRecord: React.FC = () => {
             title: '操作',
             dataIndex: 'option',
             valueType: 'option',
-            width: 120,
+            width: 100,
             fixed: 'right',
             render: (_, record) => (
                 <Space size="middle">
@@ -138,7 +138,7 @@ const EmailRecord: React.FC = () => {
                 rowSelection={{
                     onChange: (_, selectedRows) => setSelectedRows(selectedRows),
                 }}
-                scroll={{ x: 1200 }}
+                scroll={{ x: 'max-content' }}
             />
             {selectedRowsState?.length > 0 && (
                 <FooterToolbar

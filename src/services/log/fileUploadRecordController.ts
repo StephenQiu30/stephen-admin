@@ -4,7 +4,7 @@ import { request } from '@umijs/max';
 
 /** 创建文件上传记录 记录文件上传信息 POST /log/file/upload/add */
 export async function addFileUploadRecord(
-  body: API.FileUploadRecordCreateRequest,
+  body: API.FileUploadRecordAddRequest,
   options?: { [key: string]: any },
 ) {
   return request<API.BaseResponseBoolean>('/log/file/upload/add', {
@@ -18,7 +18,10 @@ export async function addFileUploadRecord(
 }
 
 /** 删除文件上传记录 删除指定文件上传记录（仅管理员） POST /log/file/upload/delete */
-export async function deleteRecord(body: API.DeleteRequest, options?: { [key: string]: any }) {
+export async function deleteFileUploadRecord(
+  body: API.DeleteRequest,
+  options?: { [key: string]: any },
+) {
   return request<API.BaseResponseBoolean>('/log/file/upload/delete', {
     method: 'POST',
     headers: {

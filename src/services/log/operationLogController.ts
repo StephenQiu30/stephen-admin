@@ -4,7 +4,7 @@ import { request } from '@umijs/max';
 
 /** 创建操作日志 记录用户操作日志 POST /log/operation/add */
 export async function addOperationLog(
-  body: API.OperationLogCreateRequest,
+  body: API.OperationLogAddRequest,
   options?: { [key: string]: any },
 ) {
   return request<API.BaseResponseBoolean>('/log/operation/add', {
@@ -18,7 +18,10 @@ export async function addOperationLog(
 }
 
 /** 删除操作日志 删除指定操作日志（仅管理员） POST /log/operation/delete */
-export async function deleteLog(body: API.DeleteRequest, options?: { [key: string]: any }) {
+export async function deleteOperationLog(
+  body: API.DeleteRequest,
+  options?: { [key: string]: any },
+) {
   return request<API.BaseResponseBoolean>('/log/operation/delete', {
     method: 'POST',
     headers: {

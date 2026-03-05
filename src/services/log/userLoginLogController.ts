@@ -4,7 +4,7 @@ import { request } from '@umijs/max';
 
 /** 创建用户登录日志 记录用户登录日志 POST /log/login/add */
 export async function addUserLoginLog(
-  body: API.UserLoginLogCreateRequest,
+  body: API.UserLoginLogAddRequest,
   options?: { [key: string]: any },
 ) {
   return request<API.BaseResponseBoolean>('/log/login/add', {
@@ -18,7 +18,10 @@ export async function addUserLoginLog(
 }
 
 /** 删除用户登录日志 删除指定用户登录日志（仅管理员） POST /log/login/delete */
-export async function deleteLog1(body: API.DeleteRequest, options?: { [key: string]: any }) {
+export async function deleteUserLoginLog(
+  body: API.DeleteRequest,
+  options?: { [key: string]: any },
+) {
   return request<API.BaseResponseBoolean>('/log/login/delete', {
     method: 'POST',
     headers: {

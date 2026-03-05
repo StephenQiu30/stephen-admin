@@ -2,9 +2,9 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 发送邮箱验证码 生成验证码并通过邮件发送给用户，包含防刷频率限制 POST /mail/email/code/add */
-export async function sendEmailCode(body: API.EmailCodeRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseEmailCodeVO>('/mail/email/code/add', {
+/** 申请邮箱验证码 业务级验证码申请接口，集成限流与防爆破逻辑 POST /mail/code/add */
+export async function addEmailCode(body: API.EmailCodeRequest, options?: { [key: string]: any }) {
+  return request<API.BaseResponseEmailCodeVO>('/mail/code/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -14,12 +14,12 @@ export async function sendEmailCode(body: API.EmailCodeRequest, options?: { [key
   });
 }
 
-/** 删除邮箱验证码 删除指定邮箱的验证码，通常用于重置或安全清理 POST /mail/email/code/delete */
+/** 删除邮箱验证码 显式使指定邮箱的验证码失效 POST /mail/code/delete */
 export async function deleteEmailCode(
   body: API.EmailCodeRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean>('/mail/email/code/delete', {
+  return request<API.BaseResponseBoolean>('/mail/code/delete', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -29,12 +29,12 @@ export async function deleteEmailCode(
   });
 }
 
-/** 验证邮箱验证码 验证邮箱验证码是否正确 POST /mail/email/code/verify */
+/** 校验邮箱验证码 验证用户输入的验证码是否与缓存一致且未过期 POST /mail/code/verify */
 export async function verifyEmailCode(
   body: API.EmailCodeRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean>('/mail/email/code/verify', {
+  return request<API.BaseResponseBoolean>('/mail/code/verify', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -44,8 +44,8 @@ export async function verifyEmailCode(
   });
 }
 
-/** 发送邮件（异步） 将邮件发送任务投递至消息队列，由消费者异步处理，适用于高并发或对响应时间敏感的场景 POST /mail/send/async */
-export async function sendMailAsync(body: API.MailSendRequest, options?: { [key: string]: any }) {
+/** 异步发送邮件 基于 MQ 分离发送流程，提升接口吞吐量 POST /mail/send/async */
+export async function doSendMailAsync(body: API.MailSendRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>('/mail/send/async', {
     method: 'POST',
     headers: {
@@ -56,8 +56,8 @@ export async function sendMailAsync(body: API.MailSendRequest, options?: { [key:
   });
 }
 
-/** 发送邮件（同步） 立即发送邮件并阻塞等待结果，适用于对发送结果有即时性要求的场景 POST /mail/send/sync */
-export async function sendMailSync(body: API.MailSendRequest, options?: { [key: string]: any }) {
+/** 同步发送邮件 阻塞式发送简单或 HTML 邮件 POST /mail/send/sync */
+export async function doSendMailSync(body: API.MailSendRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>('/mail/send/sync', {
     method: 'POST',
     headers: {
@@ -68,8 +68,8 @@ export async function sendMailSync(body: API.MailSendRequest, options?: { [key: 
   });
 }
 
-/** 发送验证码邮件 发送包含验证码的邮件 POST /mail/send/verification-code */
-export async function sendVerificationCode(
+/** 快速发送验证码邮件 使用默认模板发送纯验证码通知 POST /mail/send/verification-code */
+export async function doSendVerificationCode(
   body: API.MailSendCodeRequest,
   options?: { [key: string]: any },
 ) {

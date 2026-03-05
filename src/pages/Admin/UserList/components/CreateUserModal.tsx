@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { userRole } from '@/enums/UserRoleEnum';
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
 import { addUser } from '@/services/user/userController';
-import { uploadFile } from '@/services/file/fileController';
+import { addFile } from '@/services/file/fileController';
 
 interface Props {
   onCancel: () => void;
@@ -40,7 +40,7 @@ const CreateUserModal: React.FC<Props> = (props) => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await uploadFile(
+        const res = await addFile(
           {
             fileUploadRequest: {
               biz: FileUploadBiz.USER_AVATAR,
@@ -141,6 +141,12 @@ const CreateUserModal: React.FC<Props> = (props) => {
           ...uploadProps,
         }}
         name="file"
+      />
+      <ProFormText name="githubLogin" label="GitHub 账号" placeholder="请输入 GitHub 账号" />
+      <ProFormText
+        name="githubUrl"
+        label="GitHub 主页"
+        placeholder="请输入 GitHub 主页 (例如: https://github.com/username)"
       />
       <ProFormSelect
         name="userRole"

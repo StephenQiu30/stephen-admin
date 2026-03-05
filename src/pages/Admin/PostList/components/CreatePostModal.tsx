@@ -10,7 +10,7 @@ import {
 import { MarkdownEditor } from '@/components';
 
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
-import { uploadFile } from '@/services/file/fileController';
+import { addFile } from '@/services/file/fileController';
 import { addPost } from '@/services/post/postController';
 
 interface Props {
@@ -41,7 +41,7 @@ const CreatePostModal: React.FC<Props> = (props) => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await uploadFile(
+        const res = await addFile(
           {
             fileUploadRequest: {
               biz: FileUploadBiz.POST_COVER,

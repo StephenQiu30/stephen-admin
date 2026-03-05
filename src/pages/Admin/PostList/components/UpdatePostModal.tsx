@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
 import { updatePost } from '@/services/post/postController';
-import { uploadFile } from '@/services/file/fileController';
+import { addFile } from '@/services/file/fileController';
 
 interface Props {
   oldData?: API.PostVO;
@@ -58,7 +58,7 @@ const UpdatePostModal: React.FC<Props> = (props) => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await uploadFile(
+        const res = await addFile(
           {
             fileUploadRequest: {
               biz: FileUploadBiz.POST_COVER,

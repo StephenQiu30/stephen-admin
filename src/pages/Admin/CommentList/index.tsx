@@ -47,7 +47,9 @@ const CommentList: React.FC = () => {
     if (!selectedRows?.length) return;
     const hide = message.loading('正在删除');
     try {
-      const res = await Promise.all(selectedRows.map((row) => deletePostComment({ id: row.id as any })));
+      const res = await Promise.all(
+        selectedRows.map((row) => deletePostComment({ id: row.id as any })),
+      );
       if (res.every((r) => r.code === 0)) {
         message.success('批量删除成功');
         actionRef.current?.reloadAndRest?.();
@@ -151,15 +153,12 @@ const CommentList: React.FC = () => {
         rowKey="id"
         search={{ labelWidth: 100 }}
         request={async (params, sort, filter) => {
-          const { current: pageNum, pageSize, ...rest } = params;
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
 
           const { data, code } = await listPostCommentByPage({
-            ...rest,
+            ...params,
             ...filter,
-            pageNum,
-            pageSize,
             sortField,
             sortOrder,
           } as any);

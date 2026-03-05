@@ -2,7 +2,7 @@ import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro
 import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { listLogByPage2 } from '@/services/log/apiAccessLogController';
-import { deleteLog2 } from '@/services/log/apiAccessLogController';
+import { deleteApiAccessLog } from '@/services/log/apiAccessLogController';
 import { ApiAccessStatusEnumMap } from '@/enums/ApiAccessStatusEnum';
 import ViewApiAccessLogModal from './components/ViewApiAccessLogModal';
 
@@ -21,7 +21,7 @@ const ApiAccessLog: React.FC = () => {
     const hide = message.loading('正在删除');
     if (!record?.id) return true;
     try {
-      await deleteLog2({ id: record.id as any });
+      await deleteApiAccessLog({ id: record.id as any });
       message.success('删除成功');
       actionRef.current?.reload();
       return true;
@@ -41,7 +41,7 @@ const ApiAccessLog: React.FC = () => {
     const hide = message.loading('正在删除');
     if (!selectedRows?.length) return true;
     try {
-      await Promise.all(selectedRows.map((row) => deleteLog2({ id: row.id as any })));
+      await Promise.all(selectedRows.map((row) => deleteApiAccessLog({ id: row.id as any })));
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);

@@ -223,16 +223,13 @@ const PostList: React.FC = () => {
           ),
         ]}
         request={async (params, sort, filter) => {
-          const { current: pageNum, pageSize, ...rest } = params;
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
 
           const { data, code } = await listPostByPage({
-            ...rest,
+            ...params,
             ...filter,
             tags: params.tags ? [params.tags] : undefined,
-            pageNum,
-            pageSize,
             sortField,
             sortOrder,
           } as API.PostQueryRequest);

@@ -2,7 +2,7 @@ import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro
 import { Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { listLogByPage1 } from '@/services/log/userLoginLogController';
-import { deleteLog1 } from '@/services/log/userLoginLogController';
+import { deleteUserLoginLog } from '@/services/log/userLoginLogController';
 import { LoginStatusEnumMap } from '@/enums/LoginStatusEnum';
 import ViewUserLoginLogModal from './components/ViewUserLoginLogModal';
 
@@ -21,7 +21,7 @@ const UserLoginLog: React.FC = () => {
     const hide = message.loading('正在删除');
     if (!record?.id) return true;
     try {
-      await deleteLog1({ id: record.id as any });
+      await deleteUserLoginLog({ id: record.id as any });
       message.success('删除成功');
       actionRef.current?.reload();
       return true;
@@ -41,7 +41,7 @@ const UserLoginLog: React.FC = () => {
     const hide = message.loading('正在删除');
     if (!selectedRows?.length) return true;
     try {
-      await Promise.all(selectedRows.map((row) => deleteLog1({ id: row.id as any })));
+      await Promise.all(selectedRows.map((row) => deleteUserLoginLog({ id: row.id as any })));
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);

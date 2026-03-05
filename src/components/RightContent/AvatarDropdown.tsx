@@ -1,4 +1,4 @@
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { history, Link, useModel } from '@umijs/max';
 import { Button, message } from 'antd';
 import { stringify } from 'querystring';

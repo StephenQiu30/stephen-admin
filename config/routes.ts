@@ -45,11 +45,7 @@ export default [
         path: '/admin/log/email',
         component: './Admin/Log/EmailRecord',
       },
-      {
-        name: '文件系统日志',
-        path: '/admin/log/file',
-        component: './Admin/File/Log',
-      },
+
       {
         name: 'API 访问日志',
         path: '/admin/log/api',

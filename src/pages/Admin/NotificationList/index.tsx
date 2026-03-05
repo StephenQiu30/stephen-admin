@@ -3,12 +3,13 @@ import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import {
   batchDeleteNotification,
-  batchMarkRead,
+  batchMarkNotificationRead,
   deleteNotification,
-  listNotificationByPageAdmin,
-  markAllRead,
+  listNotificationByPage,
+  markAllNotificationRead,
+  markNotificationRead,
 } from '@/services/notification/notificationController';
-import { PlusOutlined, ReadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import UpdateNotificationModal from '@/pages/Admin/NotificationList/components/UpdateNotificationModal';
 import CreateNotificationModal from '@/pages/Admin/NotificationList/components/CreateNotificationModal';
 import ViewNotificationModal from '@/pages/Admin/NotificationList/components/ViewNotificationModal';
@@ -23,50 +24,6 @@ const NotificationList: React.FC = () => {
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<API.Notification>();
   const [selectedRowsState, setSelectedRows] = useState<API.Notification[]>([]);
-
-  /**
-   * 全部标记已读
-   */
-  const handleMarkAllRead = async () => {
-    const hide = message.loading('正在标记全部已读');
-    try {
-      const res = await markAllRead();
-      if (res.code === 0) {
-        message.success('全部标记已读成功');
-        actionRef.current?.reload();
-      } else {
-        message.error(`全部标记已读失败: ${res.message}`);
-      }
-    } catch (error: any) {
-      message.error(`全部标记已读报错: ${error.message}`);
-    } finally {
-      hide();
-    }
-  };
-
-  /**
-   * 批量已读
-   * @param selectedRows
-   */
-  const handleBatchRead = async (selectedRows: API.Notification[]) => {
-    if (!selectedRows?.length) return;
-    const hide = message.loading('正在处理');
-    try {
-      const ids = selectedRows.map((row) => row.id!);
-      const res = await batchMarkRead({ ids });
-      if (res.code === 0) {
-        message.success('批量已读成功');
-        actionRef.current?.reloadAndRest?.();
-        setSelectedRows([]);
-      } else {
-        message.error(`批量已读失败: ${res.message}`);
-      }
-    } catch (error: any) {
-      message.error(`批量已读报错: ${error.message}`);
-    } finally {
-      hide();
-    }
-  };
 
   /**
    * 删除节点
@@ -110,6 +67,73 @@ const NotificationList: React.FC = () => {
       }
     } catch (error: any) {
       message.error(`批量删除报错: ${error.message}`);
+    } finally {
+      hide();
+    }
+  };
+
+  /**
+   * 标记已读
+   * @param row
+   */
+  const handleMarkRead = async (row: API.Notification) => {
+    if (!row?.id) return;
+    const hide = message.loading('正在标记');
+    try {
+      const res = await markNotificationRead({ id: row.id });
+      if (res.code === 0) {
+        message.success('已标记为已读');
+        actionRef.current?.reload();
+      } else {
+        message.error(`标记失败: ${res.message}`);
+      }
+    } catch (error: any) {
+      message.error(`标记报错: ${error.message}`);
+    } finally {
+      hide();
+    }
+  };
+
+  /**
+   * 批量标记已读
+   * @param selectedRows
+   */
+  const handleBatchMarkRead = async (selectedRows: API.Notification[]) => {
+    if (!selectedRows?.length) return;
+    const hide = message.loading('正在标记');
+    try {
+      const res = await batchMarkNotificationRead({
+        ids: selectedRows.map((row) => row.id!),
+      });
+      if (res.code === 0) {
+        message.success('批量标记成功');
+        actionRef.current?.reloadAndRest?.();
+        setSelectedRows([]);
+      } else {
+        message.error(`批量标记失败: ${res.message}`);
+      }
+    } catch (error: any) {
+      message.error(`批量标记报错: ${error.message}`);
+    } finally {
+      hide();
+    }
+  };
+
+  /**
+   * 全部标记已读
+   */
+  const handleMarkAllRead = async () => {
+    const hide = message.loading('正在标记');
+    try {
+      const res = await markAllNotificationRead();
+      if (res.code === 0) {
+        message.success('全部标记成功');
+        actionRef.current?.reload();
+      } else {
+        message.error(`全部标记失败: ${res.message}`);
+      }
+    } catch (error: any) {
+      message.error(`全部标记报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -189,6 +213,11 @@ const NotificationList: React.FC = () => {
           <ViewNotificationModal notification={record}>
             <Typography.Link key="view">查看</Typography.Link>
           </ViewNotificationModal>
+          {record.isRead === 0 && (
+            <Typography.Link key="markRead" onClick={() => handleMarkRead(record)}>
+              标记已读
+            </Typography.Link>
+          )}
           <Typography.Link
             key="update"
             onClick={() => {
@@ -221,6 +250,12 @@ const NotificationList: React.FC = () => {
         search={{ labelWidth: 100 }}
         toolBarRender={() => [
           <Button
+            key="markAllRead"
+            onClick={() => handleMarkAllRead()}
+          >
+            全部标记已读
+          </Button>,
+          <Button
             key="create"
             type="primary"
             icon={<PlusOutlined />}
@@ -228,25 +263,14 @@ const NotificationList: React.FC = () => {
           >
             创建通知
           </Button>,
-          <Popconfirm
-            key="markAllRead"
-            title="确定全部标记已读？"
-            description="此操作将把您的所有未读通知标记为已读？"
-            onConfirm={handleMarkAllRead}
-          >
-            <Button icon={<ReadOutlined />}>全部已读</Button>
-          </Popconfirm>,
         ]}
         request={async (params, sort, filter) => {
-          const { current: pageNum, pageSize, ...rest } = params;
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
 
-          const { data, code } = await listNotificationByPageAdmin({
-            ...rest,
+          const { data, code } = await listNotificationByPage({
+            ...params,
             ...filter,
-            pageNum,
-            pageSize,
             sortField,
             sortOrder,
           } as API.NotificationQueryRequest);
@@ -271,24 +295,24 @@ const NotificationList: React.FC = () => {
             </div>
           }
         >
-          <Popconfirm
-            key="batchDelete"
-            title="确定批量删除？"
-            description="删除后将无法恢复？"
-            onConfirm={() => handleBatchDelete(selectedRowsState)}
-          >
-            <Button danger type="primary">
-              批量删除
+          <Space>
+            <Button
+              key="batchRead"
+              onClick={() => handleBatchMarkRead(selectedRowsState)}
+            >
+              批量已读
             </Button>
-          </Popconfirm>
-          <Popconfirm
-            key="batchRead"
-            title="确定批量已读？"
-            description="确定将选中项标记为已读？"
-            onConfirm={() => handleBatchRead(selectedRowsState)}
-          >
-            <Button type="primary">批量已读</Button>
-          </Popconfirm>
+            <Popconfirm
+              key="batchDelete"
+              title="确定批量删除？"
+              description="删除后将无法恢复？"
+              onConfirm={() => handleBatchDelete(selectedRowsState)}
+            >
+              <Button danger type="primary">
+                批量删除
+              </Button>
+            </Popconfirm>
+          </Space>
         </FooterToolbar>
       )}
       <CreateNotificationModal

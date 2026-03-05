@@ -110,6 +110,19 @@ const UserList: React.FC = () => {
       hideInSearch: true,
     },
     {
+      title: 'GitHub 账号',
+      dataIndex: 'githubLogin',
+      hideInSearch: true,
+      render: (_, record) =>
+        record.githubLogin ? (
+          <a href={record.githubUrl} target="_blank" rel="noreferrer">
+            {record.githubLogin}
+          </a>
+        ) : (
+          '-'
+        ),
+    },
+    {
       title: '角色',
       dataIndex: 'userRole',
       valueType: 'select',
@@ -186,15 +199,12 @@ const UserList: React.FC = () => {
           ),
         ]}
         request={async (params, sort, filter) => {
-          const { current: pageNum, pageSize, ...rest } = params;
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
 
           const { data, code } = await listUserByPage({
-            ...rest,
+            ...params,
             ...filter,
-            pageNum,
-            pageSize,
             sortField,
             sortOrder,
           } as API.UserQueryRequest);

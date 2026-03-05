@@ -84,7 +84,11 @@ const Login: React.FC = () => {
         <div className={styles.loginCard}>
           <LoginForm
             logo={<Image preview={false} width={48} alt="logo" src="/logo.svg" />}
-            title={<Typography.Title level={3} style={{ marginBottom: 0 }}>{STEPHEN_TITLE}</Typography.Title>}
+            title={
+              <Typography.Title level={3} style={{ marginBottom: 0 }}>
+                {STEPHEN_TITLE}
+              </Typography.Title>
+            }
             subTitle={STEPHEN_SUBTITLE}
             initialValues={{
               autoLogin: true,

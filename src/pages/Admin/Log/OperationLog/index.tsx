@@ -2,7 +2,7 @@ import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro
 import { Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { listLogByPage } from '@/services/log/operationLogController';
-import { deleteLog } from '@/services/log/operationLogController';
+import { deleteOperationLog } from '@/services/log/operationLogController';
 import { OperationStatusEnumMap } from '@/enums/OperationStatusEnum';
 import ViewOperationLogModal from './components/ViewOperationLogModal';
 
@@ -21,7 +21,7 @@ const OperationLog: React.FC = () => {
     const hide = message.loading('正在删除');
     if (!record?.id) return true;
     try {
-      await deleteLog({ id: record.id as any });
+      await deleteOperationLog({ id: record.id as any });
       message.success('删除成功');
       actionRef.current?.reload();
       return true;
@@ -41,7 +41,7 @@ const OperationLog: React.FC = () => {
     const hide = message.loading('正在删除');
     if (!selectedRows?.length) return true;
     try {
-      await Promise.all(selectedRows.map((row) => deleteLog({ id: row.id as any })));
+      await Promise.all(selectedRows.map((row) => deleteOperationLog({ id: row.id as any })));
       message.success('批量删除成功');
       actionRef.current?.reloadAndRest?.();
       setSelectedRows([]);

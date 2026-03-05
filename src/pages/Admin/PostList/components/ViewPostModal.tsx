@@ -1,4 +1,4 @@
-import { Modal, Button, Typography, Space, Tag } from 'antd';
+import { Modal, Button, Space, Tag } from 'antd';
 import React, { useState } from 'react';
 import { ProDescriptions, ProDescriptionsItemProps, ProCard } from '@ant-design/pro-components';
 import { MarkdownViewer } from '@/components';

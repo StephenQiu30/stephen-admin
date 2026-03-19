@@ -1,5 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
+import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
+
 import { Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { userRole } from '@/enums/UserRoleEnum';
@@ -7,6 +8,7 @@ import CreateUserModal from '@/pages/Admin/UserList/components/CreateUserModal';
 import UpdateUserModal from '@/pages/Admin/UserList/components/UpdateUserModal';
 import ViewUserModal from '@/pages/Admin/UserList/components/ViewUserModal';
 import { deleteUser, listUserByPage } from '@/services/user/userController';
+
 
 /**
  * 用户管理列表
@@ -80,6 +82,7 @@ const UserList: React.FC = () => {
       ellipsis: true,
       width: 140,
     },
+
     {
       title: '用户名',
       dataIndex: 'userName',
@@ -140,7 +143,6 @@ const UserList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      fixed: 'right',
       width: 180,
       render: (_, record) => (
         <Space size="middle">
@@ -186,18 +188,8 @@ const UserList: React.FC = () => {
           >
             新建
           </Button>,
-          selectedRowsState?.length > 0 && (
-            <Popconfirm
-              key="batchDelete"
-              title="确定批量删除？"
-              onConfirm={() => handleBatchDelete(selectedRowsState)}
-            >
-              <Button type="primary" danger>
-                批量删除
-              </Button>
-            </Popconfirm>
-          ),
         ]}
+
         request={async (params, sort, filter) => {
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
@@ -215,12 +207,34 @@ const UserList: React.FC = () => {
             total: Number(data?.total) || 0,
           };
         }}
+
+
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
         scroll={{ x: 'max-content' }}
       />
+      {selectedRowsState?.length > 0 && (
+        <FooterToolbar
+          extra={
+            <div>
+              已选择 <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a> 项
+            </div>
+          }
+        >
+          <Popconfirm
+            title="确定批量删除？"
+            description="删除后将无法恢复？"
+            onConfirm={() => handleBatchDelete(selectedRowsState)}
+          >
+            <Button danger type="primary">
+              批量删除
+            </Button>
+          </Popconfirm>
+        </FooterToolbar>
+      )}
+
 
       <CreateUserModal
         visible={createModalVisible}

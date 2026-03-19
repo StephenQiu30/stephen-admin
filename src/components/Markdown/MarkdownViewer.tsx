@@ -1,5 +1,6 @@
 import { MarkdownEditor } from '@ant-design/md-editor';
 import React from 'react';
+import './Markdown.css';
 
 interface Props {
   value?: string;
@@ -14,7 +15,12 @@ interface Props {
 const MarkdownViewer: React.FC<Props> = (props) => {
   const { value = '' } = props;
 
-  return <MarkdownEditor initValue={value} readonly={true} toc={true} />;
+  return (
+    <div className="markdown-viewer">
+      <MarkdownEditor initValue={value} readonly={true} toc={false} />
+    </div>
+  );
 };
+
 
 export default MarkdownViewer;

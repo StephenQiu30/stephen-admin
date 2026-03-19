@@ -1,5 +1,5 @@
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Badge, Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import {
   batchDeleteNotification,
@@ -144,27 +144,36 @@ const NotificationList: React.FC = () => {
    */
   const columns: ProColumns<API.Notification>[] = [
     {
-      title: 'ID',
+      title: '序号',
+      dataIndex: 'id',
+      valueType: 'index',
+      width: 48,
+      hideInTable: true,
+    },
+    {
+      title: '通知ID',
       dataIndex: 'id',
       valueType: 'text',
       hideInForm: true,
       hideInTable: true,
       copyable: true,
-      width: 140,
+      ellipsis: true,
+      width: 120,
     },
     {
       title: '标题',
       dataIndex: 'title',
       valueType: 'text',
       ellipsis: true,
-      width: 180,
+      width: 140,
     },
     {
       title: '内容',
       dataIndex: 'content',
-      valueType: 'textarea',
-      ellipsis: true,
+      valueType: 'text',
     },
+
+
     {
       title: '通知类型',
       dataIndex: 'type',
@@ -179,20 +188,17 @@ const NotificationList: React.FC = () => {
       valueEnum: NotificationReadStatusEnumMap,
       width: 110,
     },
+
     {
       title: '关联信息',
       dataIndex: 'related',
       hideInSearch: true,
-      width: 140,
       render: (_, record) => {
+
         if (!record.relatedType) return '-';
-        return (
-          <Space>
-            <Tag color="cyan">{record.relatedType}</Tag>
-            {record.relatedId && <Typography.Text copyable>{record.relatedId}</Typography.Text>}
-          </Space>
-        );
+        return <Tag color="processing">{record.relatedType}</Tag>;
       },
+
     },
     {
       title: '创建时间',
@@ -207,7 +213,6 @@ const NotificationList: React.FC = () => {
       dataIndex: 'option',
       valueType: 'option',
       width: 120,
-      fixed: 'right',
       render: (_, record) => (
         <Space size="middle">
           <ViewNotificationModal notification={record}>

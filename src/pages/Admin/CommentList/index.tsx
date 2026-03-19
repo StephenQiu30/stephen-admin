@@ -116,7 +116,6 @@ const CommentList: React.FC = () => {
       dataIndex: 'option',
       valueType: 'option',
       width: 160,
-      fixed: 'right',
       render: (_, record) => (
         <Space size="middle">
           <ViewCommentModal comment={record}>

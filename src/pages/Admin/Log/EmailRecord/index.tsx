@@ -90,7 +90,6 @@ const EmailRecord: React.FC = () => {
       dataIndex: 'option',
       valueType: 'option',
       width: 100,
-      fixed: 'right',
       render: (_, record) => (
         <Space size="middle">
           <ViewEmailRecordModal record={record}>

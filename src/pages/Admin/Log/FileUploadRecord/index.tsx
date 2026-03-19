@@ -122,7 +122,6 @@ const FileUploadRecord: React.FC = () => {
       dataIndex: 'option',
       valueType: 'option',
       width: 120,
-      fixed: 'right',
       render: (_, record) => (
         <Space size="middle">
           <ViewFileUploadRecordModal record={record}>
@@ -170,7 +169,8 @@ const FileUploadRecord: React.FC = () => {
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
-        scroll={{ x: 1200 }}
+        scroll={{ x: 'max-content' }}
+
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar

@@ -1,4 +1,5 @@
-import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
+import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
+
 import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
@@ -86,6 +87,7 @@ const PostList: React.FC = () => {
       ellipsis: true,
       width: 120,
     },
+
     {
       title: '标题',
       dataIndex: 'title',
@@ -139,6 +141,7 @@ const PostList: React.FC = () => {
       valueEnum: reviewStatus,
       width: 100,
     },
+
     {
       title: '创建时间',
       dataIndex: 'createTime',
@@ -151,7 +154,6 @@ const PostList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      fixed: 'right',
       width: 200,
       render: (_, record) => (
         <Space size="middle">
@@ -206,22 +208,8 @@ const PostList: React.FC = () => {
           >
             新建
           </Button>,
-          selectedRowsState?.length > 0 && (
-            <Space key="batchActions">
-              <Button type="primary" onClick={() => setBatchReviewModalVisible(true)}>
-                批量审核
-              </Button>
-              <Popconfirm
-                title="确定批量删除？"
-                onConfirm={() => handleBatchDelete(selectedRowsState)}
-              >
-                <Button type="primary" danger>
-                  批量删除
-                </Button>
-              </Popconfirm>
-            </Space>
-          ),
         ]}
+
         request={async (params, sort, filter) => {
           const sortField = Object.keys(sort)?.[0] || 'createTime';
           const sortOrder = sort?.[sortField] ?? 'descend';
@@ -229,7 +217,7 @@ const PostList: React.FC = () => {
           const { data, code } = await listPostByPage({
             ...params,
             ...filter,
-            tags: params.tags ? [params.tags] : undefined,
+            tags: params.tags ? (Array.isArray(params.tags) ? params.tags : [params.tags]) : undefined,
             sortField,
             sortOrder,
           } as API.PostQueryRequest);
@@ -240,12 +228,39 @@ const PostList: React.FC = () => {
             total: Number(data?.total) || 0,
           };
         }}
+
+
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
         scroll={{ x: 'max-content' }}
       />
+      {selectedRowsState?.length > 0 && (
+        <FooterToolbar
+          extra={
+            <div>
+              已选择 <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a> 项
+            </div>
+          }
+        >
+          <Space>
+            <Button type="primary" onClick={() => setBatchReviewModalVisible(true)}>
+              批量审核
+            </Button>
+            <Popconfirm
+              title="确定批量删除？"
+              description="删除后将无法恢复？"
+              onConfirm={() => handleBatchDelete(selectedRowsState)}
+            >
+              <Button type="primary" danger>
+                批量删除
+              </Button>
+            </Popconfirm>
+          </Space>
+        </FooterToolbar>
+      )}
+
 
       <CreatePostModal
         visible={createModalVisible}

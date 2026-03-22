@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { userRole } from '@/enums/UserRoleEnum';
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
 import { addUser } from '@/services/user/userController';
-import { addFile } from '@/services/file/fileController';
+import { uploadFile } from '@/services/file/fileController';
 
 interface Props {
   onCancel: () => void;
@@ -40,13 +40,14 @@ const CreateUserModal: React.FC<Props> = (props) => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await addFile(
+        const res = await uploadFile(
           {
             fileUploadRequest: {
               biz: FileUploadBiz.USER_AVATAR,
             },
           },
-          formData,
+          {},
+          file as any,
         );
         if (res.code === 0 && res.data?.url) {
           onSuccess(res.data);

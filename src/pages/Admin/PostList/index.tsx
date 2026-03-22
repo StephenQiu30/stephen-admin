@@ -5,6 +5,7 @@ import React, { useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { TAG_EMPTY } from '@/constants';
 import { deletePost, listPostByPage } from '@/services/post/postController';
+import { batchUpsertPost } from '@/services/search/searchController';
 import { reviewStatus } from '@/enums/ReviewStatusEnum';
 import CreatePostModal from '@/pages/Admin/PostList/components/CreatePostModal';
 import UpdatePostModal from '@/pages/Admin/PostList/components/UpdatePostModal';
@@ -68,6 +69,49 @@ const PostList: React.FC = () => {
       }
     } catch (error: any) {
       message.error(`批量删除报错: ${error.message}`);
+    } finally {
+      hide();
+    }
+  };
+
+  /**
+   * 同步到 ES
+   * @param record
+   */
+  const handleSyncToEs = async (record: API.PostVO) => {
+    if (!record?.id) return;
+    const hide = message.loading('正在同步');
+    try {
+      const res = await batchUpsertPost([record as any]);
+      if (res.code === 0) {
+        message.success('同步成功');
+      } else {
+        message.error(`同步失败: ${res.message}`);
+      }
+    } catch (error: any) {
+      message.error(`同步报错: ${error.message}`);
+    } finally {
+      hide();
+    }
+  };
+
+  /**
+   * 批量同步到 ES
+   * @param selectedRows
+   */
+  const handleBatchSyncToEs = async (selectedRows: API.PostVO[]) => {
+    if (!selectedRows?.length) return;
+    const hide = message.loading('正在同步');
+    try {
+      const res = await batchUpsertPost(selectedRows as any);
+      if (res.code === 0) {
+        message.success('批量同步成功');
+        setSelectedRows([]);
+      } else {
+        message.error('部分内容同步失败');
+      }
+    } catch (error: any) {
+      message.error(`批量同步报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -187,6 +231,9 @@ const PostList: React.FC = () => {
               删除
             </Typography.Link>
           </Popconfirm>
+          <Typography.Link key="sync" onClick={() => handleSyncToEs(record)}>
+            同步
+          </Typography.Link>
         </Space>
       ),
     },
@@ -207,6 +254,18 @@ const PostList: React.FC = () => {
             onClick={() => setCreateModalVisible(true)}
           >
             新建
+          </Button>,
+          <Button
+            key="sync"
+            onClick={() => {
+              if (selectedRowsState.length === 0) {
+                message.warning('请选择要同步的数据');
+                return;
+              }
+              handleBatchSyncToEs(selectedRowsState);
+            }}
+          >
+            同步 ES
           </Button>,
         ]}
 
@@ -234,6 +293,29 @@ const PostList: React.FC = () => {
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
+        tableAlertRender={({ selectedRowKeys, onCleanSelected }) => (
+          <Space size={24}>
+            <span>
+              已选 {selectedRowKeys.length} 项
+              <a style={{ marginInlineStart: 8 }} onClick={onCleanSelected}>
+                取消选择
+              </a>
+            </span>
+          </Space>
+        )}
+        tableAlertOptionRender={() => (
+          <Space size={16}>
+            <Typography.Link onClick={() => handleBatchSyncToEs(selectedRowsState)}>
+              批量同步到 ES
+            </Typography.Link>
+            <Popconfirm
+              title="确定批量删除？"
+              onConfirm={() => handleBatchDelete(selectedRowsState)}
+            >
+              <Typography.Link type="danger">批量删除</Typography.Link>
+            </Popconfirm>
+          </Space>
+        )}
         scroll={{ x: 'max-content' }}
       />
       {selectedRowsState?.length > 0 && (

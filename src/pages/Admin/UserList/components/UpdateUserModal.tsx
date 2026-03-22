@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import { userRole } from '@/enums/UserRoleEnum';
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
 import { updateUser } from '@/services/user/userController';
-import { addFile } from '@/services/file/fileController';
+import { uploadFile } from '@/services/file/fileController';
 
 interface Props {
   oldData?: API.User;
@@ -50,13 +50,14 @@ const UpdateUserModal: React.FC<Props> = (props) => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await addFile(
+        const res = await uploadFile(
           {
             fileUploadRequest: {
               biz: FileUploadBiz.USER_AVATAR,
             },
           },
-          formData,
+          {},
+          file as any,
         );
         if (res.code === 0 && res.data?.url) {
           onSuccess(res.data);

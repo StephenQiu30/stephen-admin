@@ -14,7 +14,7 @@ export async function addUser(body: API.UserAddRequest, options?: { [key: string
   });
 }
 
-/** 此处后端没有提供注释 POST /user/delete */
+/** 删除用户 删除指定 ID 的用户，需具备相应权限 POST /user/delete */
 export async function deleteUser(body: API.DeleteRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>('/user/delete', {
     method: 'POST',
@@ -38,7 +38,7 @@ export async function editUser(body: API.UserEditRequest, options?: { [key: stri
   });
 }
 
-/** 此处后端没有提供注释 GET /user/get */
+/** 根据 ID 获取用户详情 管理员获取指定用户的原始实体信息 GET /user/get */
 export async function getUserById(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.getUserByIdParams,
@@ -61,7 +61,7 @@ export async function getLoginUser(options?: { [key: string]: any }) {
   });
 }
 
-/** 此处后端没有提供注释 GET /user/get/vo */
+/** 根据 ID 获取脱敏信息 获取指定用户的脱敏后的视图数据 GET /user/get/vo */
 export async function getUserVoById(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.getUserVOByIdParams,
@@ -179,7 +179,7 @@ export async function userLoginByGitHub(
   });
 }
 
-/** 此处后端没有提供注释 GET /user/login/github/callback */
+/** GitHub 登录回调 用于接收 GitHub 授权重定向后的回调请求 GET /user/login/github/callback */
 export async function gitHubLoginCallback(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.gitHubLoginCallbackParams,
@@ -196,7 +196,7 @@ export async function gitHubLoginCallback(
   });
 }
 
-/** 此处后端没有提供注释 GET /user/login/wx/qrcode */
+/** 获取微信登录二维码 获取用于扫码登录的二维码 URL 和场景 ID GET /user/login/wx/qrcode */
 export async function getWxLoginQrCode(options?: { [key: string]: any }) {
   return request<API.BaseResponseWxLoginResponse>('/user/login/wx/qrcode', {
     method: 'GET',

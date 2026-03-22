@@ -8,6 +8,7 @@ import CreateUserModal from '@/pages/Admin/UserList/components/CreateUserModal';
 import UpdateUserModal from '@/pages/Admin/UserList/components/UpdateUserModal';
 import ViewUserModal from '@/pages/Admin/UserList/components/ViewUserModal';
 import { deleteUser, listUserByPage } from '@/services/user/userController';
+import { batchUpsertUser } from '@/services/search/searchController';
 
 
 /**
@@ -63,6 +64,49 @@ const UserList: React.FC = () => {
       }
     } catch (error: any) {
       message.error(`批量删除报错: ${error.message}`);
+    } finally {
+      hide();
+    }
+  };
+
+  /**
+   * 同步到 ES
+   * @param record
+   */
+  const handleSyncToEs = async (record: API.User) => {
+    if (!record?.id) return;
+    const hide = message.loading('正在同步');
+    try {
+      const res = await batchUpsertUser([record as any]);
+      if (res.code === 0) {
+        message.success('同步成功');
+      } else {
+        message.error(`同步失败: ${res.message}`);
+      }
+    } catch (error: any) {
+      message.error(`同步报错: ${error.message}`);
+    } finally {
+      hide();
+    }
+  };
+
+  /**
+   * 批量同步到 ES
+   * @param selectedRows
+   */
+  const handleBatchSyncToEs = async (selectedRows: API.User[]) => {
+    if (!selectedRows?.length) return;
+    const hide = message.loading('正在同步');
+    try {
+      const res = await batchUpsertUser(selectedRows as any);
+      if (res.code === 0) {
+        message.success('批量同步成功');
+        setSelectedRows([]);
+      } else {
+        message.error('部分内容同步失败');
+      }
+    } catch (error: any) {
+      message.error(`批量同步报错: ${error.message}`);
     } finally {
       hide();
     }
@@ -167,6 +211,9 @@ const UserList: React.FC = () => {
               删除
             </Typography.Link>
           </Popconfirm>
+          <Typography.Link key="sync" onClick={() => handleSyncToEs(record)}>
+            同步
+          </Typography.Link>
         </Space>
       ),
     },
@@ -187,6 +234,18 @@ const UserList: React.FC = () => {
             onClick={() => setCreateModalVisible(true)}
           >
             新建
+          </Button>,
+          <Button
+            key="sync"
+            onClick={() => {
+              if (selectedRowsState.length === 0) {
+                message.warning('请选择要同步的数据');
+                return;
+              }
+              handleBatchSyncToEs(selectedRowsState);
+            }}
+          >
+            同步 ES
           </Button>,
         ]}
 
@@ -213,6 +272,29 @@ const UserList: React.FC = () => {
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
         }}
+        tableAlertRender={({ selectedRowKeys, onCleanSelected }) => (
+          <Space size={24}>
+            <span>
+              已选 {selectedRowKeys.length} 项
+              <a style={{ marginInlineStart: 8 }} onClick={onCleanSelected}>
+                取消选择
+              </a>
+            </span>
+          </Space>
+        )}
+        tableAlertOptionRender={() => (
+          <Space size={16}>
+            <Typography.Link onClick={() => handleBatchSyncToEs(selectedRowsState)}>
+              批量同步到 ES
+            </Typography.Link>
+            <Popconfirm
+              title="确定批量删除？"
+              onConfirm={() => handleBatchDelete(selectedRowsState)}
+            >
+              <Typography.Link type="danger">批量删除</Typography.Link>
+            </Popconfirm>
+          </Space>
+        )}
         scroll={{ x: 'max-content' }}
       />
       {selectedRowsState?.length > 0 && (

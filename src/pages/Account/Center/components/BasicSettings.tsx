@@ -5,7 +5,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import React from 'react';
 import { createStyles } from 'antd-style';
 import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
-import { addFile } from '@/services/file/fileController';
+import { uploadFile } from '@/services/file/fileController';
 import { updateUser } from '@/services/user/userController';
 
 const useStyles = createStyles(({ token }) => {
@@ -84,13 +84,14 @@ const BasicSettings: React.FC = () => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await addFile(
+        const res = await uploadFile(
           {
             fileUploadRequest: {
               biz: FileUploadBiz.USER_AVATAR,
             },
           },
-          formData,
+          {},
+          file as any,
         );
         if (res.code === 0 && res.data?.url) {
           const newAvatar = res.data.url;

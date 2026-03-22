@@ -28,6 +28,13 @@ export default [
     icon: 'NotificationOutlined',
     access: 'canAdmin',
   },
+  {
+    name: 'AI 对话管理',
+    path: '/admin/ai_chat',
+    component: './Admin/AIChatRecordList',
+    icon: 'MessageOutlined',
+    access: 'canAdmin',
+  },
 
   {
     name: '日志管理',

@@ -8,14 +8,6 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponseEmailCodeVO = {
-    /** 状态码 */
-    code?: number;
-    data?: EmailCodeVO;
-    /** 消息 */
-    message?: string;
-  };
-
   type EmailAttachment = {
     /** 附件名称 */
     filename: string;
@@ -25,20 +17,6 @@ declare namespace API {
     size?: number;
     /** 内容类型 */
     contentType?: string;
-  };
-
-  type EmailCodeRequest = {
-    /** 邮箱 */
-    email?: string;
-    /** 验证码 */
-    code?: string;
-    /** 客户端IP */
-    clientIp?: string;
-  };
-
-  type EmailCodeVO = {
-    /** 验证码过期时间(秒) */
-    expireTime?: number;
   };
 
   type MailSendCodeRequest = {

@@ -205,6 +205,15 @@ declare namespace API {
     searchText?: string;
   };
 
+  type EmailRecordUpdateStatusRequest = {
+    /** 记录ID */
+    id: number;
+    /** 发送状态 */
+    status: string;
+    /** 错误信息 */
+    errorMessage?: string;
+  };
+
   type EmailRecordVO = {
     /** 主键 */
     id?: number;
@@ -352,6 +361,8 @@ declare namespace API {
     errorMessage?: string;
     /** 客户端IP */
     clientIp?: string;
+    /** 归属地 */
+    location?: string;
   };
 
   type OperationLogQueryRequest = {
@@ -406,6 +417,8 @@ declare namespace API {
     errorMessage?: string;
     /** 客户端IP */
     clientIp?: string;
+    /** 归属地 */
+    location?: string;
     /** 创建时间 */
     createTime?: string;
   };
@@ -498,6 +511,8 @@ declare namespace API {
     failReason?: string;
     /** 客户端IP */
     clientIp?: string;
+    /** 归属地 */
+    location?: string;
     /** User-Agent */
     userAgent?: string;
   };
@@ -542,6 +557,8 @@ declare namespace API {
     failReason?: string;
     /** 客户端IP */
     clientIp?: string;
+    /** 归属地 */
+    location?: string;
     /** User-Agent */
     userAgent?: string;
     /** 创建时间 */

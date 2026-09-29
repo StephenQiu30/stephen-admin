@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Space, Typography, Image } from 'antd';
 import React, { useRef, useState } from 'react';
@@ -143,8 +144,9 @@ const FileUploadRecord: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="文件上传日志" description="追踪上传文件、业务类型和处理状态。" category="系统记录" />
       <ProTable<API.FileUploadRecordVO>
-        headerTitle="文件上传记录"
+        headerTitle="上传记录"
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 100 }}

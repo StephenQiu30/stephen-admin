@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
@@ -104,8 +105,9 @@ const UserLoginLog: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="登录日志" description="查看登录时间、来源与登录结果。" category="系统记录" />
       <ProTable<API.UserLoginLogVO>
-        headerTitle="登录日志"
+        headerTitle="登录记录"
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 100 }}

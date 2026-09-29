@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
@@ -99,8 +100,9 @@ const OperationLog: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="操作日志" description="查询管理操作和执行结果。" category="系统记录" />
       <ProTable<API.OperationLogVO>
-        headerTitle="操作日志"
+        headerTitle="操作记录"
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 100 }}

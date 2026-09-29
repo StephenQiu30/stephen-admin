@@ -1,4 +1,5 @@
 import { PageContainer, ProCard } from '@ant-design/pro-components';
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { useModel } from '@umijs/max';
 import React, { useState } from 'react';
 import {
@@ -71,6 +72,11 @@ const AccountCenter: React.FC = () => {
 
   return (
     <PageContainer title={false}>
+      <AdminPageHeader
+        title="个人中心"
+        description="查看账户资料并管理自己的基本设置。"
+        category="账户"
+      />
       <ProCard variant="outlined" headerBordered split="vertical" style={{ minHeight: '600px' }}>
         <ProCard
           colSpan={{ xs: 24, sm: 24, md: 8, lg: 8, xl: 6 }}

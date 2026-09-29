@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Avatar, Button, message, Popconfirm, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
@@ -146,8 +147,9 @@ const CommentList: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="评论管理" description="检索评论、查看上下文并处理不合适的内容。" category="内容与账户" />
       <ProTable<API.PostCommentVO, any>
-        headerTitle="评论管理"
+        headerTitle="评论列表"
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 100 }}

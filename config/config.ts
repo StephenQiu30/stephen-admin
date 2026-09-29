@@ -97,7 +97,30 @@ export default defineConfig({
    * @description 内置了 babel import 插件
    * @doc https://umijs.org/docs/max/antd#antd
    */
-  antd: {},
+  antd: {
+    configProvider: {
+      theme: {
+        token: {
+          colorPrimary: '#0066cc',
+          colorInfo: '#0066cc',
+          colorBgLayout: '#f5f5f7',
+          colorText: '#1d1d1f',
+          colorTextSecondary: '#6e6e73',
+          colorBorderSecondary: '#e0e0e0',
+          borderRadius: 8,
+          controlHeight: 36,
+        },
+        components: {
+          Table: {
+            headerBg: '#fafafc',
+            headerColor: '#1d1d1f',
+            rowHoverBg: '#f5f5f7',
+          },
+          Card: { borderRadiusLG: 18 },
+        },
+      },
+    },
+  },
   /**
    * @name 网络请求配置
    * @description 它基于 axios 和 ahooks 的 useRequest 提供了一套统一的网络请求和错误处理方案。

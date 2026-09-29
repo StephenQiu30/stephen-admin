@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 
 import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
@@ -241,8 +242,9 @@ const PostList: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="帖子管理" description="查看内容、处理审核，并维护帖子资料。" category="内容与账户" />
       <ProTable<API.PostVO, API.PostQueryRequest>
-        headerTitle="帖子管理"
+        headerTitle="帖子列表"
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 100 }}
@@ -250,6 +252,7 @@ const PostList: React.FC = () => {
           <Button
             key="create"
             type="primary"
+            shape="round"
             icon={<PlusOutlined />}
             onClick={() => setCreateModalVisible(true)}
           >

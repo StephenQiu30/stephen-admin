@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Space, Typography, message, Popconfirm } from 'antd';
 import React, { useRef, useState } from 'react';
@@ -142,8 +143,9 @@ const AIChatRecordList: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="AI 对话管理" description="查询对话记录与消息内容，定位相关会话。" category="内容与账户" />
       <ProTable<API.AiChatRecordVO, API.AiChatRecordQueryRequest>
-        headerTitle="AI 对话管理"
+        headerTitle="对话记录"
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 100 }}

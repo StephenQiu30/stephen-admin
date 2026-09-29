@@ -4,7 +4,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
 }
@@ -31,12 +31,68 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.ant-pro-layout .ant-pro-layout-content {
+  padding-top: 24px;
+}
+
+.ant-pro-layout .ant-pro-sider {
+  border-right: 1px solid #e0e0e0;
+}
+
+.admin-page-header {
+  margin-bottom: 20px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.admin-page-header .ant-card-body {
+  padding: 26px 30px;
+}
+
+.admin-page-header-copy {
+  min-width: 0;
+}
+
+.admin-page-header-category {
+  color: #6e6e73;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.admin-page-header-title.ant-typography {
+  margin: 2px 0 4px;
+  font-size: 24px;
+  line-height: 1.35;
+}
+
+.ant-pro-table-search,
+.ant-pro-table-list-toolbar-container {
+  border-radius: 14px;
+}
+
+.ant-pro-table .ant-table-wrapper .ant-table-thead > tr > th {
+  font-weight: 600;
+}
+
 ul,
 ol {
   list-style: none;
 }
 
 @media (max-width: 768px) {
+  .ant-pro-layout .ant-pro-layout-content {
+    padding-top: 16px;
+  }
+
+  .admin-page-header .ant-card-body {
+    padding: 20px;
+  }
+
+  .admin-page-header-title.ant-typography {
+    font-size: 21px;
+  }
+
   .ant-table {
     width: 100%;
     overflow-x: auto;

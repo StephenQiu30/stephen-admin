@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
@@ -113,8 +114,9 @@ const ApiAccessLog: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="API 访问日志" description="检查接口请求、响应状态与耗时。" category="系统记录" />
       <ProTable<API.ApiAccessLogVO>
-        headerTitle="API 访问日志"
+        headerTitle="访问记录"
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 100 }}

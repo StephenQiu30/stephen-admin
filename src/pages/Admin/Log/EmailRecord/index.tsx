@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
@@ -111,6 +112,7 @@ const EmailRecord: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="邮件发送日志" description="查看收件、发送状态与重试记录。" category="系统记录" />
       <ProTable<API.EmailRecordVO>
         headerTitle="邮件记录"
         actionRef={actionRef}

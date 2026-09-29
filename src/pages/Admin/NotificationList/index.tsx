@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Badge, Button, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
@@ -248,8 +249,9 @@ const NotificationList: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="通知管理" description="管理系统通知、查看阅读状态并处理批量任务。" category="内容与账户" />
       <ProTable<API.Notification, API.NotificationQueryRequest>
-        headerTitle="通知管理"
+        headerTitle="通知列表"
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 100 }}
@@ -263,6 +265,7 @@ const NotificationList: React.FC = () => {
           <Button
             key="create"
             type="primary"
+            shape="round"
             icon={<PlusOutlined />}
             onClick={() => setCreateModalVisible(true)}
           >

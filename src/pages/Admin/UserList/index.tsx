@@ -1,3 +1,4 @@
+import AdminPageHeader from '@/components/AdminPageHeader';
 import { PlusOutlined } from '@ant-design/icons';
 import { ActionType, FooterToolbar, ProColumns, ProTable } from '@ant-design/pro-components';
 
@@ -221,8 +222,9 @@ const UserList: React.FC = () => {
 
   return (
     <>
+      <AdminPageHeader title="用户管理" description="查询账户、维护用户资料与角色，并管理搜索同步。" category="内容与账户" />
       <ProTable<API.User, API.UserQueryRequest>
-        headerTitle="用户管理"
+        headerTitle="用户列表"
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 100 }}
@@ -230,6 +232,7 @@ const UserList: React.FC = () => {
           <Button
             key="create"
             type="primary"
+            shape="round"
             icon={<PlusOutlined />}
             onClick={() => setCreateModalVisible(true)}
           >

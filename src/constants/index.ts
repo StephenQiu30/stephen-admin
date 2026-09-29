@@ -4,8 +4,8 @@ export const STEPHEN_GITHUB = 'https://github.com/Stephenqhd30';
 export const STEPHEN_TITLE = 'StephenQiu30';
 export const STEPHEN_SUBTITLE = '想要对你说的不敢说的爱，会不会有人可以明白';
 export const STEPHEN_DEFAULT_MESSAGE = 'StephenQiu30';
-export const BASE_URL = 'http://localhost:8080/api';
-export const PRODUCTION_URL = 'http://localhost:8080';
+export const BASE_URL = process.env.UMI_APP_API_BASE_URL || 'http://localhost:8080/api';
+export const PRODUCTION_URL = process.env.UMI_APP_API_BASE_URL || '/api';
 export const BACKGROUND_IMAGE =
   'https://butterfly-1318299170.cos.ap-shanghai.myqcloud.com/Images/Blog/Background/6.webp';
 export const ACCOUNT_TITLE = '我的城堡说欢迎光临';

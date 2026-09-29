@@ -152,7 +152,7 @@ const BasicSettings: React.FC = () => {
               render: (_, dom) => dom[1],
             }}
             initialValues={currentUser}
-            hideRequiredMark
+            requiredMark={false}
           >
             <ProFormText
               width="md"

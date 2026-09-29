@@ -10,7 +10,7 @@ import ViewUserLoginLogModal from './components/ViewUserLoginLogModal';
  * 登录日志页面
  */
 const UserLoginLog: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
   const [selectedRowsState, setSelectedRows] = useState<API.UserLoginLogVO[]>([]);
 
   /**

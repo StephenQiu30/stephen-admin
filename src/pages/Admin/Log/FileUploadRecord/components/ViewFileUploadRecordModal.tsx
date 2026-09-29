@@ -5,7 +5,7 @@ import { FileUploadStatusEnumMap } from '@/enums/FileUploadStatusEnum';
 
 interface Props {
   record: API.FileUploadRecordVO;
-  children?: React.ReactElement;
+  children?: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
   columns?: ProDescriptionsItemProps<API.FileUploadRecordVO>[];
 }
 

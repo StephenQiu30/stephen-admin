@@ -16,7 +16,7 @@ import { batchUpsertUser } from '@/services/search/searchController';
  * @constructor
  */
 const UserList: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
 
   // Modal 状态管理
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
@@ -139,7 +139,7 @@ const UserList: React.FC = () => {
       dataIndex: 'userAvatar',
       valueType: 'image',
       fieldProps: { width: 48 },
-      hideInSearch: true,
+      search: false,
       width: 80,
     },
     {
@@ -154,12 +154,12 @@ const UserList: React.FC = () => {
       dataIndex: 'userPhone',
       valueType: 'text',
       copyable: true,
-      hideInSearch: true,
+      search: false,
     },
     {
       title: 'GitHub 账号',
       dataIndex: 'githubLogin',
-      hideInSearch: true,
+      search: false,
       render: (_, record) =>
         record.githubLogin ? (
           <a href={record.githubUrl} target="_blank" rel="noreferrer">

@@ -9,7 +9,7 @@ import ViewAiChatRecordModal from './components/ViewAiChatRecordModal';
  * @constructor
  */
 const AIChatRecordList: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
   const [viewModalVisible, setViewModalVisible] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<API.AiChatRecordVO>();
   const [selectedRowsState, setSelectedRows] = useState<API.AiChatRecordVO[]>([]);
@@ -69,7 +69,7 @@ const AIChatRecordList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       valueType: 'text',
-      hideInSearch: true,
+      search: false,
       width: 80,
     },
     {
@@ -96,7 +96,7 @@ const AIChatRecordList: React.FC = () => {
       dataIndex: 'message',
       valueType: 'text',
       ellipsis: true,
-      hideInSearch: true,
+      search: false,
     },
     {
       title: '搜索内容',

@@ -6,7 +6,7 @@ import { EmailVerifiedEnumMap } from '@/enums/EmailVerifiedEnum';
 
 interface Props {
   user: API.User;
-  children?: React.ReactElement;
+  children?: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
   columns?: ProDescriptionsItemProps<API.User>[];
 }
 

@@ -17,7 +17,7 @@ import { NotificationTypeEnumMap } from '@/enums/NotificationTypeEnum';
 import { NotificationReadStatusEnumMap } from '@/enums/NotificationReadStatusEnum';
 
 const NotificationList: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
 
   // Modal 状态管理
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
@@ -192,7 +192,7 @@ const NotificationList: React.FC = () => {
     {
       title: '关联信息',
       dataIndex: 'related',
-      hideInSearch: true,
+      search: false,
       render: (_, record) => {
 
         if (!record.relatedType) return '-';

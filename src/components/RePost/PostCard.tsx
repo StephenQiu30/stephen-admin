@@ -21,22 +21,16 @@ const PostCard: React.FC<Props> = ({ post }) => {
   return (
     <ProCard
       title={<PostAvatarCard key={post.id} post={post} />}
-      headStyle={{ padding: 4 }}
-      bodyStyle={{ paddingTop: 0 }}
+      styles={{ header: { padding: 4 }, body: { paddingTop: 0 } }}
     >
       <Row>
         <Col span={isMobile ? 24 : post?.cover ? 18 : 24}>
-          <ProCard bodyStyle={{ padding: 4 }}>
+          <ProCard styles={{ body: { padding: 4 } }}>
             <StatisticCard
               onClick={() => {
                 window.open(`/post/${post?.id}`, '_blank');
               }}
-              bodyStyle={{
-                padding: 0,
-              }}
-              headStyle={{
-                padding: 0,
-              }}
+              styles={{ body: { padding: 0 }, header: { padding: 0 } }}
               statistic={{
                 title: <Typography.Title level={4}>{post?.title}</Typography.Title>,
                 valueRender: () => (
@@ -55,7 +49,7 @@ const PostCard: React.FC<Props> = ({ post }) => {
         </Col>
         <Col span={isMobile ? 24 : 6}>
           {post?.cover && (
-            <ProCard bodyStyle={{ padding: 0 }}>
+            <ProCard styles={{ body: { padding: 0 } }}>
               <Image
                 src={post?.cover}
                 style={{

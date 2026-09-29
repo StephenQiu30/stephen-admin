@@ -5,7 +5,7 @@ import { OperationStatusEnumMap } from '@/enums/OperationStatusEnum';
 
 interface Props {
   record: API.OperationLogVO;
-  children?: React.ReactElement;
+  children?: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
   columns?: ProDescriptionsItemProps<API.OperationLogVO>[];
 }
 

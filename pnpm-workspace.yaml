@@ -1,0 +1,9 @@
+allowBuilds:
+  '@scarf/scarf': false
+  core-js: false
+  core-js-pure: false
+  es5-ext: false
+  esbuild: true
+  puppeteer-core: false
+minimumReleaseAgeExclude:
+  - '@ant-design/pro-components@3.1.15-3'

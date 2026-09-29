@@ -71,7 +71,7 @@ const AccountCenter: React.FC = () => {
 
   return (
     <PageContainer title={false}>
-      <ProCard bordered headerBordered split="vertical" style={{ minHeight: '600px' }}>
+      <ProCard variant="outlined" headerBordered split="vertical" style={{ minHeight: '600px' }}>
         <ProCard
           colSpan={{ xs: 24, sm: 24, md: 8, lg: 8, xl: 6 }}
           title={

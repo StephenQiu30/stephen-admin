@@ -9,7 +9,7 @@ import ViewEmailRecordModal from './components/ViewEmailRecordModal';
  * 邮件记录页面
  */
 const EmailRecord: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
   const [selectedRowsState, setSelectedRows] = useState<API.EmailRecordVO[]>([]);
 
   /**
@@ -54,7 +54,7 @@ const EmailRecord: React.FC = () => {
   };
 
   const columns: ProColumns<API.EmailRecordVO>[] = [
-    { title: '记录ID', dataIndex: 'id', width: 120, copyable: true, hideInSearch: true },
+    { title: '记录ID', dataIndex: 'id', width: 120, copyable: true, search: false },
     { title: '消息ID', dataIndex: 'msgId', width: 120, ellipsis: true },
     { title: '收件人', dataIndex: 'toEmail', width: 180, copyable: true },
     { title: '主题', dataIndex: 'subject', ellipsis: true, width: 200 },
@@ -74,7 +74,7 @@ const EmailRecord: React.FC = () => {
       title: '重试',
       dataIndex: 'retryCount',
       width: 60,
-      hideInSearch: true,
+      search: false,
       render: (count) => <Tag color={Number(count) > 0 ? 'warning' : 'default'}>{count}</Tag>,
     },
     {
@@ -83,7 +83,7 @@ const EmailRecord: React.FC = () => {
       valueType: 'dateTime',
       width: 180,
       sorter: true,
-      hideInSearch: true,
+      search: false,
     },
     {
       title: '操作',

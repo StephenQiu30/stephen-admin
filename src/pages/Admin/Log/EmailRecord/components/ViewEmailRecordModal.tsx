@@ -2,10 +2,11 @@ import { Modal, Tag, Button } from 'antd';
 import React, { useState } from 'react';
 import { ProDescriptions, ProDescriptionsItemProps } from '@ant-design/pro-components';
 import { EmailStatusEnumMap } from '@/enums/EmailStatusEnum';
+import DOMPurify from 'dompurify';
 
 interface Props {
   record: API.EmailRecordVO;
-  children?: React.ReactElement;
+  children?: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
   columns?: ProDescriptionsItemProps<API.EmailRecordVO>[];
 }
 
@@ -54,7 +55,8 @@ const ViewEmailRecordModal: React.FC<Props> = (props) => {
             overflow: 'auto',
             background: '#fafafa',
           }}
-          dangerouslySetInnerHTML={{ __html: (text as string) || '-' }}
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Email HTML is sanitized before display.
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((text as string) || '-') }}
         />
       ),
     },

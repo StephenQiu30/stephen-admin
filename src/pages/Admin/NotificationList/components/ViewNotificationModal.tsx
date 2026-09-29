@@ -6,7 +6,7 @@ import { NotificationReadStatusEnumMap } from '@/enums/NotificationReadStatusEnu
 
 interface Props {
   notification: API.Notification;
-  children?: React.ReactElement;
+  children?: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
   columns?: ProDescriptionsItemProps<API.Notification>[];
 }
 

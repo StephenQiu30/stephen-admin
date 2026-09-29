@@ -13,7 +13,7 @@ import { FileUploadBiz } from '@/enums/FileUploadBizEnum';
  * 文件上传记录页面
  */
 const FileUploadRecord: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
   const [selectedRowsState, setSelectedRows] = useState<API.FileUploadRecordVO[]>([]);
 
   /**
@@ -74,7 +74,7 @@ const FileUploadRecord: React.FC = () => {
       title: '大小',
       dataIndex: 'fileSize',
       width: 100,
-      hideInSearch: true,
+      search: false,
       render: (size) => {
         const s = Number(size);
         if (s < 1024) return `${s} B`;
@@ -82,12 +82,12 @@ const FileUploadRecord: React.FC = () => {
         return `${((s as number) / (1024 * 1024)).toFixed(2)} MB`;
       },
     },
-    { title: '后缀', dataIndex: 'fileSuffix', width: 80, hideInSearch: true },
+    { title: '后缀', dataIndex: 'fileSuffix', width: 80, search: false },
     {
       title: '预览',
       dataIndex: 'url',
       width: 100,
-      hideInSearch: true,
+      search: false,
       render: (url) => {
         if (!url) return '-';
         const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url as string);
@@ -115,7 +115,7 @@ const FileUploadRecord: React.FC = () => {
       valueType: 'dateTime',
       width: 160,
       sorter: true,
-      hideInSearch: true,
+      search: false,
     },
     {
       title: '操作',

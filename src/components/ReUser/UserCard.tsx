@@ -24,7 +24,7 @@ const UserCard: React.FC<Props> = (props) => {
   return (
     <ProCard
       loading={loading}
-      bodyStyle={{ padding: 0 }}
+      styles={{ body: { padding: 0 } }}
       layout="center"
       direction="column"
       style={{

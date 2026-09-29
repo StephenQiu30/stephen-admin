@@ -10,7 +10,7 @@ import ViewApiAccessLogModal from './components/ViewApiAccessLogModal';
  * API 访问日志页面
  */
 const ApiAccessLog: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
   const [selectedRowsState, setSelectedRows] = useState<API.ApiAccessLogVO[]>([]);
 
   /**
@@ -77,8 +77,8 @@ const ApiAccessLog: React.FC = () => {
       width: 100,
       valueEnum: ApiAccessStatusEnumMap,
     },
-    { title: '耗时 (ms)', dataIndex: 'latencyMs', width: 100, hideInSearch: true, sorter: true },
-    { title: 'IP地址', dataIndex: 'clientIp', width: 120, hideInSearch: true },
+    { title: '耗时 (ms)', dataIndex: 'latencyMs', width: 100, search: false, sorter: true },
+    { title: 'IP地址', dataIndex: 'clientIp', width: 120, search: false },
     {
       title: '时间',
       dataIndex: 'createTime',

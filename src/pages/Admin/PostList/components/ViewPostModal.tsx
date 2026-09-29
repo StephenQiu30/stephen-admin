@@ -6,7 +6,7 @@ import { reviewStatus } from '@/enums/ReviewStatusEnum';
 
 interface Props {
   post: API.PostVO;
-  children?: React.ReactElement;
+  children?: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
   columns?: ProDescriptionsItemProps<API.PostVO>[];
 }
 
@@ -70,7 +70,7 @@ const ViewPostModal: React.FC<Props> = (props) => {
             dataSource={post}
             columns={columns || defaultColumns}
           />
-          <ProCard title="文章内容" bordered headerBordered bodyStyle={{ padding: 16 }}>
+          <ProCard title="文章内容" variant="outlined" headerBordered styles={{ body: { padding: 16 } }}>
             <MarkdownViewer value={post?.content} />
           </ProCard>
         </Space>

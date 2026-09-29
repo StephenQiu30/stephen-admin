@@ -10,7 +10,7 @@ import ViewOperationLogModal from './components/ViewOperationLogModal';
  * 操作日志页面
  */
 const OperationLog: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
   const [selectedRowsState, setSelectedRows] = useState<API.OperationLogVO[]>([]);
 
   /**

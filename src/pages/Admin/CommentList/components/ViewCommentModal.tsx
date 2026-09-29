@@ -4,7 +4,7 @@ import { ProDescriptions, ProDescriptionsItemProps } from '@ant-design/pro-compo
 
 interface Props {
   comment: API.PostCommentVO;
-  children?: React.ReactElement;
+  children?: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
   columns?: ProDescriptionsItemProps<API.PostCommentVO>[];
 }
 

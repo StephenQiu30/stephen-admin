@@ -5,7 +5,7 @@ import { LoginStatusEnumMap } from '@/enums/LoginStatusEnum';
 
 interface Props {
   record: API.UserLoginLogVO;
-  children?: React.ReactElement;
+  children?: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
   columns?: ProDescriptionsItemProps<API.UserLoginLogVO>[];
 }
 

@@ -6,8 +6,8 @@ import routes from './routes';
 
 const { REACT_APP_ENV = 'dev' } = process.env;
 export default defineConfig({
-  // 资源静态化
-  exportStatic: {},
+  // 资源静态化仅用于构建；开发服务器需回退到入口页以支持直接访问路由。
+  ...(process.env.NODE_ENV === 'production' ? { exportStatic: {} } : {}),
   /**
    * @name 开启 hash 模式
    * @description 让 build 之后的产物包含 hash 后缀。通常用于增量发布和避免浏览器加载缓存。
@@ -122,7 +122,7 @@ export default defineConfig({
     },
   ],
   //================ pro 插件配置 =================
-  presets: ['umi-presets-pro'],
+  plugins: ['@umijs/max-plugin-openapi', '@umijs/request-record'],
   /**
    * @name openAPI 插件的配置
    * @description 基于 openapi 的规范生成serve 和mock，能减少很多样板代码

@@ -16,9 +16,7 @@ const PostAvatarCard: React.FC<Props> = (props) => {
   const { post } = props;
   return (
     <StatisticCard
-      bodyStyle={{
-        padding: 4,
-      }}
+      styles={{ body: { padding: 4 } }}
       statistic={{
         title: post?.userVO?.userName,
         valueRender: () => (

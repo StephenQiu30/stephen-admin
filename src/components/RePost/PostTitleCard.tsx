@@ -16,9 +16,7 @@ const PostAvatarCard: React.FC<Props> = (props) => {
   const { post } = props;
   return (
     <StatisticCard
-      bodyStyle={{
-        padding: 0,
-      }}
+      styles={{ body: { padding: 0 } }}
       statistic={{
         title: <Typography.Title level={3}>{post?.title}</Typography.Title>,
         valueRender: () => (

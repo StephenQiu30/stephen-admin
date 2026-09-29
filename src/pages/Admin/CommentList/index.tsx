@@ -10,7 +10,7 @@ import ViewCommentModal from '@/pages/Admin/CommentList/components/ViewCommentMo
  * @constructor
  */
 const CommentList: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
 
   // Modal 状态管理
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);

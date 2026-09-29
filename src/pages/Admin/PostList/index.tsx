@@ -18,7 +18,7 @@ import BatchReviewPostModal from '@/pages/Admin/PostList/components/BatchReviewP
  * @constructor
  */
 const PostList: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType | null>(null);
 
   // Modal 状态管理
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
@@ -156,7 +156,7 @@ const PostList: React.FC = () => {
       dataIndex: 'cover',
       valueType: 'image',
       fieldProps: { width: 48 },
-      hideInSearch: true,
+      search: false,
       width: 80,
     },
     {

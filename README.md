@@ -8,21 +8,20 @@
 
 ### 核心框架
 
-- **Ant Design Pro 6.0.0** - 企业级中后台前端/设计解决方案
-- **React 18.3.1** - 用于构建用户界面的 JavaScript 库
+- **Ant Design Pro 6 系架构** - 企业级中后台前端/设计解决方案
+- **React 19.3.0** - 用于构建用户界面的 JavaScript 库
 - **Umi 4.x** - 可扩展的企业级前端应用框架
-- **Ant Design 5.29.3** - 企业级 UI 设计语言和 React 组件库
-- **TypeScript 5.9.3** - JavaScript 的超集，提供类型安全
+- **Ant Design 6.6.5** - 企业级 UI 设计语言和 React 组件库
+- **TypeScript 7.0.2** - JavaScript 的超集，提供类型安全
 
 ### 开发工具
 
 - **OpenAPI** - 自动生成后端请求代码，基于 Swagger/OpenAPI 规范
-- **ESLint + Prettier** - 代码规范和格式化工具
-- **Husky + lint-staged** - Git 提交前的代码检查
+- **Biome + Prettier** - 代码规范和格式化工具
 
 ### 主要组件库
 
-- **@ant-design/pro-components** - 高级业务组件
+- **@ant-design/pro-components 3.1.15-3（预发行版）** - 高级业务组件；当前 Ant Design 6 兼容分支尚未发布稳定版
   - ProLayout - 提供开箱即用的菜单和面包屑功能
   - ProForm - 表单模板组件，预设常见布局和行为
   - ProTable - 表格模板组件，抽象网格请求和单元格样式
@@ -122,9 +121,8 @@
 ### 代码规范
 
 - TypeScript 类型检查
-- ESLint 代码规范检查
+- Biome 代码规范检查
 - Prettier 代码格式化
-- Git Hooks 提交前检查
 
 ### 性能优化
 
@@ -136,7 +134,7 @@
 ## 目录结构
 
 ```
-stephen-frontend/
+stephen-admin/
 ├── config/              # 配置文件
 │   ├── config.ts       # Umi 配置
 │   ├── routes.ts       # 路由配置
@@ -169,19 +167,15 @@ stephen-frontend/
 
 ## 环境要求
 
-- **Node.js**: >= 12.0.0（建议 >= 16.x）
-- **npm** 或 **yarn** 或 **pnpm**
+- **Node.js**: >= 22.0.0
+- **pnpm** 12.x
 
 ## 快速开始
 
 ### 1. 安装依赖
 
 ```bash
-npm install
-# 或
-yarn install
-# 或
-pnpm install
+pnpm install --frozen-lockfile
 ```
 
 ### 2. 配置后端 API
@@ -201,15 +195,13 @@ openAPI: [
 ### 3. 生成后端请求代码
 
 ```bash
-npm run openapi
+pnpm run openapi
 ```
 
 ### 4. 启动开发服务器
 
 ```bash
-npm run dev
-# 或
-npm run start:dev
+pnpm run start:dev
 ```
 
 访问 http://localhost:8000 查看应用。
@@ -217,20 +209,19 @@ npm run start:dev
 ### 5. 构建生产版本
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 构建产物在 `dist` 目录。
 
 ## 可用脚本
 
-- `npm run dev` - 启动开发服务器
-- `npm run build` - 构建生产版本
-- `npm run analyze` - 分析构建产物
-- `npm run lint` - 运行代码检查
-- `npm run lint:fix` - 自动修复代码问题
-- `npm run openapi` - 生成后端 API 请求代码
-- `npm run preview` - 预览构建后的应用
+- `pnpm run build` - 构建生产版本
+- `pnpm run analyze` - 分析构建产物
+- `pnpm run lint` - 运行代码检查
+- `pnpm run lint:fix` - 自动修复代码问题
+- `pnpm run openapi` - 生成后端 API 请求代码
+- `pnpm run preview` - 预览构建后的应用
 
 ## 个性化配置
 
@@ -254,12 +245,12 @@ export const BACKGROUND_IMAGE = '你的背景图URL';
 ### 部署到 GitHub Pages
 
 ```bash
-npm run deploy
+pnpm run deploy
 ```
 
 ### 部署到其他服务器
 
-1. 运行 `npm run build` 构建项目
+1. 运行 `pnpm run build` 构建项目
 2. 将 `dist` 目录部署到你的服务器
 
 ## 相关项目
